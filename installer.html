@@ -109,11 +109,11 @@ html,body{height:100%;font-family:var(--font);font-size:14px;color:var(--t0);bac
         <div class="step-line" id="l1" style="height:60px"></div>
       </div>
       <div class="step-body">
-        <div class="step-title">สร้าง Google Sheet</div>
-        <div class="step-desc mb12">คลิกปุ่มด้านล่างเพื่อเปิด Google Sheets และสร้าง Spreadsheet ใหม่</div>
+        <div class="step-title">เปิด Google Sheet (สร้างให้แล้ว ✓)</div>
+        <div class="step-desc mb12">Sheet "IT ServiceDesk DB" ถูกสร้างไว้ให้แล้ว คลิกเพื่อเปิด</div>
         <div class="df g8">
-          <button class="btn pri" onclick="openSheets()">🔗 เปิด Google Sheets</button>
-          <button class="btn sec" id="btn1done" onclick="markStep1()">✅ สร้างแล้ว — ถัดไป</button>
+          <button class="btn pri" onclick="openSheets()">🔗 เปิด Sheet ที่สร้างไว้</button>
+          <button class="btn sec" id="btn1done" onclick="markStep1()">✅ เปิดแล้ว — ถัดไป</button>
         </div>
         <div class="status-box info mt12" style="margin-top:12px">
           <span>💡</span><div><strong>วิธี:</strong> กด <code style="background:#D6E8FF;padding:1px 6px;border-radius:4px;font-size:12px">+ Blank Spreadsheet</code> → ตั้งชื่อว่า <strong>"IT ServiceDesk DB"</strong> → จำ URL ไว้</div>
@@ -225,8 +225,9 @@ const CODE_GS = `// ============================================================
 //   Execute as: Me  |  Who has access: Anyone
 // ============================================================
 
-const SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
-const SS       = SpreadsheetApp.getActiveSpreadsheet();
+// Sheet ID — ถูกตั้งค่าอัตโนมัติแล้ว
+const SHEET_ID = '19QBZiaAVQqJja9ndfl_6Ur_VT-ZaTF_jSSYt_C39aXE';
+const SS       = SpreadsheetApp.openById(SHEET_ID);
 
 // ── Sheet names ──────────────────────────────────────────────
 const SH = {
@@ -291,6 +292,10 @@ function doPost(e) {
       case 'updateUser':    return json(updateUser(body.data));
       case 'saveSettings':  return json(saveSettings(body.data));
       case 'addAudit':      return json(addAudit(body.data));
+      case 'manualLogin':   return json(manualLogin(body.data));
+      case 'oauthLogin':    return json(oauthLogin(body.data));
+      case 'resetPassword': return json(resetPassword(body.data));
+      case 'setPassword':   setUserPassword(body.data.userId, body.data.hash); return json({ok:true});
       default: return json({ error: 'Unknown action: ' + action });
     }
   } catch(err) {
@@ -321,7 +326,7 @@ function initSheets() {
     ],
     [SH.USERS]: [
       'id','firstName','lastName','email','employeeId','dept','branch','phone',
-      'role','status','lastLogin','ticketCount','createdAt'
+      'role','status','lastLogin','ticketCount','createdAt','passwordHash','provider'
     ],
     [SH.AUDIT]: [
       'id','timestamp','userId','userName','action','targetType','targetId',
@@ -792,6 +797,530 @@ function updateSLAPercents() {
     sh.getRange(i + 1, slaIdx + 1).setValue(pct);
   }
 }
+
+// ============================================================
+// AUTH — เพิ่มใน Code.gs
+// ============================================================
+
+/** ตรวจสอบ user จาก Google OAuth token */
+function verifyGoogleToken(idToken) {
+  try {
+    const url = \`https://oauth2.googleapis.com/tokeninfo?id_token=\${idToken}\`;
+    const resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const info = JSON.parse(resp.getContentText());
+    if (resp.getResponseCode() !== 200) return null;
+    return {
+      email     : info.email,
+      name      : info.name,
+      picture   : info.picture,
+      googleId  : info.sub,
+      verified  : info.email_verified === 'true',
+    };
+  } catch(e) { return null; }
+}
+
+/** Manual login — ตรวจจาก Users sheet (password เก็บเป็น SHA-256) */
+function manualLogin(data) {
+  const users = sheetToObjects(SH.USERS);
+  const u = users.find(u =>
+    (u.email === data.email || u.employeeId === data.email) &&
+    u.status === 'active'
+  );
+  if (!u) return { ok: false, error: 'ไม่พบบัญชีผู้ใช้' };
+
+  // ถ้าไม่มี password hash ให้ set ครั้งแรก
+  if (!u.passwordHash) {
+    // First time login — set password
+    setUserPassword(u.id, data.password);
+  } else {
+    // Compare hash — frontend ส่ง SHA-256 มา
+    if (u.passwordHash !== data.passwordHash)
+      return { ok: false, error: 'รหัสผ่านไม่ถูกต้อง' };
+  }
+
+  // Update lastLogin
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, u.id);
+  const llIdx   = headers.indexOf('lastLogin');
+  if (row > 0 && llIdx >= 0)
+    sh.getRange(row, llIdx+1).setValue(new Date().toISOString());
+
+  addAudit({ action:'LOGIN', targetType:'User', targetId:u.id,
+             detail:\`Login: \${data.method||'manual'}\`, userName:u.firstName+' '+u.lastName });
+
+  return {
+    ok  : true,
+    user: {
+      id        : u.id,
+      name      : u.firstName + ' ' + u.lastName,
+      firstName : u.firstName,
+      lastName  : u.lastName,
+      email     : u.email,
+      role      : u.role,
+      dept      : u.dept,
+      branch    : u.branch,
+      employeeId: u.employeeId,
+      phone     : u.phone,
+    }
+  };
+}
+
+/** Google/Microsoft OAuth login — upsert user */
+function oauthLogin(data) {
+  const users = sheetToObjects(SH.USERS);
+  let u = users.find(u => u.email === data.email);
+
+  if (!u) {
+    // Auto-register
+    const sh  = SS.getSheetByName(SH.USERS);
+    const now = new Date().toISOString();
+    const id  = 'USR-' + String(sh.getLastRow()).padStart(4,'0');
+    const row = [
+      id, data.firstName||data.name.split(' ')[0]||'',
+      data.lastName||data.name.split(' ').slice(1).join(' ')||'',
+      data.email, '', '', '', '', 'req', 'active', now, 0, now, '', data.provider||''
+    ];
+    sh.appendRow(row);
+    u = { id, firstName:row[1], lastName:row[2], email:data.email,
+          role:'req', dept:'', branch:'', employeeId:'', phone:'' };
+    addAudit({ action:'REGISTER', targetType:'User', targetId:id,
+               detail:\`OAuth: \${data.provider}\`, userName:data.name });
+  } else {
+    // Update lastLogin
+    const sh      = SS.getSheetByName(SH.USERS);
+    const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+    const row     = findRowById(SH.USERS, u.id);
+    const llIdx   = headers.indexOf('lastLogin');
+    if (row > 0 && llIdx >= 0)
+      sh.getRange(row, llIdx+1).setValue(new Date().toISOString());
+    addAudit({ action:'LOGIN', targetType:'User', targetId:u.id,
+               detail:\`OAuth: \${data.provider}\`, userName:u.firstName+' '+u.lastName });
+  }
+
+  return {
+    ok  : true,
+    user: {
+      id        : u.id,
+      name      : u.firstName + ' ' + u.lastName,
+      firstName : u.firstName,
+      lastName  : u.lastName,
+      email     : u.email,
+      role      : u.role || 'req',
+      dept      : u.dept,
+      branch    : u.branch,
+      employeeId: u.employeeId,
+      phone     : u.phone,
+      avatar    : data.picture || '',
+    }
+  };
+}
+
+function setUserPassword(userId, plainPassword) {
+  // Store hash sent from frontend (we don't store plain text)
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, userId);
+  let phIdx     = headers.indexOf('passwordHash');
+  // Add column if not exists
+  if (phIdx < 0) {
+    phIdx = headers.length;
+    sh.getRange(1, phIdx+1).setValue('passwordHash');
+  }
+  if (row > 0) sh.getRange(row, phIdx+1).setValue(plainPassword);
+}
+
+function resetPassword(data) {
+  const users = sheetToObjects(SH.USERS);
+  const u = users.find(u => u.email === data.email && u.status === 'active');
+  if (!u) return { ok: false, error: 'ไม่พบอีเมลในระบบ' };
+
+  // Generate reset token
+  const token = Utilities.getUuid();
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, u.id);
+  let rtIdx     = headers.indexOf('resetToken');
+  if (rtIdx < 0) { rtIdx = headers.length; sh.getRange(1, rtIdx+1).setValue('resetToken'); }
+  if (row > 0) sh.getRange(row, rtIdx+1).setValue(token);
+
+  // Send email via GAS (ส่ง reset link ทาง Gmail)
+  try {
+    MailApp.sendEmail({
+      to      : data.email,
+      subject : '[IT ServiceDesk] รีเซ็ตรหัสผ่าน',
+      htmlBody: \`<h2>รีเซ็ตรหัสผ่าน IT ServiceDesk</h2>
+        <p>สวัสดีคุณ \${u.firstName},</p>
+        <p>คลิกลิงก์ด้านล่างเพื่อตั้งรหัสผ่านใหม่ (หมดอายุใน 1 ชั่วโมง):</p>
+        <a href="\${data.appUrl}?reset=\${token}&uid=\${u.id}" style="background:#1860C4;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin:16px 0">ตั้งรหัสผ่านใหม่</a>
+        <p style="color:#888;font-size:12px">หากไม่ได้ร้องขอ กรุณาเพิกเฉยต่ออีเมลนี้</p>\`,
+    });
+  } catch(e) { return { ok: false, error: 'ส่งอีเมลไม่สำเร็จ: '+e.message }; }
+
+  return { ok: true, message: 'ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง ' + data.email };
+}
+
+// เพิ่ม routes ใน doPost
+function handleAuth(body) {
+  switch(body.action) {
+    case 'manualLogin' : return json(manualLogin(body.data));
+    case 'oauthLogin'  : return json(oauthLogin(body.data));
+    case 'resetPassword': return json(resetPassword(body.data));
+    case 'setPassword' : setUserPassword(body.data.userId, body.data.hash); return json({ok:true});
+    default: return null;
+  }
+}
+`;
+}
+
+function deleteRow(sheetName, id) {
+  const row = findRowById(sheetName, id);
+  if (row < 0) return { ok: false, error: 'Not found' };
+  SS.getSheetByName(sheetName).deleteRow(row);
+  addAudit({ action: 'DELETE', targetType: sheetName, targetId: id, detail: 'Deleted' });
+  return { ok: true };
+}
+
+// ============================================================
+// TICKETS
+// ============================================================
+function getTickets(params) {
+  const tickets = sheetToObjects(SH.TICKETS);
+  let result = tickets;
+
+  if (params.status && params.status !== 'all') {
+    result = result.filter(t => t.status === params.status);
+  }
+  if (params.priority) {
+    result = result.filter(t => t.priority === params.priority);
+  }
+  if (params.technicianId) {
+    result = result.filter(t => t.technicianId === params.technicianId);
+  }
+  if (params.search) {
+    const q = params.search.toLowerCase();
+    result = result.filter(t =>
+      String(t.id).toLowerCase().includes(q) ||
+      String(t.subject).toLowerCase().includes(q) ||
+      String(t.requester).toLowerCase().includes(q)
+    );
+  }
+
+  return { ok: true, data: result, total: result.length };
+}
+
+function createTicket(data) {
+  const sh  = SS.getSheetByName(SH.TICKETS);
+  const now = new Date().toISOString();
+  const id  = nextId(SH.TICKETS, 'TK');
+
+  // Calculate SLA deadline
+  const slaMap = { critical: 240, high: 480, medium: 1440, low: 4320 };
+  const mins   = slaMap[data.priority] || 1440;
+  const deadline = new Date(Date.now() + mins * 60000).toISOString();
+
+  const row = [
+    id, data.subject, data.requester, data.email, data.dept, data.branch,
+    data.category, data.subcategory, data.priority, data.impact, data.urgency,
+    'new', data.technicianId||'', data.technicianName||'', data.teamId||'',
+    data.assetCode||'', data.description||'', '','','', data.tags||'',
+    100, deadline, now, now, '', '', ''
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'CREATE_TICKET', targetType: 'Ticket', targetId: id, detail: data.subject, userName: data.requester });
+  return { ok: true, id, data: { ...data, id, status: 'new', createdAt: now } };
+}
+
+function updateTicket(data) {
+  const sh      = SS.getSheetByName(SH.TICKETS);
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.TICKETS, data.id);
+  if (row < 0) return { ok: false, error: 'Ticket not found' };
+
+  const now = new Date().toISOString();
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'id' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  sh.getRange(row, headers.indexOf('updatedAt') + 1).setValue(now);
+  addAudit({ action: 'UPDATE_TICKET', targetType: 'Ticket', targetId: data.id, detail: \`Status: \${data.status||''}\` });
+  return { ok: true, id: data.id };
+}
+
+// ============================================================
+// ASSETS
+// ============================================================
+function getAssets(params) {
+  let assets = sheetToObjects(SH.ASSETS);
+  if (params.type && params.type !== 'all') {
+    assets = assets.filter(a => a.type === params.type);
+  }
+  if (params.status) {
+    assets = assets.filter(a => a.status === params.status);
+  }
+  if (params.search) {
+    const q = params.search.toLowerCase();
+    assets = assets.filter(a =>
+      String(a.code).toLowerCase().includes(q) ||
+      String(a.brand).toLowerCase().includes(q) ||
+      String(a.userName).toLowerCase().includes(q)
+    );
+  }
+  return { ok: true, data: assets, total: assets.length };
+}
+
+function createAsset(data) {
+  const sh  = SS.getSheetByName(SH.ASSETS);
+  const now = new Date().toISOString();
+  const row = [
+    data.code, data.name, data.type, data.brand, data.model, data.serialNo,
+    data.cpu||'', data.ram||'', data.storage||'', data.os||'',
+    data.userId||'', data.userName||'', data.dept||'', data.location||'',
+    data.floor||'', data.status||'active', data.purchasePrice||0,
+    data.purchaseDate||'', data.vendor||'', data.warrantyExpiry||'',
+    data.macAddress||'', data.ipAddress||'', data.software||'', data.notes||'',
+    now, now
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'CREATE_ASSET', targetType: 'Asset', targetId: data.code, detail: data.brand + ' ' + data.model });
+  return { ok: true, code: data.code };
+}
+
+function updateAsset(data) {
+  const sh      = SS.getSheetByName(SH.ASSETS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.ASSETS, data.code, 0);
+  if (row < 0) return { ok: false, error: 'Asset not found' };
+  const now = new Date().toISOString();
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'code' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  sh.getRange(row, headers.indexOf('updatedAt') + 1).setValue(now);
+  return { ok: true };
+}
+
+// ============================================================
+// DOCUMENTS
+// ============================================================
+function getDocuments(params) {
+  let docs = sheetToObjects(SH.DOCUMENTS);
+  if (params.assetCode) {
+    docs = docs.filter(d => d.assetCode === params.assetCode);
+  }
+  if (params.docType && params.docType !== 'all') {
+    docs = docs.filter(d => d.docType === params.docType);
+  }
+  return { ok: true, data: docs, total: docs.length };
+}
+
+function createDocument(data) {
+  const sh  = SS.getSheetByName(SH.DOCUMENTS);
+  const now = new Date().toISOString();
+  const id  = 'DOC-' + String(sh.getLastRow()).padStart(4, '0');
+  const row = [
+    id, data.assetCode, data.assetName, data.docType, data.name,
+    data.vendor||'', data.docDate||'', data.amount||'',
+    data.fileSize||'', data.fileExt||'pdf', data.fileUrl||'',
+    data.notes||'', now, data.uploadedBy||'Admin', data.isPublic||false
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'UPLOAD_DOC', targetType: 'Document', targetId: id, detail: data.name });
+  return { ok: true, id };
+}
+
+// ============================================================
+// USERS
+// ============================================================
+function getUsers() {
+  return { ok: true, data: sheetToObjects(SH.USERS) };
+}
+
+function createUser(data) {
+  const sh  = SS.getSheetByName(SH.USERS);
+  const now = new Date().toISOString();
+  const id  = 'USR-' + String(sh.getLastRow()).padStart(4, '0');
+  const row = [
+    id, data.firstName, data.lastName, data.email, data.employeeId||'',
+    data.dept||'', data.branch||'', data.phone||'',
+    data.role||'req', 'active', '', 0, now
+  ];
+  sh.appendRow(row);
+  return { ok: true, id };
+}
+
+function updateUser(data) {
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, data.id);
+  if (row < 0) return { ok: false, error: 'User not found' };
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'id' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  return { ok: true };
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+function getAudit() {
+  const rows = sheetToObjects(SH.AUDIT).reverse().slice(0, 100);
+  return { ok: true, data: rows };
+}
+
+function addAudit(data) {
+  const sh  = SS.getSheetByName(SH.AUDIT);
+  const now = new Date().toISOString();
+  const id  = 'AUD-' + String(sh.getLastRow()).padStart(6, '0');
+  sh.appendRow([
+    id, now,
+    data.userId   || 'system',
+    data.userName || 'System',
+    data.action   || '',
+    data.targetType || '',
+    data.targetId   || '',
+    data.detail     || '',
+    data.ipAddress  || '',
+    data.userAgent  || '',
+  ]);
+  return { ok: true, id };
+}
+
+// ============================================================
+// STATS (Dashboard)
+// ============================================================
+function getStats() {
+  const tickets = sheetToObjects(SH.TICKETS);
+  const assets  = sheetToObjects(SH.ASSETS);
+  const docs    = sheetToObjects(SH.DOCUMENTS);
+
+  const now  = new Date();
+  const mon0 = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const byStatus = {};
+  const byPri    = {};
+  const byCat    = {};
+  let   resolved = 0;
+  let   slaBreached = 0;
+  let   slaSum   = 0;
+
+  tickets.forEach(t => {
+    byStatus[t.status] = (byStatus[t.status] || 0) + 1;
+    byPri[t.priority]  = (byPri[t.priority]  || 0) + 1;
+    byCat[t.category]  = (byCat[t.category]  || 0) + 1;
+    const pct = Number(t.slaPercent) || 100;
+    slaSum += pct;
+    if (pct < 1) slaBreached++;
+    if (t.status === 'resolved' || t.status === 'closed') {
+      if (new Date(t.updatedAt) >= mon0) resolved++;
+    }
+  });
+
+  const open     = (byStatus['open']||0) + (byStatus['progress']||0) + (byStatus['assigned']||0);
+  const waiting  = (byStatus['waiting']||0);
+  const total    = tickets.length;
+  const slaComp  = total > 0 ? Math.round(slaSum / total) : 100;
+
+  // Asset warranty expiring within 90 days
+  const soon90 = assets.filter(a => {
+    if (!a.warrantyExpiry) return false;
+    const parts = String(a.warrantyExpiry).split('-');
+    const exp   = new Date(a.warrantyExpiry);
+    const diff  = (exp - now) / 86400000;
+    return diff > 0 && diff < 90;
+  }).length;
+
+  return {
+    ok: true,
+    data: {
+      total, open, waiting, resolved,
+      slaBreached, slaCompliance: slaComp,
+      critical: byPri['critical'] || 0,
+      byStatus, byPriority: byPri, byCategory: byCat,
+      assets: { total: assets.length, warrantyExpiringSoon: soon90 },
+      documents: { total: docs.length },
+    }
+  };
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function getSettings() {
+  const rows = sheetToObjects(SH.SETTINGS);
+  const obj  = {};
+  rows.forEach(r => { obj[r.key] = r.value; });
+  return { ok: true, data: obj };
+}
+
+function saveSettings(data) {
+  const sh      = SS.getSheetByName(SH.SETTINGS);
+  const now     = new Date().toISOString();
+  const rows    = sh.getDataRange().getValues();
+  const keyCol  = 0;
+  const valCol  = 1;
+
+  Object.entries(data).forEach(([key, val]) => {
+    let found = false;
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][keyCol] === key) {
+        sh.getRange(i + 1, valCol + 1).setValue(val);
+        sh.getRange(i + 1, 3).setValue(now);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      sh.appendRow([key, val, now]);
+    }
+  });
+  return { ok: true };
+}
+
+// ============================================================
+// TRIGGER: Auto SLA update every 15 min
+// ============================================================
+function setupTrigger() {
+  // Delete existing
+  ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
+  // Create new time-based trigger
+  ScriptApp.newTrigger('updateSLAPercents')
+    .timeBased()
+    .everyMinutes(15)
+    .create();
+  return 'Trigger set: every 15 minutes';
+}
+
+function updateSLAPercents() {
+  const sh      = SS.getSheetByName(SH.TICKETS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const data    = sh.getDataRange().getValues();
+  const now     = new Date();
+  const slaIdx  = headers.indexOf('slaPercent');
+  const dlIdx   = headers.indexOf('slaDeadline');
+  const crIdx   = headers.indexOf('createdAt');
+  const stIdx   = headers.indexOf('status');
+  const prIdx   = headers.indexOf('priority');
+  const slaMap  = { critical:240, high:480, medium:1440, low:4320 };
+
+  for (let i = 1; i < data.length; i++) {
+    const st = data[i][stIdx];
+    if (st === 'resolved' || st === 'closed') continue;
+
+    const pri      = data[i][prIdx];
+    const created  = new Date(data[i][crIdx]);
+    const deadline = new Date(data[i][dlIdx]);
+    const totalMs  = (slaMap[pri] || 1440) * 60000;
+    const usedMs   = now - created;
+    const pct      = Math.max(0, Math.round((1 - usedMs / totalMs) * 100));
+
+    sh.getRange(i + 1, slaIdx + 1).setValue(pct);
+  }
+}
 `;
 
 // ── State ───────────────────────────────────────────────────
@@ -802,7 +1331,7 @@ let currentStep = 1;
 // ── Init ────────────────────────────────────────────────────
 window.onload = function() {
   // Show Code.gs preview
-  document.getElementById('codePreview').textContent = CODE_GS.slice(0, 800) + '\n... (573 lines total)';
+  document.getElementById('codePreview').textContent = CODE_GS.slice(0, 800) + '\n... (751 lines total)';
 
   // If already set up, show success
   if (sheetUrl) {
@@ -856,7 +1385,8 @@ function markStep3(silent) {
 
 // ── Actions ──────────────────────────────────────────────────
 function openSheets() {
-  window.open('https://sheets.google.com/create','_blank');
+  // เปิด Sheet ที่สร้างไว้แล้ว
+  window.open('https://docs.google.com/spreadsheets/d/19QBZiaAVQqJja9ndfl_6Ur_VT-ZaTF_jSSYt_C39aXE/edit','_blank');
 }
 function openAppsScript() {
   const url = spreadsheetUrl || 'https://script.google.com';

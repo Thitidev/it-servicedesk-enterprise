@@ -4,8 +4,9 @@
 //   Execute as: Me  |  Who has access: Anyone
 // ============================================================
 
-const SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
-const SS       = SpreadsheetApp.getActiveSpreadsheet();
+// Sheet ID — ถูกตั้งค่าอัตโนมัติแล้ว
+const SHEET_ID = '19QBZiaAVQqJja9ndfl_6Ur_VT-ZaTF_jSSYt_C39aXE';
+const SS       = SpreadsheetApp.openById(SHEET_ID);
 
 // ── Sheet names ──────────────────────────────────────────────
 const SH = {
