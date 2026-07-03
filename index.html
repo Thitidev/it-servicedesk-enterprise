@@ -99,7 +99,7 @@ svg{display:block}
 .msgrd{width:18px;height:18px;display:grid;grid-template-columns:1fr 1fr;gap:2px;flex-shrink:0}
 .ldiv{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--t3);margin:18px 0;text-transform:uppercase;letter-spacing:.5px}
 .ldiv::before,.ldiv::after{content:'';flex:1;height:1px;background:var(--b0)}
-.lfoot{margin-top:20px;text-align:center;font-size:11px;color:var(--t3)}
+.lfoot{margin-top:20px;text-align:center;font-size:11px;color:var(--t3);padding-bottom:8px}
 
 /* ===================================================================
    BUTTONS
@@ -539,23 +539,23 @@ tbody tr.rc{cursor:pointer}
   .sic.it > .ti, .sic.it .ti { color: var(--teal-600) !important; }
   .sic.igr > .ti, .sic.igr .ti { color: var(--t2) !important; }
 
+
+  /* ── Login page fixes ── */
+  .lwrap{ display:flex !important; }
+  .lwrap.out{ display:none !important; }
+  .lform-wrap{ display:flex; align-items:center; justify-content:center; }
+  #lv-choose,#lv-manual,#lv-register,#lv-forgot,#lv-reset{ width:100%; }
+  #lLoading{ width:100%; }
+  .g_id_signin > div{ width:100% !important; }
+  /* Google GSI button sizing */
+  iframe.S9gUrf-YoZ4jf{ width:100% !important; border-radius:var(--r) !important; }
+  /* Role picker */
+  .role-picker{ background:var(--s2); border-radius:var(--r); padding:4px; }
+  .role-opt{ transition:all .15s; border-radius:calc(var(--r) - 2px); }
+
 </style>
 
-<script>
-// Icon font load check — if webfont fails, inject SVG icons via emoji fallback
-document.fonts.ready.then(function() {
-  const testEl = document.createElement('i');
-  testEl.className = 'ti ti-home';
-  testEl.style.cssText = 'position:absolute;visibility:hidden;font-size:20px';
-  document.body.appendChild(testEl);
-  const w = testEl.getBoundingClientRect().width;
-  document.body.removeChild(testEl);
-  if (w < 5) {
-    // Font didn't load — add visible warning and try reload
-    console.warn('Tabler icon font not loaded, width:', w);
-  }
-});
-</script>
+
 </head>
 <body>
 
@@ -611,7 +611,8 @@ document.fonts.ready.then(function() {
             data-size="large"
             data-locale="th"
             data-logo_alignment="left"
-            data-width="340">
+            data-width="340"
+            style="width:100%;margin-bottom:4px">
           </div>
           <!-- Fallback button (shown if GSI not configured) -->
           <button class="msbtn" id="googleFallbackBtn" onclick="googleSignInFallback()" style="display:none">
@@ -734,7 +735,7 @@ document.fonts.ready.then(function() {
   </div>
   <div class="sfoot">
     <div class="av av-sm" style="background:var(--green-600)">สจ</div>
-    <div class="sftxt"><strong>สมชาย ใจดี</strong><span>แผนกการเงิน</span></div>
+    <div class="sftxt"><strong id="sfName">—</strong><span id="sfDept">—</span></div>
     <div class="role-switch-btn" onclick="logout()" title="ออกจากระบบ"><i class="ti ti-logout" style="font-size:14px"></i></div>
   </div>
 </nav>
@@ -901,7 +902,7 @@ document.fonts.ready.then(function() {
       <div class="card">
         <div class="ctit mb14"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div>
         <div class="dfc g10" style="font-size:13px">
-          <div class="df ic g10"><div class="av av-sm" style="background:var(--green-600)">สจ</div><div><div class="w7">สมชาย ใจดี</div><div class="xs mu">EMP-00412</div></div></div>
+          <div class="df ic g10"><div class="av av-sm" style="background:var(--green-600)">สจ</div><div><div class="w7" id="sfName2">—</div><div class="xs mu">EMP-00412</div></div></div>
           <div class="inr"><i class="ti ti-building"></i>แผนกการเงิน · สำนักงานใหญ่</div>
           <div class="inr"><i class="ti ti-mail"></i>somchai.j@company.co.th</div>
           <div class="inr"><i class="ti ti-phone"></i>081-234-5678</div>
@@ -973,7 +974,7 @@ document.fonts.ready.then(function() {
           <div class="sic ig" style="margin:0"><i class="ti ti-message-2"></i></div>
           <div style="flex:1">
             <div class="w7" style="color:var(--green-700);font-size:13.5px">ทีม IT กำลังดำเนินการ</div>
-            <div class="xs" style="color:var(--green-700);opacity:.85;margin-top:3px">"ตรวจสอบและพบสาเหตุแล้ว กำลังแก้ไข timeout setting คาดว่าจะแล้วเสร็จภายในวันนี้" — กฤต แสงทอง, ทีม Network</div>
+            <div class="xs" style="color:var(--green-700);opacity:.85;margin-top:3px">"ตรวจสอบและพบสาเหตุแล้ว กำลังแก้ไข timeout setting คาดว่าจะแล้วเสร็จภายในวันนี้" — <span class="tkCommentAuthor">ผู้รับผิดชอบ</span></div>
           </div>
         </div>
       </div>
@@ -1067,12 +1068,12 @@ document.fonts.ready.then(function() {
   <div class="card csm mb16"><div class="slbl_ mb8">Workflow</div><div class="sf_"><div class="sfn cur">Draft</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">New</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Open</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Assigned</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">In Progress</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Testing</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Resolved</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Closed</div></div></div>
   <div class="gr21">
     <div>
-      <div class="card mb16"><div class="ctit mb16"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div><div class="fg f2"><div class="fgg"><label class="flbl">ชื่อ-นามสกุล <span class="req">*</span></label><input class="finp" value="สมชาย ใจดี"></div><div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" value="EMP-00412"></div><div class="fgg"><label class="flbl">อีเมล <span class="req">*</span></label><input class="finp" type="email" value="somchai.j@company.co.th"></div><div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-234-5678"></div><div class="fgg"><label class="flbl">แผนก <span class="req">*</span></label><select class="fsel"><option>การเงิน</option><option>HR</option><option>ไอที</option><option>ปฏิบัติการ</option><option>การขาย</option><option>การตลาด</option></select></div><div class="fgg"><label class="flbl">สาขา</label><select class="fsel"><option>สำนักงานใหญ่</option><option>เชียงใหม่</option><option>ภูเก็ต</option></select></div></div></div>
+      <div class="card mb16"><div class="ctit mb16"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div><div class="fg f2"><div class="fgg"><label class="flbl">ชื่อ-นามสกุล <span class="req">*</span></label><input class="finp" id="profFullName" placeholder="ชื่อ-นามสกุล"></div><div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" value="EMP-00412"></div><div class="fgg"><label class="flbl">อีเมล <span class="req">*</span></label><input class="finp" type="email" value="somchai.j@company.co.th"></div><div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-234-5678"></div><div class="fgg"><label class="flbl">แผนก <span class="req">*</span></label><select class="fsel"><option>การเงิน</option><option>HR</option><option>ไอที</option><option>ปฏิบัติการ</option><option>การขาย</option><option>การตลาด</option></select></div><div class="fgg"><label class="flbl">สาขา</label><select class="fsel"><option>สำนักงานใหญ่</option><option>เชียงใหม่</option><option>ภูเก็ต</option></select></div></div></div>
       <div class="card mb16"><div class="ctit mb16"><i class="ti ti-ticket"></i>รายละเอียด Ticket</div><div class="fg f2 mb16"><div class="fgg"><label class="flbl">หมวดหมู่ <span class="req">*</span></label><select class="fsel" id="catSel" onchange="updSub()"><option value="">เลือก...</option><option>Microsoft Office</option><option>Microsoft Teams</option><option>Network / VPN</option><option>เครื่องพิมพ์</option><option>Active Directory</option><option>Hardware</option><option>Application</option><option>Security</option><option>อื่นๆ</option></select></div><div class="fgg"><label class="flbl">หมวดหมู่ย่อย</label><select class="fsel" id="subSel"><option>เลือก...</option></select></div></div><div class="fgg mb16"><label class="flbl">หัวข้อ <span class="req">*</span></label><input class="finp" placeholder="อธิบายปัญหาโดยย่อ..."></div><div class="fgg mb16"><label class="flbl">รายละเอียด <span class="req">*</span></label><textarea class="fta" style="min-height:110px" placeholder="อธิบายปัญหาอย่างละเอียด..."></textarea></div><div class="fg f3"><div class="fgg"><label class="flbl">Priority <span class="req">*</span></label><select class="fsel"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div><div class="fgg"><label class="flbl">Impact</label><select class="fsel"><option>ผู้ใช้คนเดียว</option><option>ทั้งแผนก</option><option>ทั้งบริษัท</option></select></div><div class="fgg"><label class="flbl">Urgency</label><select class="fsel"><option>ต่ำ</option><option selected>ปานกลาง</option><option>สูง</option></select></div></div></div>
       <div class="card"><div class="ctit mb14"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div class="upz" onclick="toast('เปิด File Browser','info','')" ondragover="this.classList.add('drg');event.preventDefault()" ondragleave="this.classList.remove('drg')" ondrop="this.classList.remove('drg');event.preventDefault()"><i class="ti ti-cloud-upload"></i><div style="font-size:14px;font-weight:600;margin-bottom:6px">ลากไฟล์หรือ <span style="color:var(--blue-600)">คลิกเลือก</span></div><div class="xs mu">PDF, DOCX, XLSX, ZIP, PNG, JPEG · สูงสุด 50MB</div></div></div>
     </div>
     <div class="dfc g16">
-      <div class="card"><div class="ctit mb14"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb12"><label class="flbl">ช่างเทคนิค</label><select class="fsel"><option>— Auto Assign —</option><option>กฤต แสงทอง</option><option>ณัฐยา วนิช</option><option>ธนากร พัน</option></select></div><div class="fgg"><label class="flbl">ทีม</label><select class="fsel"><option>— เลือกทีม —</option><option>Network Team</option><option>Hardware Team</option><option>Software Team</option></select></div></div>
+      <div class="card"><div class="ctit mb14"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb12"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="createTechSel"><option value="">— Auto Assign —</option></select></div><div class="fgg"><label class="flbl">ทีม</label><select class="fsel"><option>— เลือกทีม —</option><option>Network Team</option><option>Hardware Team</option><option>Software Team</option></select></div></div>
       <div class="card" style="background:var(--amber-50);border-color:#F5CFA0"><div class="ctit mb10" style="color:var(--amber-700)"><i class="ti ti-alarm"></i>SLA ที่คาดการณ์</div><div style="font-size:14px;font-weight:700;color:var(--amber-700)">Priority: Medium</div><div class="xs" style="color:var(--amber-700);margin-top:6px">First Response: <strong>ภายใน 4 ชม.</strong></div><div class="xs" style="color:var(--amber-700);margin-top:3px">Resolution: <strong>ภายใน 24 ชม.</strong></div></div>
     </div>
   </div>
@@ -1103,7 +1104,7 @@ document.fonts.ready.then(function() {
      [ADMIN] ASSIGNED
      ====================================================== -->
 <div class="pg" id="pg-assigned">
-  <div class="phdr"><div><h2>งานที่ได้รับมอบหมาย</h2><p>กฤต แสงทอง — IT Technician</p></div></div>
+  <div class="phdr"><div><h2>งานที่ได้รับมอบหมาย</h2><p id="assignedPageUser">IT Technician</p></div></div>
   <div class="sg g4 mb16">
     <div class="sc"><div class="sic ib"><i class="ti ti-clipboard"></i></div><div class="slbl">มอบหมายให้ฉัน</div><div class="sval" style="color:var(--blue-600)">14</div></div>
     <div class="sc"><div class="sic ia"><i class="ti ti-clock"></i></div><div class="slbl">ครบกำหนดวันนี้</div><div class="sval" style="color:var(--amber-600)">5</div></div>
@@ -1124,20 +1125,20 @@ document.fonts.ready.then(function() {
   <div style="background:var(--amber-50);border:1.5px solid #F5CFA0;border-radius:var(--r-lg);padding:13px 18px;margin-bottom:18px;display:flex;align-items:center;gap:13px"><i class="ti ti-clock-exclamation" style="font-size:21px;color:var(--amber-600)"></i><div style="flex:1;font-size:13.5px;color:var(--amber-700)"><strong>SLA Warning:</strong> เหลือ <strong>2h 14m</strong> ก่อนเกิน SLA</div><button class="btn sm warn" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate</button></div>
   <div class="gr31">
     <div class="dfc g16">
-      <div class="card"><div class="mg mb16"><div><div class="mk">Priority</div><div><span class="badge bhi">🟠 High</span></div></div><div><div class="mk">Status</div><div><span class="badge bpr"><span class="bd"></span>In Progress</span></div></div><div><div class="mk">หมวดหมู่</div><div class="mv">Network › VPN</div></div><div><div class="mk">แผนก</div><div class="mv">การเงิน</div></div><div><div class="mk">ช่างเทคนิค</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)">KS</div><span class="mv">กฤต แสงทอง</span></div></div><div><div class="mk">วันที่สร้าง</div><div class="mv">24 มิ.ย. 2026</div></div><div><div class="mk">SLA คงเหลือ</div><div style="color:var(--amber-600);font-weight:800;font-size:20px">2h 14m</div><div class="slaw mt4"><div class="slab"><div class="slaf sfa" style="width:28%"></div></div><span class="spa">28%</span></div></div><div><div class="mk">กำหนดส่ง</div><div class="mv" style="color:var(--amber-600)">25 มิ.ย. 2026</div></div></div>
+      <div class="card"><div class="mg mb16"><div><div class="mk">Priority</div><div><span class="badge bhi">🟠 High</span></div></div><div><div class="mk">Status</div><div><span class="badge bpr"><span class="bd"></span>In Progress</span></div></div><div><div class="mk">หมวดหมู่</div><div class="mv">Network › VPN</div></div><div><div class="mk">แผนก</div><div class="mv">การเงิน</div></div><div><div class="mk">ช่างเทคนิค</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)" id="tkTechAv">—</div><span class="mv" id="tkTechName">ยังไม่มอบหมาย</span></div></div><div><div class="mk">วันที่สร้าง</div><div class="mv">24 มิ.ย. 2026</div></div><div><div class="mk">SLA คงเหลือ</div><div style="color:var(--amber-600);font-weight:800;font-size:20px">2h 14m</div><div class="slaw mt4"><div class="slab"><div class="slaf sfa" style="width:28%"></div></div><span class="spa">28%</span></div></div><div><div class="mk">กำหนดส่ง</div><div class="mv" style="color:var(--amber-600)">25 มิ.ย. 2026</div></div></div>
         <div class="div"></div><div class="slbl_ mb8">รายละเอียด</div><div style="font-size:13.5px;line-height:1.8">VPN หลุดหลังใช้งาน ~30 นาที Error: <code style="background:var(--s1);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--blue-600)">"The remote connection was lost."</code></div>
         <div class="div"></div>
         <div class="fg f2"><div class="fgg"><label class="flbl">Resolution</label><textarea class="fta" style="min-height:80px" placeholder="วิธีแก้..."></textarea></div><div class="fgg"><label class="flbl">Root Cause</label><textarea class="fta" style="min-height:80px" placeholder="สาเหตุ..."></textarea></div></div>
       </div>
-      <div class="card"><div class="chdr"><div class="ctit"><i class="ti ti-message-dots"></i>ความคิดเห็น</div><div class="df g6px"><div class="fc on" style="font-size:11px;padding:3px 10px">สาธารณะ</div><div class="fc" style="font-size:11px;padding:3px 10px">Internal Note</div></div></div><div class="df g12 is" style="padding:12px 0;border-bottom:1px solid var(--b0)"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0">KS</div><div style="flex:1"><div class="xs mu mb4">กฤต แสงทอง · 24 มิ.ย. 10:32</div><div style="font-size:13.5px;line-height:1.6">ตรวจสอบและ reproduce ปัญหาได้แล้ว กำลังแก้ไข VPN timeout setting ครับ</div></div></div><div class="df g10 is mt12"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0">AU</div><textarea class="fta" style="flex:1;min-height:64px" placeholder="เพิ่มความคิดเห็น..."></textarea><button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="toast('โพสต์แล้ว','success','')"><i class="ti ti-send"></i></button></div></div>
+      <div class="card"><div class="chdr"><div class="ctit"><i class="ti ti-message-dots"></i>ความคิดเห็น</div><div class="df g6px"><div class="fc on" style="font-size:11px;padding:3px 10px">สาธารณะ</div><div class="fc" style="font-size:11px;padding:3px 10px">Internal Note</div></div></div><div class="df g12 is" style="padding:12px 0;border-bottom:1px solid var(--b0)"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0" id="cmtAv">—</div><div style="flex:1"><div class="xs mu mb4" id="cmtAuthor">ผู้รับผิดชอบ</div><div style="font-size:13.5px;line-height:1.6">ตรวจสอบและ reproduce ปัญหาได้แล้ว กำลังแก้ไข VPN timeout setting ครับ</div></div></div><div class="df g10 is mt12"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0">AU</div><textarea class="fta" style="flex:1;min-height:64px" placeholder="เพิ่มความคิดเห็น..."></textarea><button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="toast('โพสต์แล้ว','success','')"><i class="ti ti-send"></i></button></div></div>
       <div class="card"><div class="ctit mb12"><i class="ti ti-star"></i>ประเมิน CSAT</div><div id="csStars" class="df g6px mb10" onmouseleave="rsStars()"><span class="star" onclick="setR(1)" onmouseover="hlR(1)">★</span><span class="star" onclick="setR(2)" onmouseover="hlR(2)">★</span><span class="star" onclick="setR(3)" onmouseover="hlR(3)">★</span><span class="star" onclick="setR(4)" onmouseover="hlR(4)">★</span><span class="star" onclick="setR(5)" onmouseover="hlR(5)">★</span></div><textarea class="fta" style="min-height:56px" placeholder="ความคิดเห็น..."></textarea><button class="btn pri mt8" onclick="toast('ส่งการประเมินแล้ว','success','CSAT')"><i class="ti ti-send"></i>ส่ง</button></div>
       <div class="card"><div class="ctit mb16"><i class="ti ti-timeline"></i>Timeline</div><div class="tl" id="dTl"></div></div>
     </div>
     <div class="dfc g16">
-      <div class="card"><div class="ctit mb12"><i class="ti ti-user"></i>ผู้แจ้ง</div><div class="df ic g12 mb12"><div class="av av-md" style="background:var(--green-600)">สจ</div><div><div class="w7">สมชาย ใจดี</div><div class="xs mu">การเงิน · EMP-00412</div></div></div><div class="dfc g4px"><div class="inr"><i class="ti ti-mail"></i>somchai.j@company.co.th</div><div class="inr"><i class="ti ti-phone"></i>081-234-5678</div></div></div>
-      <div class="card"><div class="ctit mb12"><i class="ti ti-device-laptop"></i>สินทรัพย์</div><div class="dfc g4px xs"><div><strong>NB-DELL-0412</strong></div><div class="mu">Dell Latitude 5520</div><div class="mu">Win 11 · 16GB · 512GB</div><span class="badge bact mt6">ใช้งานปกติ</span></div></div>
+      <div class="card"><div class="ctit mb12"><i class="ti ti-user"></i>ผู้แจ้ง</div><div class="df ic g12 mb12"><div class="av av-md" style="background:var(--green-600)" id="tkReqAv">—</div><div><div class="w7" id="tkReqName">ผู้แจ้ง</div><div class="xs mu" id="tkReqDept">—</div></div></div><div class="dfc g4px"><div class="inr"><i class="ti ti-mail"></i>somchai.j@company.co.th</div><div class="inr"><i class="ti ti-phone"></i>081-234-5678</div></div></div>
+      <div class="card"><div class="ctit mb12"><i class="ti ti-device-laptop"></i>สินทรัพย์</div><div class="dfc g4px xs"><div><strong id="asDetailCode">—</strong></div><div class="mu" id="asDetailName">—</div><div class="mu">Win 11 · 16GB · 512GB</div><span class="badge bact mt6">ใช้งานปกติ</span></div></div>
       <div class="card"><div class="ctit mb10"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div class="ach mb6" onclick="toast('ดาวน์โหลด...','info','')"><i class="ti ti-file-type-png" style="font-size:22px;color:var(--blue-600)"></i><div style="flex:1;min-width:0"><div class="xs w6 tr">screenshot_vpn.png</div><div class="xs mu">248 KB</div></div><i class="ti ti-download" style="color:var(--t2)"></i></div></div>
-      <div class="card"><div class="ctit mb10"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb10"><label class="flbl">ช่างเทคนิค</label><select class="fsel" onchange="toast('มอบหมาย: '+this.value,'success','')"><option>กฤต แสงทอง</option><option>ณัฐยา วนิช</option></select></div><button class="btn dan cw" style="justify-content:center" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate ไปยัง IT Manager</button></div>
+      <div class="card"><div class="ctit mb10"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb10"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="tkAssignSel" onchange="toast('มอบหมาย: '+this.value,'success','')"><option value="">— เลือกช่าง —</option></select></div><button class="btn dan cw" style="justify-content:center" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate ไปยัง IT Manager</button></div>
     </div>
   </div>
 </div>
@@ -1184,7 +1185,7 @@ document.fonts.ready.then(function() {
      ====================================================== -->
 <div class="pg" id="pg-assetdetail">
   <div class="phdr">
-    <div><div class="xs mu mb4"><span class="bcl" onclick="nav('assets')" style="cursor:pointer">สินทรัพย์</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> NB-DELL-0412</div><h2>Dell Latitude 5520</h2></div>
+    <div><div class="xs mu mb4"><span class="bcl" onclick="nav('assets')" style="cursor:pointer">สินทรัพย์</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> <span id="asBreadCode">—</span></div><h2 id="asBreadName">—</h2></div>
     <div class="pact">
       <button class="btn xs" onclick="toast('พิมพ์ QR Label','info','')"><i class="ti ti-qrcode"></i>QR Label</button>
       <button class="btn xs" onclick="toast('Print Asset Card','info','')"><i class="ti ti-printer"></i>ใบครุภัณฑ์</button>
@@ -1279,11 +1280,11 @@ document.fonts.ready.then(function() {
       <div class="card">
         <div class="df ic g12 mb14">
           <div class="sic ib" style="width:56px;height:56px;font-size:26px;border-radius:16px;margin:0"><i class="ti ti-device-laptop"></i></div>
-          <div><div class="w7" style="font-size:16px">Dell Latitude 5520</div><div class="xs mu mt4">NB-DELL-0412</div><span class="badge bact mt6">ใช้งานปกติ</span></div>
+          <div><div class="w7" style="font-size:16px" id="asBreadNameTop">—</div><div class="xs mu mt4" id="asDetailCodeSub">—</div><span class="badge bact mt6" id="asDetailStatus">ใช้งานปกติ</span></div>
         </div>
         <div class="div"></div>
         <div class="slbl_">ผู้ใช้งานปัจจุบัน</div>
-        <div class="df ic g10 mb12"><div class="av av-sm" style="background:var(--green-600)">สจ</div><div><div class="sm w7">สมชาย ใจดี</div><div class="xs mu">การเงิน · ชั้น 5</div></div></div>
+        <div class="df ic g10 mb12"><div class="av av-sm" style="background:var(--green-600)" id="uCreateReqAv">—</div><div><div class="sm w7" id="uCreateReqName">—</div><div class="xs mu" id="uCreateReqDept">—</div></div></div>
         <button class="btn xs cw" style="justify-content:center" onclick="toast('เปลี่ยนผู้ใช้งาน','info','')"><i class="ti ti-transfer"></i>เปลี่ยนผู้ใช้งาน</button>
       </div>
       <div class="card" style="background:var(--red-50);border-color:#F5B8B8">
@@ -1447,7 +1448,7 @@ document.fonts.ready.then(function() {
       <div class="fgg"><label class="flbl">RAM</label><input class="finp" placeholder="16GB DDR4"></div>
       <div class="fgg"><label class="flbl">Storage</label><input class="finp" placeholder="512GB NVMe SSD"></div>
       <div class="fgg"><label class="flbl">OS</label><select class="fsel"><option>Windows 11 Pro</option><option>Windows 10 Pro</option><option>macOS Sequoia</option><option>Ubuntu 24.04</option><option>Windows Server 2022</option></select></div>
-      <div class="fgg"><label class="flbl">มอบหมายให้</label><select class="fsel"><option>— ยังไม่มอบหมาย —</option><option>สมชาย ใจดี</option><option>มาลี ศรีสุข</option><option>กฤต แสงทอง</option></select></div>
+      <div class="fgg"><label class="flbl">มอบหมายให้</label><select class="fsel" id="asUserSel"><option value="">— ยังไม่มอบหมาย —</option></select></div>
       <div class="fgg"><label class="flbl">สถานะ</label><select class="fsel"><option>ใช้งานปกติ</option><option>ซ่อมบำรุง</option><option>เก็บสต็อก</option><option>เลิกใช้งาน</option></select></div>
       <div class="fgg"><label class="flbl">ราคาซื้อ (บาท)</label><input class="finp" placeholder="42,500"></div>
       <div class="fgg"><label class="flbl">วันที่ซื้อ</label><input class="finp" type="text" placeholder="DD/MM/YYYY"></div>
@@ -1481,7 +1482,7 @@ document.fonts.ready.then(function() {
       <div id="docPreviewItems" class="dfc g8px mb16"></div>
     </div>
     <div class="fg f2" style="gap:13px">
-      <div class="fgg"><label class="flbl">รหัสสินทรัพย์ <span class="req">*</span></label><select class="fsel" id="docAssetSel"><option value="">— เลือกสินทรัพย์ —</option><option value="NB-DELL-0412">NB-DELL-0412 — Dell Latitude 5520</option><option value="NB-HP-0381">NB-HP-0381 — HP EliteBook 840</option><option value="DT-LNV-0245">DT-LNV-0245 — Lenovo ThinkCentre</option><option value="SRV-HP-001">SRV-HP-001 — HP ProLiant DL380</option></select></div>
+      <div class="fgg"><label class="flbl">รหัสสินทรัพย์ <span class="req">*</span></label><select class="fsel" id="docAssetSel"><option value="">— กำลังโหลด... —</option></select></div>
       <div class="fgg"><label class="flbl">ประเภทเอกสาร <span class="req">*</span></label><select class="fsel" id="docTypeSel">
         <option value="receipt">🧾 ใบเสร็จรับเงิน</option>
         <option value="warranty">🛡 ใบรับประกัน</option>
@@ -1490,7 +1491,7 @@ document.fonts.ready.then(function() {
         <option value="repair">🔧 รายงานการซ่อม</option>
         <option value="other">📎 อื่นๆ</option>
       </select></div>
-      <div class="fgg"><label class="flbl">ชื่อเอกสาร <span class="req">*</span></label><input class="finp" placeholder="เช่น ใบเสร็จซื้อ Dell Latitude 5520" id="docNameIn"></div>
+      <div class="fgg"><label class="flbl">ชื่อเอกสาร <span class="req">*</span></label><input class="finp" placeholder="เช่น ใบเสร็จรับเงิน / ใบรับประกัน" id="docNameIn"></div>
       <div class="fgg"><label class="flbl">วันที่เอกสาร</label><input class="finp" placeholder="DD/MM/YYYY" id="docDateIn"></div>
       <div class="fgg"><label class="flbl">ผู้ออกเอกสาร / Vendor</label><input class="finp" placeholder="เช่น Dell Thailand, บริษัท ABC" id="docVendorIn"></div>
       <div class="fgg"><label class="flbl">มูลค่า / จำนวนเงิน (บาท)</label><input class="finp" placeholder="42,500.00" id="docAmtIn"></div>
@@ -1517,7 +1518,7 @@ document.fonts.ready.then(function() {
     <div class="fgg"><label class="flbl">Priority</label><select class="fsel"><option>ทั้งหมด</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
     <div class="fgg"><label class="flbl">Status</label><select class="fsel"><option>ทั้งหมด</option><option>Open</option><option>In Progress</option><option>Waiting</option><option>Resolved</option></select></div>
     <div class="fgg"><label class="flbl">หมวดหมู่</label><select class="fsel"><option>ทั้งหมด</option><option>Network</option><option>Microsoft Office</option></select></div>
-    <div class="fgg"><label class="flbl">ช่างเทคนิค</label><select class="fsel"><option>ทั้งหมด</option><option>กฤต แสงทอง</option></select></div>
+    <div class="fgg"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="fltTechSel"><option value="">ทั้งหมด</option></select></div>
     <div class="fgg"><label class="flbl">จากวันที่</label><input class="finp" value="01/06/2026"></div>
     <div class="fgg"><label class="flbl">ถึงวันที่</label><input class="finp" value="30/06/2026"></div>
     <div class="fgg"><label class="flbl">แผนก</label><select class="fsel"><option>ทั้งหมด</option><option>การเงิน</option><option>HR</option></select></div>
@@ -1528,7 +1529,7 @@ document.fonts.ready.then(function() {
 
 <div class="mov" id="apvM" onclick="if(event.target===this)closeM('apvM')">
   <div class="mdl msm"><div class="mhdr"><h3><i class="ti ti-check" style="color:var(--blue-600)"></i> อนุมัติ / ปฏิเสธ</h3><button class="mcl" onclick="closeM('apvM')"><i class="ti ti-x"></i></button></div>
-  <div class="mbdy"><div class="card csm mb14" style="background:var(--blue-50);border-color:var(--blue-100)"><div class="w7 mb4" style="color:var(--blue-700)">#TK-0091 — ขอ Adobe Creative Cloud</div><div class="xs mu">สมชาย ใจดี · การตลาด · งบ: 12,000 บาท/ปี</div></div><div class="fgg mb12"><label class="flbl">เหตุผล</label><textarea class="fta" style="min-height:80px" placeholder="ระบุเหตุผล..."></textarea></div><div class="fgg"><label class="flbl">แจ้งผ่าน</label><div class="df g8 mt4"><label class="df ic g8px"><input type="checkbox" checked>Email</label><label class="df ic g8px"><input type="checkbox" checked>Teams</label></div></div></div>
+  <div class="mbdy"><div class="card csm mb14" style="background:var(--blue-50);border-color:var(--blue-100)"><div class="w7 mb4" style="color:var(--blue-700)"><span id="apvTitle">รายการอนุมัติ</span></div><div class="xs mu" id="apvSub"></div></div><div class="fgg mb12"><label class="flbl">เหตุผล</label><textarea class="fta" style="min-height:80px" placeholder="ระบุเหตุผล..."></textarea></div><div class="fgg"><label class="flbl">แจ้งผ่าน</label><div class="df g8 mt4"><label class="df ic g8px"><input type="checkbox" checked>Email</label><label class="df ic g8px"><input type="checkbox" checked>Teams</label></div></div></div>
   <div class="mftr"><button class="btn" onclick="closeM('apvM')">ยกเลิก</button><button class="btn dan" onclick="closeM('apvM');toast('ปฏิเสธแล้ว','warning','ปฏิเสธ')"><i class="ti ti-x"></i>ปฏิเสธ</button><button class="btn pri" onclick="closeM('apvM');toast('อนุมัติแล้ว!','success','อนุมัติ')"><i class="ti ti-check"></i>อนุมัติ</button></div></div>
 </div>
 
@@ -1622,7 +1623,7 @@ async function apiCreateTicket(data) {
   const tmpId = '#TK-' + Date.now();
   const now   = new Date().toLocaleString('th-TH');
   DB.tickets.unshift({ id:tmpId, ...data, status:'new', sla:100, cr:now });
-  scheduleSyncToGist();
+  scheduleSync();
   if (!useSheets) return { ok:true, id:tmpId };
   setSyncStatus('syncing');
   try {
@@ -1639,7 +1640,7 @@ async function apiCreateTicket(data) {
 }
 async function apiCreateAsset(data) {
   DB.assets.push({ ...data, status: data.status||'active' });
-  saveToLocal(); scheduleSyncToGist();
+  saveToLocal(); scheduleSync();
   if (!useSheets) return { ok:true };
   setSyncStatus('syncing');
   try {
@@ -1651,7 +1652,7 @@ async function apiCreateAsset(data) {
 async function apiCreateDocument(data) {
   const tmpId = 'DOC-' + Date.now();
   DB.documents.push({ id:tmpId, ...data, uploaded:'ตอนนี้', uploader:'Admin User' });
-  saveToLocal(); scheduleSyncToGist();
+  saveToLocal(); scheduleSync();
   if (!useSheets) return { ok:true, id:tmpId };
   setSyncStatus('syncing');
   try {
@@ -1664,19 +1665,19 @@ async function apiCreateDocument(data) {
 }
 async function apiDeleteDocument(id) {
   DB.documents = DB.documents.filter(d => d.id !== id);
-  saveToLocal(); scheduleSyncToGist();
+  saveToLocal(); scheduleSync();
   if (!useSheets) return;
   try { await sheetPOST('deleteDocument', {}); /* id passed via body */ } catch(e) {}
 }
 async function apiUpdateTicket(data) {
   DB.tickets = DB.tickets.map(t => t.id===data.id ? {...t,...data} : t);
-  saveToLocal(); scheduleSyncToGist();
+  saveToLocal(); scheduleSync();
   if (!useSheets) return;
   try { await sheetPOST('updateTicket', data); setSyncStatus('ok'); } catch(e) { setSyncStatus('error'); }
 }
 async function apiCreateUser(data) {
   DB.users.push(data);
-  saveToLocal(); scheduleSyncToGist();
+  saveToLocal(); scheduleSync();
   if (!useSheets) return { ok:true };
   try {
     const res = await sheetPOST('createUser', data);
@@ -1712,52 +1713,11 @@ const GIST_ID  = 'YOUR_GIST_ID';   // ← replace once after first run
 const GIST_TOKEN = '';              // ← optional: add PAT for write access
 
 const DEFAULT_DATA = {
-  tickets: [
-    {id:'#TK-0089',sub:'ไม่สามารถเชื่อมต่อ WiFi หลัง Windows Update',req:'อรุณี พัทนา',dept:'การตลาด',cat:'Network',pri:'high',status:'open',tech:'กฤต ส.',sla:88,cr:'25 มิ.ย. 2026'},
-    {id:'#TK-0088',sub:'Microsoft Teams เข้า Meeting ไม่ได้',req:'ประยุทธ์ ชูศรี',dept:'การเงิน',cat:'Microsoft Teams',pri:'medium',status:'progress',tech:'ณัฐยา ว.',sla:55,cr:'25 มิ.ย. 2026'},
-    {id:'#TK-0087',sub:'Outlook ค้นหาอีเมลไม่ได้',req:'สมศักดิ์ วงขาม',dept:'HR',cat:'Outlook',pri:'low',status:'open',tech:'—',sla:72,cr:'24 มิ.ย. 2026'},
-    {id:'#TK-0086',sub:'เครื่องพิมพ์ออฟไลน์ — ชั้น 8',req:'มาลี ศรีสุข',dept:'HR',cat:'Printer',pri:'medium',status:'waiting',tech:'ธนากร พ.',sla:20,cr:'24 มิ.ย. 2026'},
-    {id:'#TK-0085',sub:'ขอ VPN สำหรับพนักงานใหม่',req:'IT Manager',dept:'ไอที',cat:'Active Directory',pri:'high',status:'assigned',tech:'กฤต ส.',sla:90,cr:'23 มิ.ย. 2026'},
-    {id:'#TK-0084',sub:'Excel ไม่สามารถเปิดไฟล์ XLSX',req:'ชัยวัฒน์ บุนส่ง',dept:'การเงิน',cat:'Microsoft Office',pri:'low',status:'resolved',tech:'ณัฐยา ว.',sla:100,cr:'23 มิ.ย. 2026'},
-    {id:'#TK-0083',sub:'ไม่สามารถเข้า Outlook',req:'สมชาย ใจดี',dept:'การเงิน',cat:'Outlook',pri:'medium',status:'open',tech:'—',sla:45,cr:'25 มิ.ย. 2026'},
-    {id:'#TK-0082',sub:'หน้าจอมอนิเตอร์กระพริบ',req:'รัตนา โพล',dept:'การขาย',cat:'Hardware',pri:'critical',status:'progress',tech:'กฤต ส.',sla:8,cr:'22 มิ.ย. 2026'},
-    {id:'#TK-0081',sub:'SharePoint อัปโหลดไฟล์ไม่ได้',req:'วันชัย สอน',dept:'ปฏิบัติการ',cat:'SharePoint',pri:'medium',status:'waiting',tech:'ณัฐยา ว.',sla:35,cr:'22 มิ.ย. 2026'},
-    {id:'#TK-0080',sub:'ขอรีเซ็ตรหัสผ่าน Active Directory',req:'อัญชิสา ทอง',dept:'กฎหมาย',cat:'Active Directory',pri:'low',status:'resolved',tech:'ธนากร พ.',sla:100,cr:'21 มิ.ย. 2026'},
-  ],
-  assets: [
-    {code:'NB-DELL-0412',name:'LAPTOP-SJ-001',type:'notebook',brand:'Dell Latitude 5520',cpu:'i7-1165G7',ram:'16GB',os:'Win 11 Pro',user:'สมชาย ใจดี',status:'active',warranty:'31/12/2025',tickets:3,location:'ชั้น 5'},
-    {code:'NB-HP-0381',name:'LAPTOP-NW-002',type:'notebook',brand:'HP EliteBook 840',cpu:'i5-1135G7',ram:'8GB',os:'Win 11 Pro',user:'ณัฐยา วนิช',status:'active',warranty:'01/06/2027',tickets:1,location:'ชั้น 1 ไอที'},
-    {code:'DT-LNV-0245',name:'DESKTOP-FIN-012',type:'desktop',brand:'Lenovo ThinkCentre M90',cpu:'i7-10700',ram:'32GB',os:'Win 10 Pro',user:'Finance Pool',status:'active',warranty:'15/01/2027',tickets:2,location:'ชั้น 5 ห้องการเงิน'},
-    {code:'NB-DELL-0398',name:'LAPTOP-RP-003',type:'notebook',brand:'Dell Latitude 5520',cpu:'i5-1135G7',ram:'16GB',os:'Win 11 Pro',user:'รัตนา โพล',status:'repair',warranty:'30/11/2026',tickets:0,location:'ห้องซ่อม'},
-    {code:'SRV-HP-001',name:'SERVER-MAIN-01',type:'server',brand:'HP ProLiant DL380 G10',cpu:'Xeon E5-2690',ram:'128GB',os:'Win Server 2022',user:'IT Team',status:'active',warranty:'01/01/2028',tickets:0,location:'Server Room B1'},
-    {code:'NET-CISCO-001',name:'SW-CORE-01',type:'network',brand:'Cisco Catalyst 9300',cpu:'—',ram:'16GB',os:'Cisco IOS-XE',user:'IT Team',status:'active',warranty:'15/03/2028',tickets:0,location:'Server Room B1'},
-    {code:'PRT-HP-101',name:'PRINTER-FIN-01',type:'printer',brand:'HP LaserJet Pro M404dn',cpu:'—',ram:'—',os:'—',user:'Finance Pool',status:'active',warranty:'20/08/2026',tickets:2,location:'ชั้น 5'},
-    {code:'DT-HP-0412',name:'DESKTOP-HR-008',type:'desktop',brand:'HP EliteDesk 800 G6',cpu:'i5-10600',ram:'16GB',os:'Win 11 Pro',user:'มาลี ศรีสุข',status:'active',warranty:'10/07/2026',tickets:1,location:'ชั้น 3 HR'},
-  ],
-  documents: [
-    {id:'DOC-001',assetCode:'NB-DELL-0412',assetName:'Dell Latitude 5520',type:'receipt',name:'ใบเสร็จซื้อ Dell Latitude 5520',vendor:'Dell Thailand',date:'15/01/2024',amount:'42,500',size:'1.2 MB',ext:'pdf',uploaded:'15 ม.ค. 2024',uploader:'Admin User'},
-    {id:'DOC-002',assetCode:'NB-DELL-0412',assetName:'Dell Latitude 5520',type:'warranty',name:'ใบรับประกัน Dell On-Site 3 ปี',vendor:'Dell Thailand',date:'15/01/2024',amount:'—',size:'842 KB',ext:'pdf',uploaded:'15 ม.ค. 2024',uploader:'Admin User'},
-    {id:'DOC-003',assetCode:'NB-DELL-0412',assetName:'Dell Latitude 5520',type:'manual',name:'คู่มือการใช้งาน Latitude 5520',vendor:'Dell Inc.',date:'2024',amount:'—',size:'18.4 MB',ext:'pdf',uploaded:'16 ม.ค. 2024',uploader:'กฤต แสงทอง'},
-    {id:'DOC-004',assetCode:'NB-DELL-0412',assetName:'Dell Latitude 5520',type:'delivery',name:'ใบส่งมอบพัสดุ NB-DELL-0412',vendor:'IT Department',date:'17/01/2024',amount:'—',size:'320 KB',ext:'pdf',uploaded:'17 ม.ค. 2024',uploader:'Admin User'},
-    {id:'DOC-005',assetCode:'NB-DELL-0412',assetName:'Dell Latitude 5520',type:'repair',name:'รายงานการซ่อม — แบตเตอรี่',vendor:'Dell Service',date:'10/04/2025',amount:'3,200',size:'480 KB',ext:'pdf',uploaded:'10 เม.ย. 2025',uploader:'ธนากร พัน'},
-    {id:'DOC-006',assetCode:'NB-HP-0381',assetName:'HP EliteBook 840',type:'receipt',name:'ใบเสร็จซื้อ HP EliteBook 840',vendor:'HP Thailand',date:'01/03/2024',amount:'38,900',size:'980 KB',ext:'pdf',uploaded:'01 มี.ค. 2024',uploader:'Admin User'},
-    {id:'DOC-007',assetCode:'NB-HP-0381',assetName:'HP EliteBook 840',type:'warranty',name:'ใบรับประกัน HP Care Pack 3Y',vendor:'HP Thailand',date:'01/03/2024',amount:'—',size:'760 KB',ext:'pdf',uploaded:'01 มี.ค. 2024',uploader:'Admin User'},
-    {id:'DOC-008',assetCode:'SRV-HP-001',assetName:'HP ProLiant DL380',type:'receipt',name:'ใบเสร็จ Server HP ProLiant',vendor:'HP Thailand',date:'15/06/2023',amount:'285,000',size:'2.1 MB',ext:'pdf',uploaded:'15 มิ.ย. 2023',uploader:'Admin User'},
-    {id:'DOC-009',assetCode:'SRV-HP-001',assetName:'HP ProLiant DL380',type:'warranty',name:'HP 3Y Foundation Care 24x7',vendor:'HP Thailand',date:'15/06/2023',amount:'—',size:'1.8 MB',ext:'pdf',uploaded:'15 มิ.ย. 2023',uploader:'Admin User'},
-    {id:'DOC-010',assetCode:'NET-CISCO-001',assetName:'Cisco Catalyst 9300',type:'delivery',name:'ใบส่งมอบ Cisco Switch Core',vendor:'Cisco Systems',date:'20/03/2025',amount:'—',size:'540 KB',ext:'pdf',uploaded:'20 มี.ค. 2025',uploader:'กฤต แสงทอง'},
-    {id:'DOC-011',assetCode:'PRT-HP-101',assetName:'HP LaserJet M404dn',type:'receipt',name:'ใบเสร็จ HP LaserJet Pro',vendor:'Office Depot',date:'25/08/2023',amount:'12,500',size:'680 KB',ext:'pdf',uploaded:'25 ส.ค. 2023',uploader:'Admin User'},
-    {id:'DOC-012',assetCode:'DT-LNV-0245',assetName:'Lenovo ThinkCentre M90',type:'warranty',name:'Lenovo Premier Support 3Y',vendor:'Lenovo Thailand',date:'10/12/2023',amount:'—',size:'920 KB',ext:'pdf',uploaded:'10 ธ.ค. 2023',uploader:'Admin User'},
-  ],
-  users: [
-    {n:'กฤต แสงทอง',email:'krit.s@company.co.th',dept:'ไอที',role:'tech',bg:'#1A6FC4',init:'KS',st:'active',login:'25 มิ.ย. 09:14',tkt:48},
-    {n:'ณัฐยา วนิช',email:'nattaya.w@company.co.th',dept:'ไอที',role:'tech',bg:'#4F44B8',init:'NW',st:'active',login:'25 มิ.ย. 08:52',tkt:42},
-    {n:'ธนากร พัน',email:'thanakorn.p@company.co.th',dept:'ไอที',role:'tech',bg:'#22640A',init:'TP',st:'active',login:'24 มิ.ย. 17:30',tkt:31},
-    {n:'Admin User',email:'admin@company.co.th',dept:'ไอที',role:'admin',bg:'#1860C4',init:'AU',st:'active',login:'25 มิ.ย. 09:00',tkt:0},
-    {n:'สมชาย ใจดี',email:'somchai.j@company.co.th',dept:'การเงิน',role:'req',bg:'#22640A',init:'สจ',st:'active',login:'25 มิ.ย. 08:30',tkt:12},
-    {n:'มาลี ศรีสุข',email:'malee.s@company.co.th',dept:'HR',role:'req',bg:'#7A4500',init:'มส',st:'active',login:'24 มิ.ย. 17:01',tkt:8},
-    {n:'รัตนา โพล',email:'rattana.p@company.co.th',dept:'การขาย',role:'req',bg:'#6B7088',init:'รพ',st:'suspended',login:'20 มิ.ย. 10:22',tkt:4},
-    {n:'ชัยวัฒน์ บุนส่ง',email:'chaiwat.b@company.co.th',dept:'การเงิน',role:'req',bg:'#0A6370',init:'ชบ',st:'active',login:'25 มิ.ย. 07:55',tkt:6},
-  ],
+  tickets  : [],
+  assets   : [],
+  documents: [],
+  users    : [],
+  stats    : {},
 };
 
 // ============================================================
@@ -1778,7 +1738,7 @@ let lastSynced = null;
 // ============================================================
 const GIST_FILENAME = 'it-helpdesk-data.json';
 
-async function syncToGist() {
+async function scheduleSync() {
   if (!GIST_TOKEN) return; // skip if no token
   try {
     const body = { files: { [GIST_FILENAME]: { content: JSON.stringify(DB, null, 2) } } };
@@ -1802,7 +1762,7 @@ async function syncToGist() {
   } catch(e) { updateSyncStatus(false); }
 }
 
-async function syncFromGist() {
+async function loadFromSheets() {
   if (!GIST_TOKEN || !GIST_ID || GIST_ID === 'YOUR_GIST_ID') {
     loadFromLocal();
     return;
@@ -1845,9 +1805,9 @@ function updateSyncStatus(ok) {
   }
 }
 
-function scheduleSyncToGist() {
+function scheduleSync() {
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => { saveToLocal(); syncToGist(); }, 1500);
+  syncTimer = setTimeout(() => { saveToLocal(); scheduleSync(); }, 1500);
 }
 </script>
 
@@ -1912,48 +1872,14 @@ function updSub(){
 // LOGIN / ROLE
 // ============================================================
 let selectedRole = 'user';
-function pickRole(r){
-  selectedRole = r;
-  document.getElementById('roleOptUser').classList.toggle('on', r==='user');
-  document.getElementById('roleOptAdmin').classList.toggle('on', r==='admin');
-  document.getElementById('un').value = r==='admin' ? 'admin' : 'somchai.j';
-}
-function doMs(){ doLogin(); }
+// pickRole() defined in auth module
+function doMs(){ msSignIn(); } // redirect to real MS auth
 function tpwd(){
   const i=document.getElementById('up'),e=document.getElementById('ei');
   i.type=i.type==='password'?'text':'password';
   e.className=i.type==='password'?'ti ti-eye':'ti ti-eye-off';
 }
-function doLogin(){
-  currentRole = selectedRole;
-  document.getElementById('lw').classList.add('out');
-  const isAdmin = currentRole==='admin';
-  // show correct sidebar
-  document.getElementById('sidebarUser').style.display  = isAdmin?'none':'flex';
-  document.getElementById('sidebarAdmin').style.display = isAdmin?'flex':'none';
-  // update header user info
-  if(isAdmin){
-    document.getElementById('hdrAv').textContent='AU';
-    document.getElementById('hdrAv').style.background='var(--blue-600)';
-    document.getElementById('hdrName').textContent='Admin User';
-    document.getElementById('hdrRole').textContent='Administrator';
-    document.getElementById('ndotEl').style.display='block';
-    document.getElementById('hdrSearch').style.display='flex';
-    nav('dashboard');
-    toast('ยินดีต้อนรับ Admin User — IT Admin Portal','success','เข้าสู่ระบบสำเร็จ');
-  } else {
-    document.getElementById('hdrAv').textContent='สจ';
-    document.getElementById('hdrAv').style.background='var(--green-600)';
-    document.getElementById('hdrName').textContent='สมชาย ใจดี';
-    document.getElementById('hdrRole').textContent='พนักงาน · การเงิน';
-    document.getElementById('ndotEl').style.display='none';
-    document.getElementById('hdrSearch').style.display='none';
-    navU('u-home');
-    toast('ยินดีต้อนรับ สมชาย ใจดี','success','เข้าสู่ระบบสำเร็จ');
-  }
-  loadFromSheets();
-  setTimeout(()=>{ initAll(); }, 350);
-}
+// doLogin removed
 function logout(){
   closeM('profileM');
   document.getElementById('lw').classList.remove('out');
@@ -2123,8 +2049,10 @@ async function submitUserTicket(){
   const subj = document.querySelector('#pg-u-create .finp[placeholder*="ปัญหา"]')?.value || 'ปัญหาจากผู้ใช้';
   const urg  = document.getElementById('uUrgSel')?.value || 'medium';
   const data = {
-    subject: subj, requester:'สมชาย ใจดี', email:'somchai.j@company.co.th',
-    dept:'การเงิน', branch:'สำนักงานใหญ่', category:'อื่นๆ', subcategory:'',
+    subject: subj,
+    requester: (currentUser?.firstName||'') + ' ' + (currentUser?.lastName||''),
+    email: currentUser?.email || '',
+    dept: currentUser?.dept || '', branch: currentUser?.branch || '', category:'อื่นๆ', subcategory:'',
     priority: urg, impact:'ผู้ใช้คนเดียว', urgency: urg, description: subj, tags:''
   };
   toast('กำลังส่งเรื่อง...','info','');
@@ -2205,102 +2133,20 @@ function uFilterTab(f, el){
 // ============================================================
 // RENDER — ADMIN DASHBOARD
 // ============================================================
-const SLA_WARN=[
-  {id:'#TK-0082',sub:'หน้าจอกระพริบ',pct:8,col:'var(--red-600)',time:'< 1h'},
-  {id:'#TK-0086',sub:'เครื่องพิมพ์ออฟไลน์',pct:20,col:'var(--red-600)',time:'2h 15m'},
-  {id:'#TK-0083',sub:'ไม่สามารถเข้า Outlook',pct:45,col:'var(--amber-600)',time:'4h 30m'},
-  {id:'#TK-0081',sub:'SharePoint อัปโหลดไม่ได้',pct:35,col:'var(--amber-600)',time:'3h 20m'},
-];
-const TECHS=[
-  {name:'กฤต แสงทอง',init:'KS',bg:'#1A6FC4',load:8,max:12,tickets:48,sla:94,avg:'3.8h'},
-  {name:'ณัฐยา วนิช',init:'NW',bg:'#4F44B8',load:6,max:12,tickets:42,sla:91,avg:'4.1h'},
-  {name:'ธนากร พัน',init:'TP',bg:'#22640A',load:4,max:12,tickets:31,sla:88,avg:'5.2h'},
-  {name:'ศิริพร ชัย',init:'SC',bg:'#7A4500',load:2,max:12,tickets:21,sla:95,avg:'2.9h'},
-];
-const ACTIVITIES=[
-  {ic:'ti-ticket',bg:'var(--blue-50)',col:'var(--blue-600)',txt:'สร้าง Ticket #TK-0089 โดย อรุณี',time:'2 นาทีที่แล้ว'},
-  {ic:'ti-user-check',bg:'var(--purple-50)',col:'var(--purple-600)',txt:'มอบหมาย #TK-0088 → ณัฐยา วนิช',time:'15 นาทีที่แล้ว'},
-  {ic:'ti-check',bg:'var(--green-50)',col:'var(--green-600)',txt:'Resolve #TK-0084 โดย ณัฐยา',time:'42 นาทีที่แล้ว'},
-  {ic:'ti-message',bg:'var(--amber-50)',col:'var(--amber-600)',txt:'ความคิดเห็นใหม่ใน #TK-0086',time:'1 ชั่วโมงที่แล้ว'},
-  {ic:'ti-arrow-right',bg:'var(--blue-50)',col:'var(--blue-600)',txt:'#TK-0085 → Assigned',time:'2 ชั่วโมงที่แล้ว'},
-];
-const FREQ=[
-  {n:'VPN เชื่อมต่อไม่ได้',c:42,p:85},{n:'Outlook Login ไม่ได้',c:38,p:76},
-  {n:'Windows Update ล้มเหลว',c:31,p:62},{n:'WiFi หลุดบ่อย',c:27,p:54},
-  {n:'เครื่องพิมพ์ไม่รู้จัก',c:24,p:48},{n:'Teams เข้า Meeting ไม่ได้',c:21,p:42},
-  {n:'รีเซ็ตรหัสผ่าน AD',c:18,p:36},{n:'Excel ไฟล์เสีย',c:15,p:30},
-  {n:'SharePoint Access Denied',c:12,p:24},{n:'เครื่องคอมช้า',c:9,p:18},
-];
-const TL_ITEMS=[
-  {t:'สร้าง Ticket โดย สมชาย ใจดี',time:'24 มิ.ย. 09:05',dot:'f'},
-  {t:'เปลี่ยนสถานะ → Open',time:'24 มิ.ย. 09:05',dot:'f'},
-  {t:'มอบหมายให้ กฤต แสงทอง',time:'24 มิ.ย. 09:31',dot:'f'},
-  {t:'เปลี่ยนสถานะ → In Progress',time:'24 มิ.ย. 10:00',dot:'f'},
-  {t:'เพิ่มความคิดเห็น',time:'24 มิ.ย. 10:32',dot:'',sub:'ตรวจสอบและ reproduce ปัญหาได้แล้ว...'},
-];
-const APV_PENDING=[
-  {id:'#TK-0090',sub:'ขอ Adobe Creative Cloud',dept:'การตลาด',budget:'12,000 บาท/ปี',req:'สมชาย ใจดี'},
-  {id:'#TK-0091',sub:'เพิ่ม RAM Server',dept:'ไอที',budget:'45,000 บาท',req:'กฤต แสงทอง'},
-  {id:'#TK-0092',sub:'Microsoft 365 License +5',dept:'ปฏิบัติการ',budget:'8,500 บาท/ปี',req:'ธนากร พัน'},
-];
-const WF_STEPS=[
-  {label:'ผู้ขอสร้าง Ticket',done:true},{label:'หัวหน้าแผนกอนุมัติ',done:true},
-  {label:'IT Manager อนุมัติ',done:true},{label:'CFO (>50k)',done:false},{label:'จัดซื้อ/ดำเนินการ',done:false},
-];
-const ESCAL=[
-  {lv:'ระดับ 1',title:'แจ้งช่างเทคนิค',desc:'SLA เหลือ 50%',ic:'ti-bell',bg:'var(--amber-50)',col:'var(--amber-600)',on:true},
-  {lv:'ระดับ 2',title:'แจ้ง IT Manager',desc:'SLA เหลือ 25%',ic:'ti-bell-ringing',bg:'var(--red-50)',col:'var(--red-600)',on:true},
-  {lv:'ระดับ 3',title:'IT Director',desc:'SLA เกินกำหนด',ic:'ti-phone',bg:'var(--red-50)',col:'var(--red-600)',on:true},
-];
-const KB_CATS=[
-  {ic:'ti-mail',bg:'var(--blue-50)',col:'var(--blue-600)',n:'อีเมล & Outlook',cnt:24},
-  {ic:'ti-brand-teams',bg:'var(--purple-50)',col:'var(--purple-600)',n:'Microsoft Teams',cnt:18},
-  {ic:'ti-wifi',bg:'var(--green-50)',col:'var(--green-600)',n:'Network & VPN',cnt:31},
-  {ic:'ti-printer',bg:'var(--amber-50)',col:'var(--amber-600)',n:'เครื่องพิมพ์',cnt:12},
-  {ic:'ti-shield-lock',bg:'var(--red-50)',col:'var(--red-600)',n:'Security',cnt:9},
-  {ic:'ti-device-laptop',bg:'var(--s2)',col:'var(--t2)',n:'Hardware',cnt:15},
-];
-const KB_ARTS=[
-  {t:'วิธีรีเซ็ตรหัสผ่าน Windows ผ่าน Self-Service Portal',v:1240,h:98},
-  {t:'ตั้งค่า VPN Client บน Windows 11',v:980,h:94},
-  {t:'แก้ไขปัญหา Outlook ค้นหาไม่ได้',v:742,h:91},
-  {t:'เชื่อมต่อ Network Printer ผ่าน LAN',v:631,h:88},
-  {t:'เปิดใช้งาน MFA บน Microsoft Authenticator',v:540,h:96},
-  {t:'ติดตั้ง VPN Client บน macOS',v:412,h:87},
-];
-const AUDIT_ROWS=[
-  {t:'25 มิ.ย. 09:14',u:'สมชาย ใจดี',a:'สร้าง Ticket',tgt:'#TK-0089',d:'Priority: Medium',ip:'10.1.4.52'},
-  {t:'25 มิ.ย. 09:02',u:'กฤต แสงทอง',a:'เปลี่ยนสถานะ',tgt:'#TK-0088',d:'In Progress → Waiting',ip:'10.1.1.12'},
-  {t:'25 มิ.ย. 08:52',u:'ณัฐยา วนิช',a:'Login',tgt:'ระบบ',d:'สำเร็จ',ip:'10.1.1.18'},
-  {t:'24 มิ.ย. 17:45',u:'ธนากร พัน',a:'เพิ่ม Comment',tgt:'#TK-0086',d:'Internal Note',ip:'10.1.1.24'},
-  {t:'24 มิ.ย. 16:30',u:'กฤต แสงทอง',a:'Resolve Ticket',tgt:'#TK-0084',d:'Resolution added',ip:'10.1.1.12'},
-  {t:'24 มิ.ย. 14:20',u:'Admin User',a:'อัปโหลดเอกสาร',tgt:'NB-DELL-0412',d:'DOC-005 รายงานซ่อม',ip:'10.1.1.1'},
-  {t:'23 มิ.ย. 11:00',u:'ณัฐยา วนิช',a:'มอบหมาย',tgt:'#TK-0085',d:'→ กฤต แสงทอง',ip:'10.1.1.18'},
-  {t:'23 มิ.ย. 09:30',u:'Admin User',a:'แก้ไข SLA',tgt:'Priority: Critical',d:'Resolution: 4h→2h',ip:'10.1.1.1'},
-];
-const NOTIFS=[
-  {ic:'ti-ticket',bg:'var(--blue-50)',col:'var(--blue-600)',title:'Ticket ใหม่มอบหมายให้คุณ',desc:'#TK-0089 — WiFi หลัง Windows Update',time:'2 นาทีที่แล้ว',unread:true},
-  {ic:'ti-alert-triangle',bg:'var(--red-50)',col:'var(--red-600)',title:'SLA Warning',desc:'#TK-0082 — หน้าจอกระพริบ (8%)',time:'14 นาทีที่แล้ว',unread:true},
-  {ic:'ti-message-dots',bg:'var(--purple-50)',col:'var(--purple-600)',title:'ความคิดเห็นใหม่',desc:'กฤต ตอบกลับใน #TK-0074',time:'1 ชั่วโมงที่แล้ว',unread:true},
-  {ic:'ti-upload',bg:'var(--green-50)',col:'var(--green-600)',title:'อัปโหลดเอกสารสำเร็จ',desc:'DOC-005 รายงานการซ่อม NB-DELL-0412',time:'2 ชั่วโมงที่แล้ว',unread:false},
-  {ic:'ti-check',bg:'var(--green-50)',col:'var(--green-600)',title:'Ticket แก้ไขแล้ว',desc:'#TK-0084 — Excel ไฟล์ปัญหา',time:'3 ชั่วโมงที่แล้ว',unread:false},
-];
-const CAT_TREE=[
-  {n:'Microsoft 365',ic:'ti-brand-office',col:'#1860C4',subs:['Word','Excel','PowerPoint','Outlook','Teams','OneDrive','SharePoint']},
-  {n:'Network & VPN',ic:'ti-network',col:'#22640A',subs:['LAN','WiFi','Internet','VPN','Firewall','Proxy']},
-  {n:'Hardware',ic:'ti-device-laptop',col:'#7A4500',subs:['Notebook','Desktop','Monitor','Printer','Scanner','Docking']},
-  {n:'Active Directory',ic:'ti-shield-lock',col:'#4F44B8',subs:['รีเซ็ตรหัสผ่าน','บัญชีถูกล็อก','สร้างบัญชีใหม่','สิทธิ์']},
-  {n:'Application',ic:'ti-apps',col:'#B02424',subs:['ติดตั้งซอฟต์แวร์','License','Error','การตั้งค่า']},
-  {n:'Security',ic:'ti-lock',col:'#0A6370',subs:['Access Control','Malware','Phishing','Data Breach']},
-];
-const AS_HISTORY=[
-  {t:'มอบหมายให้ สมชาย ใจดี',time:'15 ม.ค. 2024',dot:'f'},
-  {t:'ลง Windows 11 Pro 23H2',time:'20 ม.ค. 2024',dot:'f'},
-  {t:'ติดตั้ง Microsoft 365',time:'21 ม.ค. 2024',dot:'f'},
-  {t:'อัปโหลดใบเสร็จและใบรับประกัน',time:'22 ม.ค. 2024',dot:'g'},
-  {t:'แก้ไข Ticket #TK-0041 — ลง VPN ใหม่',time:'22 พ.ค. 2026',dot:''},
-  {t:'ซ่อมแบตเตอรี่ + อัปโหลดรายงานซ่อม',time:'10 เม.ย. 2025',dot:'a'},
-];
+const SLA_WARN[];
+const TECHS[];
+const ACTIVITIES[];
+const FREQ[];
+const TL_ITEMS=[];
+const APV_PENDING=[];
+const WF_STEPS=[];
+const ESCAL=[];
+const KB_CATS=[];
+const KB_ARTS=[];
+const AUDIT_ROWS=[];
+const NOTIFS=[];
+const CAT_TREE=[];
+const AS_HISTORY=[];
 
 function renderDashboard(){
   const now=new Date();
@@ -2446,7 +2292,7 @@ function renderAssetDetail(){
 function renderRecentDocs(){
   const el=document.getElementById('recentDocs');
   if(!el) return;
-  const recent=DB.documents.filter(d=>d.assetCode==='NB-DELL-0412').slice(0,3);
+  const recent=DB.documents.filter(d=>d.assetCode===(window.currentAssetCode||'')).slice(0,3);
   el.innerHTML=recent.map(d=>{
     const ti=docTypeInfo(d.type);
     return `<div class="df ic g8 p8" style="background:var(--s1);border-radius:var(--r);cursor:pointer" onclick="asTab('docs')">
@@ -2457,7 +2303,7 @@ function renderRecentDocs(){
 function renderDocGrid(){
   const el=document.getElementById('docGrid');
   if(!el) return;
-  const data=DB.documents.filter(d=>d.assetCode==='NB-DELL-0412'&&(docFilter==='all'||d.type===docFilter));
+  const data=DB.documents.filter(d=>d.assetCode===(window.currentAssetCode||'')&&(docFilter==='all'||d.type===docFilter));
   const empty=document.getElementById('docEmpty');
   if(!data.length){ el.style.display='none'; if(empty) empty.style.display='block'; return; }
   el.style.display='grid'; if(empty) empty.style.display='none';
@@ -2556,7 +2402,7 @@ function renderAudit(){
 // ============================================================
 // RENDER — USER PORTAL
 // ============================================================
-const U_FREQ=['WiFi หลุดบ่อย','ลืมรหัสผ่าน Windows','Outlook ส่งอีเมลไม่ได้','Teams Call ไม่ได้ยินเสียง','เครื่องพิมพ์ไม่รู้จัก'];
+const U_FREQ=[];
 function renderUHome(){
   const rec=document.getElementById('uRecentTickets');
   if(rec) rec.innerHTML=DB.tickets.slice(0,4).map(t=>`
@@ -2585,16 +2431,7 @@ function renderUDetail(){
   if(!el) return;
   el.innerHTML=TL_ITEMS.map(x=>`<div class="tli"><div class="tleft"><div class="tldot ${x.dot}"></div><div class="tlln"></div></div><div class="tlb"><div class="tlt">${x.t}</div><div class="tlts">${x.time}</div>${x.sub?`<div class="tlsb">${x.sub}</div>`:''}</div></div>`).join('');
 }
-const U_CAT_ICONS=[
-  {ic:'ti-mail',bg:'var(--blue-50)',col:'var(--blue-600)',n:'อีเมล & Outlook',eg:'เข้าไม่ได้ ส่งไม่ออก'},
-  {ic:'ti-wifi',bg:'var(--green-50)',col:'var(--green-600)',n:'เครือข่าย & VPN',eg:'WiFi หลุด ต่อ VPN ไม่ได้'},
-  {ic:'ti-brand-teams',bg:'var(--purple-50)',col:'var(--purple-600)',n:'Microsoft Teams',eg:'Meeting ไม่ได้ยิน ค้าง'},
-  {ic:'ti-device-laptop',bg:'var(--amber-50)',col:'var(--amber-600)',n:'คอมพิวเตอร์',eg:'เปิดไม่ติด ช้า จอดับ'},
-  {ic:'ti-printer',bg:'var(--teal-50)',col:'var(--teal-600)',n:'เครื่องพิมพ์',eg:'พิมพ์ไม่ออก กระดาษติด'},
-  {ic:'ti-lock',bg:'var(--red-50)',col:'var(--red-600)',n:'รหัสผ่าน & สิทธิ์',eg:'ลืมรหัส บัญชีถูกล็อก'},
-  {ic:'ti-apps',bg:'var(--s2)',col:'var(--t2)',n:'ซอฟต์แวร์',eg:'เปิดโปรแกรมไม่ได้ Error'},
-  {ic:'ti-help',bg:'var(--s2)',col:'var(--t2)',n:'อื่นๆ',eg:'ปัญหาที่ไม่อยู่ในหมวดข้างต้น'},
-];
+const U_CAT_ICONS=[];
 function renderUCatGrid(){
   const el=document.getElementById('uCatGrid');
   if(!el) return;
@@ -2861,7 +2698,6 @@ function initAll(){
 // ============================================================
 window.addEventListener('DOMContentLoaded', ()=>{
   // default role already set to 'user'
-  setTimeout(doLogin, 1200);
 });
 </script>
 
@@ -3368,10 +3204,8 @@ async function doManualLogin() {
     if (!CFG.SHEET_URL) {
       // Demo mode
       const demoUsers = {
-        'admin@company.co.th'    : { role:'admin',   name:'Admin User',    firstName:'Admin',  lastName:'User' },
-        'krit.s@company.co.th'   : { role:'tech',    name:'กฤต แสงทอง',    firstName:'กฤต',   lastName:'แสงทอง' },
-        'somchai.j@company.co.th': { role:'req',     name:'สมชาย ใจดี',    firstName:'สมชาย', lastName:'ใจดี' },
-        'admin': { role:'admin', name:'Admin User', firstName:'Admin', lastName:'User' },
+        'admin': { role:'admin', name:'Admin (Demo)', firstName:'Admin', lastName:'Demo', dept:'ไอที', branch:'สำนักงานใหญ่' },
+        'user' : { role:'req',   name:'User (Demo)',  firstName:'User',  lastName:'Demo', dept:'ทั่วไป', branch:'สำนักงานใหญ่' },
       };
       const found = demoUsers[emailVal];
       if (found) {
@@ -3657,6 +3491,105 @@ function doMs()     { msSignIn(); }
     } catch(e) { localStorage.removeItem('itdesk_user_persist'); }
   }
 })();
+</script>
+
+
+<script>
+// ============================================================
+//  DYNAMIC DROPDOWN POPULATORS — called after loadFromSheets()
+// ============================================================
+function populateDynamicDropdowns() {
+  // Tech dropdown in Create Ticket
+  const techSel = document.getElementById('createTechSel');
+  if (techSel) {
+    const techs = DB.users.filter(u => ['tech','manager','admin'].includes(u.role));
+    techSel.innerHTML = '<option value="">— Auto Assign —</option>' +
+      techs.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName}</option>`).join('');
+  }
+
+  // Tech dropdown in Filter modal
+  const fltTech = document.getElementById('fltTechSel');
+  if (fltTech) {
+    const techs = DB.users.filter(u => ['tech','manager','admin'].includes(u.role));
+    fltTech.innerHTML = '<option value="">ทั้งหมด</option>' +
+      techs.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName}</option>`).join('');
+  }
+
+  // Asset dropdown in Document upload modal
+  const assetSel = document.getElementById('docAssetSel');
+  if (assetSel) {
+    assetSel.innerHTML = '<option value="">— เลือกสินทรัพย์ —</option>' +
+      DB.assets.map(a => `<option value="${a.code}">${a.code} — ${a.brand||''} ${a.model||a.name||''}</option>`).join('');
+  }
+
+  // User dropdown in Add Asset modal
+  const userSel = document.getElementById('asUserSel');
+  if (userSel) {
+    userSel.innerHTML = '<option value="">— ยังไม่มอบหมาย —</option>' +
+      DB.users.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName} (${u.dept||''})</option>`).join('');
+  }
+
+  // Tech assign dropdown in ticket detail
+  const tkAssign = document.getElementById('tkAssignSel');
+  if (tkAssign) {
+    const techs = DB.users.filter(u => ['tech','manager','admin'].includes(u.role));
+    tkAssign.innerHTML = '<option value="">— เลือกช่าง —</option>' +
+      techs.map(u => `<option value="${u.id}">${u.firstName} ${u.lastName}</option>`).join('');
+  }
+
+  // Update assigned page header
+  if (currentUser) {
+    const apUser = document.getElementById('assignedPageUser');
+    if (apUser) apUser.textContent = `${currentUser.firstName} ${currentUser.lastName} — ${
+      {admin:'Administrator',tech:'IT Technician',manager:'IT Manager'}[currentUser.role] || currentUser.role
+    }`;
+
+    // Update User portal create ticket requester card
+    const uReqAv   = document.getElementById('uCreateReqAv');
+    const uReqName = document.getElementById('uCreateReqName');
+    const uReqDept = document.getElementById('uCreateReqDept');
+    const initials = (currentUser.firstName?.[0]||'') + (currentUser.lastName?.[0]||'');
+    if (uReqAv)   uReqAv.textContent   = initials || '—';
+    if (uReqName) uReqName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+    if (uReqDept) uReqDept.textContent = `${currentUser.dept||''} · ${currentUser.employeeId||currentUser.email||''}`;
+  }
+}
+
+// ── Override loadFromSheets to also call populateDynamicDropdowns ──
+const _origLoadFromSheets = loadFromSheets;
+loadFromSheets = async function() {
+  await _origLoadFromSheets();
+  populateDynamicDropdowns();
+};
+
+// ── Override initAll to call populateDynamicDropdowns ──
+const _origInitAll = initAll;
+initAll = function() {
+  _origInitAll();
+  populateDynamicDropdowns();
+};
+
+// ── Empty state renderers ──────────────────────────────────────
+function renderEmptyDashboard() {
+  // Show empty state on dashboard when no data
+  const isEmpty = DB.tickets.length === 0;
+  const emptyMsg = document.getElementById('dashboardEmpty');
+  if (emptyMsg) emptyMsg.style.display = isEmpty ? 'block' : 'none';
+
+  // Update stat cards with 0
+  ['statTotal','statOpen','statWaiting','statSLABreach','statResolved','statCritical']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el && isEmpty) el.textContent = '0';
+    });
+}
+
+// ── Patch renderDashboard to handle empty DB ──────────────────
+const _origRenderDash = renderDashboard;
+renderDashboard = function() {
+  _origRenderDash();
+  renderEmptyDashboard();
+};
 </script>
 
 </body>
