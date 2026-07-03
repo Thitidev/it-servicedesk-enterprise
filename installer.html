@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IT ServiceDesk — Installer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1860C4;--blue-lt:#EBF3FF;--green:#22640A;--green-lt:#E8F5DC;
+  --red:#B02424;--red-lt:#FDEAEA;--amber:#7A4500;--amber-lt:#FDF0D5;
+  --bg:#F0F4FA;--s0:#fff;--s1:#F7F8FC;--s2:#ECEEF5;
+  --b0:#DCE1EE;--t0:#11131F;--t1:#3D4255;--t2:#6B7088;--t3:#9499AE;
+  --r:10px;--rl:14px;--rxl:20px;
+  --font:'Inter','Sarabun',system-ui,sans-serif;
+}
+html,body{height:100%;font-family:var(--font);font-size:14px;color:var(--t0);background:var(--bg)}
+.wrap{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px}
+.card{background:var(--s0);border-radius:var(--rxl);box-shadow:0 8px 40px rgba(0,0,0,.12);width:100%;max-width:720px}
+.hero{background:linear-gradient(135deg,#0C2F61,#1860C4 60%,#3B8AE0);border-radius:var(--rxl) var(--rxl) 0 0;padding:40px 44px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.1),transparent 70%);top:-80px;right:-60px}
+.hero-ic{width:56px;height:56px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;position:relative;z-index:1}
+.hero h1{font-size:26px;font-weight:800;letter-spacing:-.5px;position:relative;z-index:1}
+.hero p{font-size:14px;opacity:.8;margin-top:6px;position:relative;z-index:1}
+.body{padding:36px 44px}
+/* Steps */
+.step-row{display:flex;gap:0;margin-bottom:28px}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;margin-top:1px}
+.step-num.done{background:var(--green);color:#fff}
+.step-num.active{background:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(24,96,196,.2)}
+.step-num.wait{background:var(--s2);color:var(--t2);border:2px solid var(--b0)}
+.step-line{width:2px;background:var(--b0);margin:4px auto;flex-shrink:0}
+.step-line.done{background:var(--green)}
+.step-connector{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0;margin-right:16px}
+.step-body{flex:1;padding-bottom:24px}
+.step-title{font-size:15px;font-weight:700;margin-bottom:4px;margin-top:4px}
+.step-desc{font-size:13px;color:var(--t2);line-height:1.6}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:var(--r);font-size:13.5px;font-weight:600;border:none;cursor:pointer;transition:all .16s;white-space:nowrap}
+.btn.pri{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(24,96,196,.3)}
+.btn.pri:hover{background:#134B9C}
+.btn.pri:disabled{opacity:.5;cursor:not-allowed}
+.btn.sec{background:var(--s0);color:var(--t1);border:1.5px solid var(--b0)}
+.btn.sec:hover{background:var(--s2)}
+.btn.suc{background:var(--green);color:#fff}
+.btn.suc:hover{background:#1d520a}
+.btn.dan{background:var(--red-lt);color:var(--red);border:none}
+/* Inputs */
+.inp{padding:10px 13px;border:1.5px solid var(--b0);border-radius:var(--r);font-size:14px;color:var(--t0);font-family:var(--font);width:100%;outline:none;transition:border-color .16s,box-shadow .16s;background:var(--s0)}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,96,196,.12)}
+.lbl{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:6px;display:block}
+/* Status */
+.status-box{border-radius:var(--r);padding:14px 16px;font-size:13px;display:flex;align-items:flex-start;gap:12px;margin-top:14px}
+.status-box.info{background:var(--blue-lt);border:1px solid #B5D8FF;color:#134B9C}
+.status-box.success{background:var(--green-lt);border:1px solid #B5E6A0;color:#1a4f08}
+.status-box.error{background:var(--red-lt);border:1px solid #F5B8B8;color:var(--red)}
+.status-box.warn{background:var(--amber-lt);border:1px solid #F5CFA0;color:var(--amber)}
+/* Log */
+.log{background:#0C0F1A;border-radius:var(--r);padding:16px;font-family:'Courier New',monospace;font-size:12px;color:#E2E8F6;max-height:180px;overflow-y:auto;line-height:1.7;margin-top:14px}
+.log-ok{color:#4ADE80}.log-err{color:#F87171}.log-info{color:#60A5FA}.log-warn{color:#FBBF24}
+/* Code block */
+.code-block{background:#0C0F1A;border-radius:var(--r);padding:14px 16px;font-family:'Courier New',monospace;font-size:12px;color:#94A3B8;overflow-x:auto;position:relative}
+.copy-btn{position:absolute;top:10px;right:10px;background:#1E293B;color:#94A3B8;border:1px solid #334155;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit}
+.copy-btn:hover{background:#334155;color:#E2E8F6}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700}
+.b-blue{background:var(--blue-lt);color:var(--blue)}.b-green{background:var(--green-lt);color:var(--green)}
+.b-gray{background:var(--s2);color:var(--t2)}.b-red{background:var(--red-lt);color:var(--red)}
+/* Divider */
+.div{height:1px;background:var(--b0);margin:24px 0}
+/* Progress bar */
+.prg-wrap{height:8px;background:var(--s2);border-radius:4px;overflow:hidden;margin:12px 0}
+.prg-fill{height:100%;border-radius:4px;background:var(--blue);transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+.footer{padding:20px 44px;border-top:1px solid var(--b0);display:flex;align-items:center;justify-content:space-between;background:var(--s1);border-radius:0 0 var(--rxl) var(--rxl)}
+.df{display:flex}.ic{align-items:center}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}
+.xs{font-size:11px}.sm{font-size:12px}.w6{font-weight:600}.w7{font-weight:700}
+.mu{color:var(--t2)}.f1{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-ic">🚀</div>
+    <h1>IT ServiceDesk — Auto Installer</h1>
+    <p>ติดตั้ง Google Sheets Database อัตโนมัติ ใช้เวลา ~2 นาที ไม่ต้องเขียน Code</p>
+  </div>
+
+  <div class="body">
+
+    <!-- Prerequisites check -->
+    <div id="prereqBox" class="status-box info">
+      <span style="font-size:18px">ℹ️</span>
+      <div><div class="w6 mb4">สิ่งที่ต้องมีก่อนเริ่ม</div>
+        <div>✅ บัญชี Google (Gmail)<br>✅ เบราว์เซอร์ Chrome / Edge<br>✅ ไฟล์ <strong>IT-ServiceDesk-v5.html</strong> (ดาวน์โหลดแล้ว)</div>
+      </div>
+    </div>
+
+    <div class="div"></div>
+
+    <!-- ── STEP 1 ── -->
+    <div class="step-row">
+      <div class="step-connector">
+        <div class="step-num active" id="n1">1</div>
+        <div class="step-line" id="l1" style="height:60px"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">สร้าง Google Sheet</div>
+        <div class="step-desc mb12">คลิกปุ่มด้านล่างเพื่อเปิด Google Sheets และสร้าง Spreadsheet ใหม่</div>
+        <div class="df g8">
+          <button class="btn pri" onclick="openSheets()">🔗 เปิด Google Sheets</button>
+          <button class="btn sec" id="btn1done" onclick="markStep1()">✅ สร้างแล้ว — ถัดไป</button>
+        </div>
+        <div class="status-box info mt12" style="margin-top:12px">
+          <span>💡</span><div><strong>วิธี:</strong> กด <code style="background:#D6E8FF;padding:1px 6px;border-radius:4px;font-size:12px">+ Blank Spreadsheet</code> → ตั้งชื่อว่า <strong>"IT ServiceDesk DB"</strong> → จำ URL ไว้</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2 ── -->
+    <div class="step-row" id="step2" style="opacity:.4;pointer-events:none">
+      <div class="step-connector">
+        <div class="step-num wait" id="n2">2</div>
+        <div class="step-line" id="l2" style="height:120px"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">เพิ่ม Apps Script</div>
+        <div class="step-desc mb12">ใน Google Sheets ที่สร้าง → เมนู <strong>Extensions → Apps Script</strong><br>ลบ code เดิมทั้งหมด แล้ว <strong>วาง code ด้านล่าง</strong> → กด Save (Ctrl+S)</div>
+        <div class="code-block" style="max-height:120px;overflow-y:auto">
+          <button class="copy-btn" onclick="copyCode()">📋 Copy</button>
+          <pre id="codePreview" style="white-space:pre;overflow-x:auto;padding-right:60px;font-size:11px"></pre>
+        </div>
+        <div class="df g8 mt12">
+          <button class="btn pri" onclick="openAppsScript()">🔗 เปิด Apps Script</button>
+          <button class="btn sec" id="btn2done" onclick="markStep2()">✅ วาง Code แล้ว — ถัดไป</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3 ── -->
+    <div class="step-row" id="step3" style="opacity:.4;pointer-events:none">
+      <div class="step-connector">
+        <div class="step-num wait" id="n3">3</div>
+        <div class="step-line" id="l3" style="height:160px"></div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">Deploy เป็น Web App + รัน Setup</div>
+        <div class="step-desc mb12">ทำ 2 อย่างในหน้า Apps Script:</div>
+        <div class="df" style="flex-direction:column;gap:10px;margin-bottom:14px">
+          <div class="status-box info" style="margin-top:0">
+            <span>①</span>
+            <div><strong>Run Setup:</strong> เลือก function <code style="background:#D6E8FF;padding:1px 5px;border-radius:4px">initSheets</code> → กด ▶ Run → อนุมัติ Permission → รอจนเสร็จ</div>
+          </div>
+          <div class="status-box warn" style="margin-top:0">
+            <span>②</span>
+            <div><strong>Deploy:</strong> Deploy → <em>New Deployment</em> → ⚙️ Web App<br>
+            • Execute as: <strong>Me</strong><br>
+            • Who has access: <strong>Anyone</strong><br>
+            → กด Deploy → <strong>Copy Web App URL</strong></div>
+          </div>
+        </div>
+        <button class="btn sec" onclick="markStep3()">✅ Deploy แล้ว มี URL แล้ว — ถัดไป</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4 ── -->
+    <div class="step-row" id="step4" style="opacity:.4;pointer-events:none">
+      <div class="step-connector">
+        <div class="step-num wait" id="n4">4</div>
+      </div>
+      <div class="step-body">
+        <div class="step-title">วาง Web App URL &amp; ทดสอบ</div>
+        <div class="step-desc mb12">วาง URL ที่ได้จาก Deploy ด้านล่าง แล้วกด <strong>ทดสอบ</strong></div>
+        <label class="lbl">Web App URL <span style="color:var(--red)">*</span></label>
+        <input class="inp mb12" id="webAppUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec"
+          oninput="document.getElementById('btnTest').disabled=!this.value.trim()">
+        <div class="df g8">
+          <button class="btn pri" id="btnTest" onclick="testAndSave()" disabled>🔌 ทดสอบการเชื่อมต่อ</button>
+          <button class="btn sec" onclick="document.getElementById('webAppUrl').value=''">🗑 ล้าง</button>
+        </div>
+        <div class="prg-wrap" id="testPrg" style="display:none"><div class="prg-fill" id="testPrgFill"></div></div>
+        <div id="testResult"></div>
+        <div class="log" id="testLog" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS ── -->
+    <div id="successBox" style="display:none">
+      <div class="div"></div>
+      <div class="status-box success">
+        <span style="font-size:24px">🎉</span>
+        <div>
+          <div class="w7" style="font-size:15px;margin-bottom:6px">ติดตั้งสำเร็จ!</div>
+          <div>Google Sheets Database พร้อมใช้งานแล้ว ข้อมูลจะซิงค์แบบ Real-time</div>
+        </div>
+      </div>
+      <div class="df g12 mt16">
+        <button class="btn suc" style="flex:1;justify-content:center" onclick="openApp()">🚀 เปิด IT ServiceDesk</button>
+        <button class="btn sec" onclick="openSpreadsheet()">📊 เปิด Google Sheets</button>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <div class="footer">
+    <div class="xs mu">IT ServiceDesk Enterprise · Auto Installer v1.0</div>
+    <div class="df g8">
+      <button class="btn sec" style="padding:7px 14px;font-size:12px" onclick="resetAll()">🔄 เริ่มใหม่</button>
+      <a class="btn pri" style="padding:7px 14px;font-size:12px;text-decoration:none" href="IT-ServiceDesk-v5.html">📂 เปิดระบบหลัก</a>
+    </div>
+  </div>
+
+</div><!-- /card -->
+</div><!-- /wrap -->
+
+<script>
+// ── Embedded Code.gs ────────────────────────────────────────
+const CODE_GS = `// ============================================================
+// IT ServiceDesk — Google Apps Script Backend
+// Deploy: Extensions → Apps Script → Deploy → Web App
+//   Execute as: Me  |  Who has access: Anyone
+// ============================================================
+
+const SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
+const SS       = SpreadsheetApp.getActiveSpreadsheet();
+
+// ── Sheet names ──────────────────────────────────────────────
+const SH = {
+  TICKETS  : 'Tickets',
+  ASSETS   : 'Assets',
+  DOCUMENTS: 'Documents',
+  USERS    : 'Users',
+  AUDIT    : 'AuditLog',
+  SETTINGS : 'Settings',
+};
+
+// ── CORS headers ─────────────────────────────────────────────
+function corsHeaders() {
+  return ContentService.createTextOutput()
+    .setMimeType(ContentService.MimeType.JSON);
+}
+function json(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================================
+// ROUTER — GET
+// ============================================================
+function doGet(e) {
+  try {
+    const action = e.parameter.action || 'ping';
+    switch (action) {
+      case 'ping':        return json({ ok: true, ts: new Date().toISOString() });
+      case 'getTickets':  return json(getTickets(e.parameter));
+      case 'getAssets':   return json(getAssets(e.parameter));
+      case 'getDocuments':return json(getDocuments(e.parameter));
+      case 'getUsers':    return json(getUsers());
+      case 'getAudit':    return json(getAudit());
+      case 'getStats':    return json(getStats());
+      case 'getSettings': return json(getSettings());
+      default: return json({ error: 'Unknown action: ' + action });
+    }
+  } catch(err) {
+    return json({ error: err.message, stack: err.stack });
+  }
+}
+
+// ============================================================
+// ROUTER — POST
+// ============================================================
+function doPost(e) {
+  try {
+    const body   = JSON.parse(e.postData.contents);
+    const action = body.action;
+    switch (action) {
+      case 'createTicket':  return json(createTicket(body.data));
+      case 'updateTicket':  return json(updateTicket(body.data));
+      case 'deleteTicket':  return json(deleteRow(SH.TICKETS, body.id));
+      case 'createAsset':   return json(createAsset(body.data));
+      case 'updateAsset':   return json(updateAsset(body.data));
+      case 'deleteAsset':   return json(deleteRow(SH.ASSETS, body.id));
+      case 'createDocument':return json(createDocument(body.data));
+      case 'deleteDocument':return json(deleteRow(SH.DOCUMENTS, body.id));
+      case 'createUser':    return json(createUser(body.data));
+      case 'updateUser':    return json(updateUser(body.data));
+      case 'saveSettings':  return json(saveSettings(body.data));
+      case 'addAudit':      return json(addAudit(body.data));
+      default: return json({ error: 'Unknown action: ' + action });
+    }
+  } catch(err) {
+    return json({ error: err.message });
+  }
+}
+
+// ============================================================
+// INIT — สร้าง Sheet structure ครั้งแรก
+// ============================================================
+function initSheets() {
+  const headers = {
+    [SH.TICKETS]: [
+      'id','subject','requester','email','dept','branch','category','subcategory',
+      'priority','impact','urgency','status','technicianId','technicianName','teamId',
+      'assetCode','description','resolution','rootCause','preventive','tags',
+      'slaPercent','slaDeadline','createdAt','updatedAt','closedAt','csatScore','csatNote'
+    ],
+    [SH.ASSETS]: [
+      'code','name','type','brand','model','serialNo','cpu','ram','storage','os',
+      'userId','userName','dept','location','floor','status','purchasePrice',
+      'purchaseDate','vendor','warrantyExpiry','macAddress','ipAddress',
+      'software','notes','createdAt','updatedAt'
+    ],
+    [SH.DOCUMENTS]: [
+      'id','assetCode','assetName','docType','name','vendor','docDate','amount',
+      'fileSize','fileExt','fileUrl','notes','uploadedAt','uploadedBy','isPublic'
+    ],
+    [SH.USERS]: [
+      'id','firstName','lastName','email','employeeId','dept','branch','phone',
+      'role','status','lastLogin','ticketCount','createdAt'
+    ],
+    [SH.AUDIT]: [
+      'id','timestamp','userId','userName','action','targetType','targetId',
+      'detail','ipAddress','userAgent'
+    ],
+    [SH.SETTINGS]: ['key','value','updatedAt'],
+  };
+
+  Object.entries(headers).forEach(([name, cols]) => {
+    let sh = SS.getSheetByName(name);
+    if (!sh) {
+      sh = SS.insertSheet(name);
+    }
+    if (sh.getLastRow() === 0) {
+      sh.getRange(1, 1, 1, cols.length).setValues([cols]);
+      sh.getRange(1, 1, 1, cols.length)
+        .setBackground('#1860C4')
+        .setFontColor('#FFFFFF')
+        .setFontWeight('bold');
+      sh.setFrozenRows(1);
+    }
+  });
+
+  // Seed sample data
+  seedSampleData();
+  return { ok: true, message: 'Sheets initialized!' };
+}
+
+// ============================================================
+// SEED DATA
+// ============================================================
+function seedSampleData() {
+  const ticketSh = SS.getSheetByName(SH.TICKETS);
+  if (ticketSh.getLastRow() > 1) return; // already seeded
+
+  const now = new Date().toISOString();
+  const tickets = [
+    ['TK-0089','ไม่สามารถเชื่อมต่อ WiFi หลัง Windows Update','อรุณี พัทนา','arune@co.th','การตลาด','สำนักงานใหญ่','Network','WiFi','high','ผู้ใช้คนเดียว','สูง','open','','','Network Team','','ไม่สามารถ connect WiFi ได้','','','','wifi,network,update',88,'2026-06-27T09:00:00Z',now,now,'','',''],
+    ['TK-0088','Microsoft Teams เข้า Meeting ไม่ได้','ประยุทธ์ ชูศรี','prayuth@co.th','การเงิน','สำนักงานใหญ่','Microsoft Teams','Meeting','medium','ผู้ใช้คนเดียว','ปานกลาง','progress','USR-001','กฤต แสงทอง','Software Team','','เข้า Teams ไม่ได้','','','','teams,meeting',55,'2026-06-27T09:00:00Z',now,now,'','',''],
+    ['TK-0087','Outlook ค้นหาอีเมลไม่ได้','สมศักดิ์ วงขาม','somsak@co.th','HR','สำนักงานใหม','อีเมล','Outlook','low','ผู้ใช้คนเดียว','ต่ำ','open','','','','','ค้นหาไม่ได้','','','','outlook,search',72,'2026-06-28T09:00:00Z',now,now,'','',''],
+    ['TK-0086','เครื่องพิมพ์ออฟไลน์ ชั้น 8','มาลี ศรีสุข','malee@co.th','HR','สำนักงานใหญ่','เครื่องพิมพ์','Network Printer','medium','ทั้งแผนก','สูง','waiting','USR-003','ธนากร พัน','Hardware Team','PRT-HP-101','เครื่องพิมพ์ offline','','','','printer,offline',20,'2026-06-26T09:00:00Z',now,now,'','',''],
+    ['TK-0082','หน้าจอมอนิเตอร์กระพริบ','รัตนา โพล','rattana@co.th','การขาย','สำนักงานใหญ่','Hardware','Monitor','critical','ผู้ใช้คนเดียว','สูง','progress','USR-001','กฤต แสงทอง','Hardware Team','DT-HP-0412','จอกระพริบ','','','','monitor,hardware,critical',8,'2026-06-25T09:00:00Z',now,now,'','',''],
+  ];
+  ticketSh.getRange(2,1,tickets.length,tickets[0].length).setValues(tickets);
+
+  const assetSh = SS.getSheetByName(SH.ASSETS);
+  if (assetSh.getLastRow() <= 1) {
+    const assets = [
+      ['NB-DELL-0412','LAPTOP-SJ-001','notebook','Dell','Latitude 5520','DL552-XK914','i7-1165G7','16GB DDR4','512GB NVMe','Windows 11 Pro','EMP-00412','สมชาย ใจดี','การเงิน','สำนักงานใหญ่','ชั้น 5','active',42500,'2024-01-15','Dell Thailand','2025-12-31','A4:C3:F0:12:45:7E','10.1.4.52','Microsoft 365,Chrome,VPN Client','',now,now],
+      ['NB-HP-0381','LAPTOP-NW-002','notebook','HP','EliteBook 840','HP840-NW02','i5-1135G7','8GB DDR4','512GB SSD','Windows 11 Pro','USR-002','ณัฐยา วนิช','ไอที','สำนักงานใหญ่','ชั้น 1','active',38900,'2024-03-01','HP Thailand','2027-06-01','B2:D4:F0:34:56:8E','10.1.1.18','Microsoft 365,Teams','',now,now],
+      ['SRV-HP-001','SERVER-MAIN-01','server','HP','ProLiant DL380','SRV380-001','Xeon E5-2690','128GB ECC','4TB RAID','Windows Server 2022','IT-TEAM','IT Team','ไอที','Server Room','ชั้น B1','active',285000,'2023-06-15','HP Thailand','2028-01-01','','10.1.0.1','IIS,SQL Server,AD','',now,now],
+      ['PRT-HP-101','PRINTER-FIN-01','printer','HP','LaserJet Pro M404dn','PRT404-FIN','—','—','—','—','FIN-POOL','Finance Pool','การเงิน','สำนักงานใหญ่','ชั้น 5','active',12500,'2023-08-25','Office Depot','2026-08-20','','10.1.4.100','','',now,now],
+    ];
+    assetSh.getRange(2,1,assets.length,assets[0].length).setValues(assets);
+  }
+
+  const userSh = SS.getSheetByName(SH.USERS);
+  if (userSh.getLastRow() <= 1) {
+    const users = [
+      ['USR-001','กฤต','แสงทอง','krit.s@company.co.th','IT-001','ไอที','สำนักงานใหญ่','081-111-1111','tech','active',now,48,now],
+      ['USR-002','ณัฐยา','วนิช','nattaya.w@company.co.th','IT-002','ไอที','สำนักงานใหญ่','081-222-2222','tech','active',now,42,now],
+      ['USR-003','ธนากร','พัน','thanakorn.p@company.co.th','IT-003','ไอที','สำนักงานใหญ่','081-333-3333','tech','active',now,31,now],
+      ['ADM-001','Admin','User','admin@company.co.th','IT-000','ไอที','สำนักงานใหญ่','081-000-0000','admin','active',now,0,now],
+      ['EMP-00412','สมชาย','ใจดี','somchai.j@company.co.th','EMP-00412','การเงิน','สำนักงานใหญ่','081-234-5678','req','active',now,12,now],
+    ];
+    userSh.getRange(2,1,users.length,users[0].length).setValues(users);
+  }
+
+  // Default settings
+  const settingSh = SS.getSheetByName(SH.SETTINGS);
+  if (settingSh.getLastRow() <= 1) {
+    const settings = [
+      ['company_name','Thai Enterprise Co., Ltd.',now],
+      ['sla_critical_response','15',now],
+      ['sla_critical_resolve','240',now],
+      ['sla_high_response','60',now],
+      ['sla_high_resolve','480',now],
+      ['sla_medium_response','240',now],
+      ['sla_medium_resolve','1440',now],
+      ['sla_low_response','480',now],
+      ['sla_low_resolve','4320',now],
+      ['notify_teams','true',now],
+      ['notify_email','true',now],
+      ['session_timeout','30',now],
+    ];
+    settingSh.getRange(2,1,settings.length,3).setValues(settings);
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function sheetToObjects(sheetName) {
+  const sh   = SS.getSheetByName(sheetName);
+  if (!sh) return [];
+  const data = sh.getDataRange().getValues();
+  if (data.length < 2) return [];
+  const headers = data[0];
+  return data.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = row[i]; });
+    return obj;
+  });
+}
+
+function findRowById(sheetName, id, idCol = 0) {
+  const sh   = SS.getSheetByName(sheetName);
+  const data = sh.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][idCol]) === String(id)) return i + 1; // 1-indexed
+  }
+  return -1;
+}
+
+function nextId(sheetName, prefix) {
+  const sh      = SS.getSheetByName(sheetName);
+  const lastRow = sh.getLastRow();
+  const num     = lastRow; // row count = auto-increment
+  const pad     = String(num).padStart(4, '0');
+  return \`\${prefix}-\${pad}\`;
+}
+
+function deleteRow(sheetName, id) {
+  const row = findRowById(sheetName, id);
+  if (row < 0) return { ok: false, error: 'Not found' };
+  SS.getSheetByName(sheetName).deleteRow(row);
+  addAudit({ action: 'DELETE', targetType: sheetName, targetId: id, detail: 'Deleted' });
+  return { ok: true };
+}
+
+// ============================================================
+// TICKETS
+// ============================================================
+function getTickets(params) {
+  const tickets = sheetToObjects(SH.TICKETS);
+  let result = tickets;
+
+  if (params.status && params.status !== 'all') {
+    result = result.filter(t => t.status === params.status);
+  }
+  if (params.priority) {
+    result = result.filter(t => t.priority === params.priority);
+  }
+  if (params.technicianId) {
+    result = result.filter(t => t.technicianId === params.technicianId);
+  }
+  if (params.search) {
+    const q = params.search.toLowerCase();
+    result = result.filter(t =>
+      String(t.id).toLowerCase().includes(q) ||
+      String(t.subject).toLowerCase().includes(q) ||
+      String(t.requester).toLowerCase().includes(q)
+    );
+  }
+
+  return { ok: true, data: result, total: result.length };
+}
+
+function createTicket(data) {
+  const sh  = SS.getSheetByName(SH.TICKETS);
+  const now = new Date().toISOString();
+  const id  = nextId(SH.TICKETS, 'TK');
+
+  // Calculate SLA deadline
+  const slaMap = { critical: 240, high: 480, medium: 1440, low: 4320 };
+  const mins   = slaMap[data.priority] || 1440;
+  const deadline = new Date(Date.now() + mins * 60000).toISOString();
+
+  const row = [
+    id, data.subject, data.requester, data.email, data.dept, data.branch,
+    data.category, data.subcategory, data.priority, data.impact, data.urgency,
+    'new', data.technicianId||'', data.technicianName||'', data.teamId||'',
+    data.assetCode||'', data.description||'', '','','', data.tags||'',
+    100, deadline, now, now, '', '', ''
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'CREATE_TICKET', targetType: 'Ticket', targetId: id, detail: data.subject, userName: data.requester });
+  return { ok: true, id, data: { ...data, id, status: 'new', createdAt: now } };
+}
+
+function updateTicket(data) {
+  const sh      = SS.getSheetByName(SH.TICKETS);
+  const headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.TICKETS, data.id);
+  if (row < 0) return { ok: false, error: 'Ticket not found' };
+
+  const now = new Date().toISOString();
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'id' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  sh.getRange(row, headers.indexOf('updatedAt') + 1).setValue(now);
+  addAudit({ action: 'UPDATE_TICKET', targetType: 'Ticket', targetId: data.id, detail: \`Status: \${data.status||''}\` });
+  return { ok: true, id: data.id };
+}
+
+// ============================================================
+// ASSETS
+// ============================================================
+function getAssets(params) {
+  let assets = sheetToObjects(SH.ASSETS);
+  if (params.type && params.type !== 'all') {
+    assets = assets.filter(a => a.type === params.type);
+  }
+  if (params.status) {
+    assets = assets.filter(a => a.status === params.status);
+  }
+  if (params.search) {
+    const q = params.search.toLowerCase();
+    assets = assets.filter(a =>
+      String(a.code).toLowerCase().includes(q) ||
+      String(a.brand).toLowerCase().includes(q) ||
+      String(a.userName).toLowerCase().includes(q)
+    );
+  }
+  return { ok: true, data: assets, total: assets.length };
+}
+
+function createAsset(data) {
+  const sh  = SS.getSheetByName(SH.ASSETS);
+  const now = new Date().toISOString();
+  const row = [
+    data.code, data.name, data.type, data.brand, data.model, data.serialNo,
+    data.cpu||'', data.ram||'', data.storage||'', data.os||'',
+    data.userId||'', data.userName||'', data.dept||'', data.location||'',
+    data.floor||'', data.status||'active', data.purchasePrice||0,
+    data.purchaseDate||'', data.vendor||'', data.warrantyExpiry||'',
+    data.macAddress||'', data.ipAddress||'', data.software||'', data.notes||'',
+    now, now
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'CREATE_ASSET', targetType: 'Asset', targetId: data.code, detail: data.brand + ' ' + data.model });
+  return { ok: true, code: data.code };
+}
+
+function updateAsset(data) {
+  const sh      = SS.getSheetByName(SH.ASSETS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.ASSETS, data.code, 0);
+  if (row < 0) return { ok: false, error: 'Asset not found' };
+  const now = new Date().toISOString();
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'code' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  sh.getRange(row, headers.indexOf('updatedAt') + 1).setValue(now);
+  return { ok: true };
+}
+
+// ============================================================
+// DOCUMENTS
+// ============================================================
+function getDocuments(params) {
+  let docs = sheetToObjects(SH.DOCUMENTS);
+  if (params.assetCode) {
+    docs = docs.filter(d => d.assetCode === params.assetCode);
+  }
+  if (params.docType && params.docType !== 'all') {
+    docs = docs.filter(d => d.docType === params.docType);
+  }
+  return { ok: true, data: docs, total: docs.length };
+}
+
+function createDocument(data) {
+  const sh  = SS.getSheetByName(SH.DOCUMENTS);
+  const now = new Date().toISOString();
+  const id  = 'DOC-' + String(sh.getLastRow()).padStart(4, '0');
+  const row = [
+    id, data.assetCode, data.assetName, data.docType, data.name,
+    data.vendor||'', data.docDate||'', data.amount||'',
+    data.fileSize||'', data.fileExt||'pdf', data.fileUrl||'',
+    data.notes||'', now, data.uploadedBy||'Admin', data.isPublic||false
+  ];
+  sh.appendRow(row);
+  addAudit({ action: 'UPLOAD_DOC', targetType: 'Document', targetId: id, detail: data.name });
+  return { ok: true, id };
+}
+
+// ============================================================
+// USERS
+// ============================================================
+function getUsers() {
+  return { ok: true, data: sheetToObjects(SH.USERS) };
+}
+
+function createUser(data) {
+  const sh  = SS.getSheetByName(SH.USERS);
+  const now = new Date().toISOString();
+  const id  = 'USR-' + String(sh.getLastRow()).padStart(4, '0');
+  const row = [
+    id, data.firstName, data.lastName, data.email, data.employeeId||'',
+    data.dept||'', data.branch||'', data.phone||'',
+    data.role||'req', 'active', '', 0, now
+  ];
+  sh.appendRow(row);
+  return { ok: true, id };
+}
+
+function updateUser(data) {
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, data.id);
+  if (row < 0) return { ok: false, error: 'User not found' };
+  headers.forEach((h, i) => {
+    if (h in data && h !== 'id' && h !== 'createdAt') {
+      sh.getRange(row, i + 1).setValue(data[h]);
+    }
+  });
+  return { ok: true };
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+function getAudit() {
+  const rows = sheetToObjects(SH.AUDIT).reverse().slice(0, 100);
+  return { ok: true, data: rows };
+}
+
+function addAudit(data) {
+  const sh  = SS.getSheetByName(SH.AUDIT);
+  const now = new Date().toISOString();
+  const id  = 'AUD-' + String(sh.getLastRow()).padStart(6, '0');
+  sh.appendRow([
+    id, now,
+    data.userId   || 'system',
+    data.userName || 'System',
+    data.action   || '',
+    data.targetType || '',
+    data.targetId   || '',
+    data.detail     || '',
+    data.ipAddress  || '',
+    data.userAgent  || '',
+  ]);
+  return { ok: true, id };
+}
+
+// ============================================================
+// STATS (Dashboard)
+// ============================================================
+function getStats() {
+  const tickets = sheetToObjects(SH.TICKETS);
+  const assets  = sheetToObjects(SH.ASSETS);
+  const docs    = sheetToObjects(SH.DOCUMENTS);
+
+  const now  = new Date();
+  const mon0 = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const byStatus = {};
+  const byPri    = {};
+  const byCat    = {};
+  let   resolved = 0;
+  let   slaBreached = 0;
+  let   slaSum   = 0;
+
+  tickets.forEach(t => {
+    byStatus[t.status] = (byStatus[t.status] || 0) + 1;
+    byPri[t.priority]  = (byPri[t.priority]  || 0) + 1;
+    byCat[t.category]  = (byCat[t.category]  || 0) + 1;
+    const pct = Number(t.slaPercent) || 100;
+    slaSum += pct;
+    if (pct < 1) slaBreached++;
+    if (t.status === 'resolved' || t.status === 'closed') {
+      if (new Date(t.updatedAt) >= mon0) resolved++;
+    }
+  });
+
+  const open     = (byStatus['open']||0) + (byStatus['progress']||0) + (byStatus['assigned']||0);
+  const waiting  = (byStatus['waiting']||0);
+  const total    = tickets.length;
+  const slaComp  = total > 0 ? Math.round(slaSum / total) : 100;
+
+  // Asset warranty expiring within 90 days
+  const soon90 = assets.filter(a => {
+    if (!a.warrantyExpiry) return false;
+    const parts = String(a.warrantyExpiry).split('-');
+    const exp   = new Date(a.warrantyExpiry);
+    const diff  = (exp - now) / 86400000;
+    return diff > 0 && diff < 90;
+  }).length;
+
+  return {
+    ok: true,
+    data: {
+      total, open, waiting, resolved,
+      slaBreached, slaCompliance: slaComp,
+      critical: byPri['critical'] || 0,
+      byStatus, byPriority: byPri, byCategory: byCat,
+      assets: { total: assets.length, warrantyExpiringSoon: soon90 },
+      documents: { total: docs.length },
+    }
+  };
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function getSettings() {
+  const rows = sheetToObjects(SH.SETTINGS);
+  const obj  = {};
+  rows.forEach(r => { obj[r.key] = r.value; });
+  return { ok: true, data: obj };
+}
+
+function saveSettings(data) {
+  const sh      = SS.getSheetByName(SH.SETTINGS);
+  const now     = new Date().toISOString();
+  const rows    = sh.getDataRange().getValues();
+  const keyCol  = 0;
+  const valCol  = 1;
+
+  Object.entries(data).forEach(([key, val]) => {
+    let found = false;
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][keyCol] === key) {
+        sh.getRange(i + 1, valCol + 1).setValue(val);
+        sh.getRange(i + 1, 3).setValue(now);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      sh.appendRow([key, val, now]);
+    }
+  });
+  return { ok: true };
+}
+
+// ============================================================
+// TRIGGER: Auto SLA update every 15 min
+// ============================================================
+function setupTrigger() {
+  // Delete existing
+  ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
+  // Create new time-based trigger
+  ScriptApp.newTrigger('updateSLAPercents')
+    .timeBased()
+    .everyMinutes(15)
+    .create();
+  return 'Trigger set: every 15 minutes';
+}
+
+function updateSLAPercents() {
+  const sh      = SS.getSheetByName(SH.TICKETS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const data    = sh.getDataRange().getValues();
+  const now     = new Date();
+  const slaIdx  = headers.indexOf('slaPercent');
+  const dlIdx   = headers.indexOf('slaDeadline');
+  const crIdx   = headers.indexOf('createdAt');
+  const stIdx   = headers.indexOf('status');
+  const prIdx   = headers.indexOf('priority');
+  const slaMap  = { critical:240, high:480, medium:1440, low:4320 };
+
+  for (let i = 1; i < data.length; i++) {
+    const st = data[i][stIdx];
+    if (st === 'resolved' || st === 'closed') continue;
+
+    const pri      = data[i][prIdx];
+    const created  = new Date(data[i][crIdx]);
+    const deadline = new Date(data[i][dlIdx]);
+    const totalMs  = (slaMap[pri] || 1440) * 60000;
+    const usedMs   = now - created;
+    const pct      = Math.max(0, Math.round((1 - usedMs / totalMs) * 100));
+
+    sh.getRange(i + 1, slaIdx + 1).setValue(pct);
+  }
+}
+`;
+
+// ── State ───────────────────────────────────────────────────
+let sheetUrl = localStorage.getItem('itdesk_sheet_url') || '';
+let spreadsheetUrl = localStorage.getItem('itdesk_spreadsheet_url') || '';
+let currentStep = 1;
+
+// ── Init ────────────────────────────────────────────────────
+window.onload = function() {
+  // Show Code.gs preview
+  document.getElementById('codePreview').textContent = CODE_GS.slice(0, 800) + '\n... (573 lines total)';
+
+  // If already set up, show success
+  if (sheetUrl) {
+    markStep1(true); markStep2(true); markStep3(true);
+    document.getElementById('webAppUrl').value = sheetUrl;
+    document.getElementById('successBox').style.display = 'block';
+    document.getElementById('btnTest').disabled = false;
+  } else {
+    activateStep(1);
+  }
+};
+
+// ── Step controls ────────────────────────────────────────────
+function activateStep(n) {
+  currentStep = n;
+  for (let i = 1; i <= 4; i++) {
+    const row = document.getElementById('step'+i);
+    if (!row && i > 1) continue;
+    if (i >= n) {
+      if (row) { row.style.opacity = i===n?'1':'0.4'; row.style.pointerEvents = i===n?'':'none'; }
+    }
+    const num = document.getElementById('n'+i);
+    if (num) {
+      if (i < n) { num.className='step-num done'; num.textContent='✓'; }
+      else if (i===n) { num.className='step-num active'; num.textContent=i; }
+      else { num.className='step-num wait'; num.textContent=i; }
+    }
+    const line = document.getElementById('l'+i);
+    if (line) line.className = i < n ? 'step-line done' : 'step-line';
+  }
+}
+
+function markStep1(silent) {
+  activateStep(2);
+  document.getElementById('step2').style.opacity='1';
+  document.getElementById('step2').style.pointerEvents='';
+  if (!silent) log('info','✅ Step 1: สร้าง Google Sheet แล้ว');
+}
+function markStep2(silent) {
+  activateStep(3);
+  document.getElementById('step3').style.opacity='1';
+  document.getElementById('step3').style.pointerEvents='';
+  if (!silent) log('info','✅ Step 2: วาง Code.gs แล้ว');
+}
+function markStep3(silent) {
+  activateStep(4);
+  document.getElementById('step4').style.opacity='1';
+  document.getElementById('step4').style.pointerEvents='';
+  if (!silent) log('info','✅ Step 3: Deploy แล้ว');
+}
+
+// ── Actions ──────────────────────────────────────────────────
+function openSheets() {
+  window.open('https://sheets.google.com/create','_blank');
+}
+function openAppsScript() {
+  const url = spreadsheetUrl || 'https://script.google.com';
+  window.open(url.replace('/edit','') + (spreadsheetUrl ? '' : ''), '_blank');
+  // Better: open Apps Script directly
+  window.open('https://script.google.com/home/projects/create','_blank');
+}
+function copyCode() {
+  navigator.clipboard.writeText(CODE_GS).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(()=>btn.textContent='📋 Copy', 2000);
+  });
+}
+function openSpreadsheet() {
+  window.open(spreadsheetUrl || 'https://sheets.google.com', '_blank');
+}
+function openApp() {
+  window.location.href = 'IT-ServiceDesk-v5.html';
+}
+
+// ── Test & Save ──────────────────────────────────────────────
+async function testAndSave() {
+  const url = document.getElementById('webAppUrl').value.trim();
+  if (!url.includes('script.google.com')) {
+    showResult('error','❌ URL ไม่ถูกต้อง — ต้องเป็น https://script.google.com/macros/s/.../exec');
+    return;
+  }
+
+  const btn = document.getElementById('btnTest');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังทดสอบ...';
+  showProgress(true);
+  clearLog(); showLog();
+
+  log('info', '🔌 กำลังเชื่อมต่อ: ' + url.substring(0,60) + '...');
+  await progress(20);
+
+  try {
+    // Test ping
+    log('info', '📡 ทดสอบ ping...');
+    const pingRes = await fetch(url + '?action=ping', { redirect:'follow' });
+    const ping = await pingRes.json();
+    await progress(40);
+
+    if (!ping.ok) throw new Error('Ping failed: ' + JSON.stringify(ping));
+    log('ok', '✅ Ping สำเร็จ — Server time: ' + ping.ts);
+
+    // Test getStats
+    log('info', '📊 ดึงสถิติจาก Sheets...');
+    const statRes = await fetch(url + '?action=getStats', { redirect:'follow' });
+    const stats = await statRes.json();
+    await progress(70);
+
+    if (stats.ok) {
+      log('ok', `✅ Database OK — Tickets: ${stats.data.total}, Assets: ${stats.data.assets?.total||0}, Docs: ${stats.data.documents?.total||0}`);
+    }
+
+    // Test getTickets
+    log('info', '🎫 ดึงข้อมูล Tickets...');
+    const tkRes = await fetch(url + '?action=getTickets', { redirect:'follow' });
+    const tk = await tkRes.json();
+    await progress(90);
+    log('ok', `✅ Tickets: ${tk.total} รายการ`);
+
+    await progress(100);
+
+    // Save to localStorage
+    localStorage.setItem('itdesk_sheet_url', url);
+    sheetUrl = url;
+
+    log('ok', '💾 บันทึก URL ลง Browser แล้ว');
+    log('ok', '🎉 ติดตั้งสำเร็จ! พร้อมใช้งาน');
+
+    showResult('success', '🎉 เชื่อมต่อสำเร็จ! Google Sheets พร้อมเป็น Database แล้ว');
+    document.getElementById('successBox').style.display = 'block';
+    document.getElementById('n4').className = 'step-num done';
+    document.getElementById('n4').textContent = '✓';
+
+  } catch(e) {
+    await progress(100);
+    log('err', '❌ Error: ' + e.message);
+    showResult('error', '❌ เชื่อมต่อไม่ได้: ' + e.message + '<br><br><strong>วิธีแก้:</strong><br>• ตรวจสอบว่า Deploy แล้วและ Access = Anyone<br>• ลองเปิด URL ใน browser แยกเพื่อตรวจสอบ<br>• Deploy ใหม่อีกครั้ง (New Deployment)');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔌 ทดสอบอีกครั้ง';
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────
+const logEl = () => document.getElementById('testLog');
+function showLog() { logEl().style.display='block'; }
+function clearLog() { logEl().innerHTML = ''; }
+function log(type, msg) {
+  const el = logEl();
+  const line = document.createElement('div');
+  line.className = 'log-' + (type==='ok'?'ok':type==='err'?'err':type==='warn'?'warn':'info');
+  line.textContent = '[' + new Date().toLocaleTimeString('th-TH') + '] ' + msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function showResult(type, html) {
+  const el = document.getElementById('testResult');
+  const cls = {success:'success',error:'error',warn:'warn',info:'info'}[type]||'info';
+  el.innerHTML = `<div class="status-box ${cls}" style="margin-top:12px">${html}</div>`;
+}
+
+function showProgress(show) {
+  document.getElementById('testPrg').style.display = show ? 'block' : 'none';
+}
+async function progress(pct) {
+  document.getElementById('testPrgFill').style.width = pct + '%';
+  await new Promise(r => setTimeout(r, 300));
+}
+
+function resetAll() {
+  localStorage.removeItem('itdesk_sheet_url');
+  location.reload();
+}
+</script>
+</body>
+</html>
