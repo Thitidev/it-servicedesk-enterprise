@@ -598,7 +598,7 @@ document.fonts.ready.then(function() {
         <!-- Google Sign-In -->
         <div id="googleBtnWrap" style="margin-bottom:10px">
           <div id="g_id_onload"
-            data-client_id="YOUR_GOOGLE_CLIENT_ID"
+            data-client_id="772923777662-3f2bl718bvfhupdsd48h1fmlr4t0q1uh.apps.googleusercontent.com"
             data-callback="handleGoogleCredential"
             data-auto_select="false"
             data-cancel_on_tap_outside="true">
@@ -3084,7 +3084,7 @@ async function testConnection() {
 const CFG = {
   // Google OAuth Client ID
   // สร้างได้ที่ console.cloud.google.com → APIs → Credentials → OAuth 2.0
-  GOOGLE_CLIENT_ID: localStorage.getItem('itdesk_google_client_id') || '',
+  GOOGLE_CLIENT_ID: '772923777662-3f2bl718bvfhupdsd48h1fmlr4t0q1uh.apps.googleusercontent.com',
 
   // Microsoft App (client) ID
   // สร้างได้ที่ portal.azure.com → App registrations
@@ -3181,38 +3181,16 @@ async function loadLoginStats() {
 //  GOOGLE SIGN-IN
 // ============================================================
 function checkGSIConfig() {
-  // If no Google Client ID configured, show fallback button
-  const configured = !!CFG.GOOGLE_CLIENT_ID && CFG.GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
-  const gsiDiv  = document.querySelector('.g_id_signin');
-  const fbBtn   = document.getElementById('googleFallbackBtn');
-  const onload  = document.getElementById('g_id_onload');
-
-  if (!configured) {
-    if (gsiDiv)  gsiDiv.style.display  = 'none';
-    if (onload)  onload.setAttribute('data-client_id', 'placeholder');
-    if (fbBtn)   fbBtn.style.display = '';
-    return;
-  }
-  // Update client_id dynamically
-  if (onload) onload.setAttribute('data-client_id', CFG.GOOGLE_CLIENT_ID);
+  // Google Client ID is hardcoded — always show real GSI button
+  const onload = document.getElementById('g_id_onload');
+  if (onload) onload.setAttribute('data-client_id', '772923777662-3f2bl718bvfhupdsd48h1fmlr4t0q1uh.apps.googleusercontent.com');
+  const fbBtn = document.getElementById('googleFallbackBtn');
+  if (fbBtn) fbBtn.style.display = 'none';
 }
 
 function googleSignInFallback() {
-  // If no Client ID configured — show setup hint
-  if (!CFG.GOOGLE_CLIENT_ID || CFG.GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
-    const id = prompt(
-      'กรอก Google OAuth Client ID:\n(console.cloud.google.com → APIs & Services → Credentials)\n\nหรือกด Cancel เพื่อใช้ Manual Login แทน',
-      ''
-    );
-    if (id && id.trim()) {
-      localStorage.setItem('itdesk_google_client_id', id.trim());
-      CFG.GOOGLE_CLIENT_ID = id.trim();
-      location.reload();
-    } else {
-      showView('lv-manual');
-    }
-    return;
-  }
+  // Client ID is configured — open OAuth popup directly
+  {
   // If configured but GSI button not showing — fallback popup
   const w = 500, h = 600;
   const l = window.screenLeft + (window.innerWidth - w) / 2;
