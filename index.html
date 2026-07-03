@@ -1871,7 +1871,7 @@ function updSub(){
 // ============================================================
 // LOGIN / ROLE
 // ============================================================
-let selectedRole = 'user';
+// selectedRole declared in auth module
 // pickRole() defined in auth module
 function doMs(){ msSignIn(); } // redirect to real MS auth
 function tpwd(){
@@ -2133,10 +2133,10 @@ function uFilterTab(f, el){
 // ============================================================
 // RENDER — ADMIN DASHBOARD
 // ============================================================
-const SLA_WARN[];
-const TECHS[];
-const ACTIVITIES[];
-const FREQ[];
+const SLA_WARN=[];
+const TECHS=[];
+const ACTIVITIES=[];
+const FREQ=[];
 const TL_ITEMS=[];
 const APV_PENDING=[];
 const WF_STEPS=[];
@@ -3026,8 +3026,6 @@ function checkGSIConfig() {
 
 function googleSignInFallback() {
   // Client ID is configured — open OAuth popup directly
-  {
-  // If configured but GSI button not showing — fallback popup
   const w = 500, h = 600;
   const l = window.screenLeft + (window.innerWidth - w) / 2;
   const t = window.screenTop  + (window.innerHeight - h) / 2;
