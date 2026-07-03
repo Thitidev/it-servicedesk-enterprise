@@ -553,6 +553,36 @@ tbody tr.rc{cursor:pointer}
   .role-picker{ background:var(--s2); border-radius:var(--r); padding:4px; }
   .role-opt{ transition:all .15s; border-radius:calc(var(--r) - 2px); }
 
+
+  /* ── Login button & layout fixes ── */
+  .btn.cw{ width:100%; }
+  .cw{ width:100%; }
+  .btn.lg{ padding:13px 20px; font-size:15px; }
+  .lwrap.out{ opacity:0; visibility:hidden; pointer-events:none; display:none !important; }
+  .lform-hdr h1{ font-size:26px; font-weight:800; letter-spacing:-.5px; margin-bottom:6px; }
+  .lform-hdr p{ font-size:13.5px; color:var(--t2); }
+  .role-opt.on{ background:var(--s0); color:var(--blue-600); box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .ldiv{ text-align:center; font-size:12px; color:var(--t3); margin:16px 0; position:relative; }
+  .ldiv::before,.ldiv::after{ content:''; position:absolute; top:50%; width:28%; height:1px; background:var(--b0); }
+  .ldiv::before{ left:0; } .ldiv::after{ right:0; }
+  .msbtn:hover{ background:var(--s1); border-color:var(--blue-400); }
+  .msgrd{ display:grid; grid-template-columns:1fr 1fr; gap:2px; width:18px; height:18px; }
+  .msgrd span{ display:block; width:100%; height:100%; }
+  .igp{ position:relative; }
+  .igp .iad{ position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--t3); }
+  .lbrand{ flex:1; background:linear-gradient(135deg,#0C2F61,#1860C4 55%,#3B8AE0); color:#fff; padding:48px 44px; display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden; }
+  .lbrand-logo{ width:48px; height:48px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; }
+  .lbrand-top{ display:flex; align-items:center; gap:14px; }
+  .lbrand-name{ font-size:19px; font-weight:800; }
+  .lbrand-sub{ font-size:10px; letter-spacing:2px; opacity:.7; }
+  .lbrand-mid h2{ font-size:26px; font-weight:800; line-height:1.35; margin-bottom:12px; }
+  .lbrand-mid p{ font-size:14px; opacity:.85; line-height:1.7; }
+  .lbrand-stats{ display:flex; gap:28px; }
+  .lbrand-stat strong{ display:block; font-size:24px; font-weight:800; }
+  .lbrand-stat span{ font-size:11px; opacity:.7; }
+  .lfoot{ margin-top:20px; text-align:center; font-size:11px; color:var(--t3); padding-bottom:8px; }
+  @media(max-width:820px){ .lbrand{ display:none; } }
+
 </style>
 
 
@@ -643,7 +673,7 @@ tbody tr.rc{cursor:pointer}
         <div class="lform-hdr mb16"><h1>เข้าสู่ระบบ</h1><p>ใช้ Email หรือรหัสพนักงาน</p></div>
         <div style="display:flex;flex-direction:column;gap:13px">
           <div class="fgg"><label class="flbl">Email / รหัสพนักงาน <span class="req">*</span></label>
-            <input class="finp" id="lEmail" placeholder="email@company.com หรือ EMP-XXXXX" autocomplete="username"></div>
+            <input class="finp" id="lEmail" placeholder="พิมพ์อะไรก็ได้ (Demo) เช่น admin หรือ your@email.com" autocomplete="username"></div>
           <div class="fgg"><label class="flbl">รหัสผ่าน <span class="req">*</span></label>
             <div class="igp">
               <input class="finp" id="lPass" type="password" placeholder="รหัสผ่าน" autocomplete="current-password" onkeydown="if(event.key==='Enter')doManualLogin()">
@@ -2997,8 +3027,16 @@ function pickRole(r) {
   document.getElementById('roleOptAdmin').classList.toggle('on', r==='admin');
 }
 async function sha256(str) {
-  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  try {
+    if (crypto?.subtle?.digest) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+  } catch(e) { console.warn('crypto.subtle unavailable, using fallback', e); }
+  // Fallback simple hash (for HTTP/non-secure contexts)
+  let h = 0;
+  for (let i=0; i<str.length; i++) { h = ((h<<5)-h + str.charCodeAt(i))|0; }
+  return 'fb_' + Math.abs(h).toString(16);
 }
 async function loadLoginStats() {
   if (!CFG.SHEET_URL) return;
@@ -3200,26 +3238,19 @@ async function doManualLogin() {
     const hash = await sha256(passVal);
 
     if (!CFG.SHEET_URL) {
-      // Demo mode
-      const demoUsers = {
-        'admin': { role:'admin', name:'Admin (Demo)', firstName:'Admin', lastName:'Demo', dept:'ไอที', branch:'สำนักงานใหญ่' },
-        'user' : { role:'req',   name:'User (Demo)',  firstName:'User',  lastName:'Demo', dept:'ทั่วไป', branch:'สำนักงานใหญ่' },
+      // Demo mode — ยอมรับทุก email, role ตามที่เลือกไว้
+      const isAdmin = selectedRole === 'admin';
+      const nm      = emailVal.split('@')[0].split('.')[0] || 'User';
+      const user = {
+        id: 'DEMO-001', email: emailVal.includes('@') ? emailVal : emailVal+'@demo.local',
+        name: (isAdmin ? 'Admin' : nm.charAt(0).toUpperCase()+nm.slice(1)) + ' (Demo)',
+        firstName: isAdmin ? 'Admin' : nm.charAt(0).toUpperCase()+nm.slice(1),
+        lastName: 'Demo',
+        role: isAdmin ? 'admin' : 'req',
+        dept: isAdmin ? 'ไอที' : 'ทั่วไป',
+        branch: 'สำนักงานใหญ่', employeeId:'', phone:'', avatar:'', provider:'manual',
       };
-      const found = demoUsers[emailVal];
-      if (found) {
-        const user = { id:'DEMO-001', email:emailVal, dept:'ไอที', branch:'สำนักงานใหญ่', employeeId:'', phone:'', avatar:'', ...found };
-        if (selectedRole==='admin' && !['admin','tech','manager'].includes(user.role)) {
-          showView('lv-manual');
-          btn.disabled = false;
-          showLoginError('lError','บัญชีนี้ไม่มีสิทธิ์เข้าระบบ Admin');
-          return;
-        }
-        enterApp(user, true);
-      } else {
-        showView('lv-manual');
-        btn.disabled = false;
-        showLoginError('lError', 'ไม่พบบัญชีผู้ใช้ในโหมด Demo');
-      }
+      enterApp(user, true);
       return;
     }
 
