@@ -70,6 +70,10 @@ function doPost(e) {
       case 'updateUser':    return json(updateUser(body.data));
       case 'saveSettings':  return json(saveSettings(body.data));
       case 'addAudit':      return json(addAudit(body.data));
+      case 'manualLogin':   return json(manualLogin(body.data));
+      case 'oauthLogin':    return json(oauthLogin(body.data));
+      case 'resetPassword': return json(resetPassword(body.data));
+      case 'setPassword':   setUserPassword(body.data.userId, body.data.hash); return json({ok:true});
       default: return json({ error: 'Unknown action: ' + action });
     }
   } catch(err) {
@@ -100,7 +104,7 @@ function initSheets() {
     ],
     [SH.USERS]: [
       'id','firstName','lastName','email','employeeId','dept','branch','phone',
-      'role','status','lastLogin','ticketCount','createdAt'
+      'role','status','lastLogin','ticketCount','createdAt','passwordHash','provider'
     ],
     [SH.AUDIT]: [
       'id','timestamp','userId','userName','action','targetType','targetId',
@@ -569,5 +573,178 @@ function updateSLAPercents() {
     const pct      = Math.max(0, Math.round((1 - usedMs / totalMs) * 100));
 
     sh.getRange(i + 1, slaIdx + 1).setValue(pct);
+  }
+}
+
+// ============================================================
+// AUTH — เพิ่มใน Code.gs
+// ============================================================
+
+/** ตรวจสอบ user จาก Google OAuth token */
+function verifyGoogleToken(idToken) {
+  try {
+    const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
+    const resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const info = JSON.parse(resp.getContentText());
+    if (resp.getResponseCode() !== 200) return null;
+    return {
+      email     : info.email,
+      name      : info.name,
+      picture   : info.picture,
+      googleId  : info.sub,
+      verified  : info.email_verified === 'true',
+    };
+  } catch(e) { return null; }
+}
+
+/** Manual login — ตรวจจาก Users sheet (password เก็บเป็น SHA-256) */
+function manualLogin(data) {
+  const users = sheetToObjects(SH.USERS);
+  const u = users.find(u =>
+    (u.email === data.email || u.employeeId === data.email) &&
+    u.status === 'active'
+  );
+  if (!u) return { ok: false, error: 'ไม่พบบัญชีผู้ใช้' };
+
+  // ถ้าไม่มี password hash ให้ set ครั้งแรก
+  if (!u.passwordHash) {
+    // First time login — set password
+    setUserPassword(u.id, data.password);
+  } else {
+    // Compare hash — frontend ส่ง SHA-256 มา
+    if (u.passwordHash !== data.passwordHash)
+      return { ok: false, error: 'รหัสผ่านไม่ถูกต้อง' };
+  }
+
+  // Update lastLogin
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, u.id);
+  const llIdx   = headers.indexOf('lastLogin');
+  if (row > 0 && llIdx >= 0)
+    sh.getRange(row, llIdx+1).setValue(new Date().toISOString());
+
+  addAudit({ action:'LOGIN', targetType:'User', targetId:u.id,
+             detail:`Login: ${data.method||'manual'}`, userName:u.firstName+' '+u.lastName });
+
+  return {
+    ok  : true,
+    user: {
+      id        : u.id,
+      name      : u.firstName + ' ' + u.lastName,
+      firstName : u.firstName,
+      lastName  : u.lastName,
+      email     : u.email,
+      role      : u.role,
+      dept      : u.dept,
+      branch    : u.branch,
+      employeeId: u.employeeId,
+      phone     : u.phone,
+    }
+  };
+}
+
+/** Google/Microsoft OAuth login — upsert user */
+function oauthLogin(data) {
+  const users = sheetToObjects(SH.USERS);
+  let u = users.find(u => u.email === data.email);
+
+  if (!u) {
+    // Auto-register
+    const sh  = SS.getSheetByName(SH.USERS);
+    const now = new Date().toISOString();
+    const id  = 'USR-' + String(sh.getLastRow()).padStart(4,'0');
+    const row = [
+      id, data.firstName||data.name.split(' ')[0]||'',
+      data.lastName||data.name.split(' ').slice(1).join(' ')||'',
+      data.email, '', '', '', '', 'req', 'active', now, 0, now, '', data.provider||''
+    ];
+    sh.appendRow(row);
+    u = { id, firstName:row[1], lastName:row[2], email:data.email,
+          role:'req', dept:'', branch:'', employeeId:'', phone:'' };
+    addAudit({ action:'REGISTER', targetType:'User', targetId:id,
+               detail:`OAuth: ${data.provider}`, userName:data.name });
+  } else {
+    // Update lastLogin
+    const sh      = SS.getSheetByName(SH.USERS);
+    const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+    const row     = findRowById(SH.USERS, u.id);
+    const llIdx   = headers.indexOf('lastLogin');
+    if (row > 0 && llIdx >= 0)
+      sh.getRange(row, llIdx+1).setValue(new Date().toISOString());
+    addAudit({ action:'LOGIN', targetType:'User', targetId:u.id,
+               detail:`OAuth: ${data.provider}`, userName:u.firstName+' '+u.lastName });
+  }
+
+  return {
+    ok  : true,
+    user: {
+      id        : u.id,
+      name      : u.firstName + ' ' + u.lastName,
+      firstName : u.firstName,
+      lastName  : u.lastName,
+      email     : u.email,
+      role      : u.role || 'req',
+      dept      : u.dept,
+      branch    : u.branch,
+      employeeId: u.employeeId,
+      phone     : u.phone,
+      avatar    : data.picture || '',
+    }
+  };
+}
+
+function setUserPassword(userId, plainPassword) {
+  // Store hash sent from frontend (we don't store plain text)
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, userId);
+  let phIdx     = headers.indexOf('passwordHash');
+  // Add column if not exists
+  if (phIdx < 0) {
+    phIdx = headers.length;
+    sh.getRange(1, phIdx+1).setValue('passwordHash');
+  }
+  if (row > 0) sh.getRange(row, phIdx+1).setValue(plainPassword);
+}
+
+function resetPassword(data) {
+  const users = sheetToObjects(SH.USERS);
+  const u = users.find(u => u.email === data.email && u.status === 'active');
+  if (!u) return { ok: false, error: 'ไม่พบอีเมลในระบบ' };
+
+  // Generate reset token
+  const token = Utilities.getUuid();
+  const sh      = SS.getSheetByName(SH.USERS);
+  const headers = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+  const row     = findRowById(SH.USERS, u.id);
+  let rtIdx     = headers.indexOf('resetToken');
+  if (rtIdx < 0) { rtIdx = headers.length; sh.getRange(1, rtIdx+1).setValue('resetToken'); }
+  if (row > 0) sh.getRange(row, rtIdx+1).setValue(token);
+
+  // Send email via GAS (ส่ง reset link ทาง Gmail)
+  try {
+    MailApp.sendEmail({
+      to      : data.email,
+      subject : '[IT ServiceDesk] รีเซ็ตรหัสผ่าน',
+      htmlBody: `<h2>รีเซ็ตรหัสผ่าน IT ServiceDesk</h2>
+        <p>สวัสดีคุณ ${u.firstName},</p>
+        <p>คลิกลิงก์ด้านล่างเพื่อตั้งรหัสผ่านใหม่ (หมดอายุใน 1 ชั่วโมง):</p>
+        <a href="${data.appUrl}?reset=${token}&uid=${u.id}" style="background:#1860C4;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin:16px 0">ตั้งรหัสผ่านใหม่</a>
+        <p style="color:#888;font-size:12px">หากไม่ได้ร้องขอ กรุณาเพิกเฉยต่ออีเมลนี้</p>`,
+    });
+  } catch(e) { return { ok: false, error: 'ส่งอีเมลไม่สำเร็จ: '+e.message }; }
+
+  return { ok: true, message: 'ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง ' + data.email };
+}
+
+// เพิ่ม routes ใน doPost
+function handleAuth(body) {
+  switch(body.action) {
+    case 'manualLogin' : return json(manualLogin(body.data));
+    case 'oauthLogin'  : return json(oauthLogin(body.data));
+    case 'resetPassword': return json(resetPassword(body.data));
+    case 'setPassword' : setUserPassword(body.data.userId, body.data.hash); return json({ok:true});
+    default: return null;
   }
 }

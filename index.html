@@ -4,10 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>IT ServiceDesk — Enterprise</title>
-<link rel="preconnect" href="https://unpkg.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css" onerror="this.onerror=null" crossorigin="anonymous">
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Microsoft MSAL.js -->
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
 <style>
@@ -190,6 +193,7 @@ svg{display:block}
 .pg{display:none;animation:fup .25s var(--ease)}
 .pg.on{display:block}
 @keyframes fup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* CARDS */
 .card{background:var(--s0);border:1px solid var(--b0);border-radius:var(--r-lg);padding:22px;box-shadow:var(--sh-xs)}
@@ -557,51 +561,159 @@ document.fonts.ready.then(function() {
 
 <!-- ==================== LOGIN ==================== -->
 <div class="lwrap" id="lw">
+  <!-- Brand panel -->
   <div class="lbrand">
     <div class="lbrand-top">
       <div class="lbrand-logo"><i class="ti ti-headset"></i></div>
-      <div><div class="lbrand-name">IT ServiceDesk</div><div class="lbrand-sub" style="opacity:.7">ENTERPRISE PLATFORM</div></div>
+      <div><div class="lbrand-name">IT ServiceDesk</div><div class="lbrand-sub">ENTERPRISE PLATFORM</div></div>
     </div>
     <div class="lbrand-mid">
       <h2>ระบบแจ้งซ่อมและบริหารจัดการ IT ครบวงจร</h2>
-      <p>แจ้งปัญหา ติดตามสถานะ และบริหารสินทรัพย์องค์กรได้ในที่เดียว รองรับการทำงานทั้งทีม IT และพนักงานทุกแผนก</p>
+      <p>แจ้งปัญหา ติดตามสถานะ และบริหารสินทรัพย์องค์กรได้ในที่เดียว</p>
     </div>
     <div class="lbrand-stats">
-      <div class="lbrand-stat"><strong>1,284</strong><span>Ticket ทั้งหมด</span></div>
-      <div class="lbrand-stat"><strong>91.4%</strong><span>SLA Compliance</span></div>
-      <div class="lbrand-stat"><strong>4.6★</strong><span>ความพึงพอใจ</span></div>
+      <div class="lbrand-stat"><strong id="lStatTk">—</strong><span>Tickets</span></div>
+      <div class="lbrand-stat"><strong id="lStatSla">—</strong><span>SLA Compliance</span></div>
+      <div class="lbrand-stat"><strong id="lStatCsat">4.6★</strong><span>CSAT</span></div>
     </div>
   </div>
+
+  <!-- Form panel -->
   <div class="lform-wrap">
     <div class="lform">
-      <div class="lform-hdr">
-        <h1>เข้าสู่ระบบ</h1>
-        <p>เลือกประเภทผู้ใช้งานเพื่อเข้าสู่ระบบที่เหมาะกับคุณ</p>
-      </div>
-      <div class="role-picker">
-        <div class="role-opt on" id="roleOptUser" onclick="pickRole('user')"><i class="ti ti-user" style="margin-right:6px"></i>พนักงานทั่วไป</div>
-        <div class="role-opt" id="roleOptAdmin" onclick="pickRole('admin')"><i class="ti ti-shield-cog" style="margin-right:6px"></i>เจ้าหน้าที่ IT</div>
-      </div>
-      <button class="msbtn" onclick="doMs()">
-        <div class="msgrd"><span style="background:#F25022"></span><span style="background:#7FBA00"></span><span style="background:#00A4EF"></span><span style="background:#FFB900"></span></div>
-        เข้าสู่ระบบด้วย Microsoft Entra ID
-      </button>
-      <div class="ldiv">หรือ</div>
-      <div style="display:flex;flex-direction:column;gap:13px">
-        <div class="fgg"><label class="flbl">ชื่อผู้ใช้ / อีเมล</label><div class="igp"><input class="finp" id="un" value="somchai.j"><div class="iad"><i class="ti ti-user"></i></div></div></div>
-        <div class="fgg"><label class="flbl">รหัสผ่าน</label><div class="igp"><input class="finp" id="up" type="password" value="••••••••"><div class="iad" onclick="tpwd()" style="cursor:pointer"><i class="ti ti-eye" id="ei"></i></div></div></div>
-        <div class="df ic jb" style="font-size:12.5px">
-          <label class="df ic g8" style="cursor:pointer"><input type="checkbox" checked> จดจำการเข้าสู่ระบบ</label>
-          <a onclick="toast('ส่งลิงก์รีเซ็ตทางอีเมลแล้ว','info','ลืมรหัสผ่าน')" style="cursor:pointer">ลืมรหัสผ่าน?</a>
+
+      <!-- ── VIEW: Choose method ── -->
+      <div id="lv-choose">
+        <div class="lform-hdr">
+          <h1>เข้าสู่ระบบ</h1>
+          <p>เลือกวิธีเข้าสู่ระบบ</p>
         </div>
+
+        <!-- Role picker -->
+        <div class="role-picker mb16">
+          <div class="role-opt on" id="roleOptUser" onclick="pickRole('user')"><i class="ti ti-user" style="margin-right:5px"></i>พนักงาน</div>
+          <div class="role-opt" id="roleOptAdmin" onclick="pickRole('admin')"><i class="ti ti-shield-cog" style="margin-right:5px"></i>เจ้าหน้าที่ IT</div>
+        </div>
+
+        <!-- Google Sign-In -->
+        <div id="googleBtnWrap" style="margin-bottom:10px">
+          <div id="g_id_onload"
+            data-client_id="YOUR_GOOGLE_CLIENT_ID"
+            data-callback="handleGoogleCredential"
+            data-auto_select="false"
+            data-cancel_on_tap_outside="true">
+          </div>
+          <div class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-locale="th"
+            data-logo_alignment="left"
+            data-width="340">
+          </div>
+          <!-- Fallback button (shown if GSI not configured) -->
+          <button class="msbtn" id="googleFallbackBtn" onclick="googleSignInFallback()" style="display:none">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            เข้าสู่ระบบด้วย Google
+          </button>
+        </div>
+
+        <!-- Microsoft Sign-In -->
+        <button class="msbtn mb10" onclick="msSignIn()" id="msBtn">
+          <div class="msgrd"><span style="background:#F25022"></span><span style="background:#7FBA00"></span><span style="background:#00A4EF"></span><span style="background:#FFB900"></span></div>
+          เข้าสู่ระบบด้วย Microsoft 365
+        </button>
+
+        <div class="ldiv">หรือเข้าสู่ระบบด้วยบัญชีองค์กร</div>
+
+        <button class="btn cw" style="justify-content:center" onclick="showView('lv-manual')">
+          <i class="ti ti-keyboard"></i>กรอก Email / รหัสพนักงาน
+        </button>
+        <button class="btn ghost cw mt8" style="justify-content:center;font-size:12px" onclick="showView('lv-register')">
+          <i class="ti ti-user-plus"></i>ลงทะเบียนบัญชีใหม่
+        </button>
       </div>
-      <button class="btn pri lg cw mt16" style="justify-content:center" onclick="doLogin()"><i class="ti ti-login"></i>เข้าสู่ระบบ</button>
-      <div class="lfoot">🔒 TLS 1.3 · JWT Session · MFA Protected</div>
+
+      <!-- ── VIEW: Manual login ── -->
+      <div id="lv-manual" style="display:none">
+        <button class="btn ghost mb16" onclick="showView('lv-choose')" style="padding:6px 10px;font-size:12px"><i class="ti ti-arrow-left"></i>กลับ</button>
+        <div class="lform-hdr mb16"><h1>เข้าสู่ระบบ</h1><p>ใช้ Email หรือรหัสพนักงาน</p></div>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div class="fgg"><label class="flbl">Email / รหัสพนักงาน <span class="req">*</span></label>
+            <input class="finp" id="lEmail" placeholder="email@company.com หรือ EMP-XXXXX" autocomplete="username"></div>
+          <div class="fgg"><label class="flbl">รหัสผ่าน <span class="req">*</span></label>
+            <div class="igp">
+              <input class="finp" id="lPass" type="password" placeholder="รหัสผ่าน" autocomplete="current-password" onkeydown="if(event.key==='Enter')doManualLogin()">
+              <div class="iad" onclick="tpwd()" style="cursor:pointer"><i class="ti ti-eye" id="ei"></i></div>
+            </div>
+          </div>
+          <div class="df ic jb" style="font-size:12.5px">
+            <label class="df ic g8" style="cursor:pointer"><input type="checkbox" id="lRemember" checked> จดจำ</label>
+            <a onclick="showView('lv-forgot')" style="cursor:pointer;color:var(--blue-600)">ลืมรหัสผ่าน?</a>
+          </div>
+          <div id="lError" style="display:none;color:var(--red-600);font-size:12.5px;background:var(--red-50);padding:10px 13px;border-radius:var(--r)"></div>
+        </div>
+        <button class="btn pri lg cw mt16" style="justify-content:center" onclick="doManualLogin()" id="loginBtn">
+          <i class="ti ti-login"></i>เข้าสู่ระบบ
+        </button>
+        <div class="div"></div>
+        <button class="btn ghost cw" style="justify-content:center;font-size:12px" onclick="showView('lv-choose')">
+          <i class="ti ti-arrow-left"></i>วิธีอื่น
+        </button>
+      </div>
+
+      <!-- ── VIEW: Register ── -->
+      <div id="lv-register" style="display:none">
+        <button class="btn ghost mb16" onclick="showView('lv-choose')" style="padding:6px 10px;font-size:12px"><i class="ti ti-arrow-left"></i>กลับ</button>
+        <div class="lform-hdr mb16"><h1>ลงทะเบียน</h1><p>สร้างบัญชีใหม่สำหรับพนักงาน</p></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="fg f2" style="gap:12px">
+            <div class="fgg"><label class="flbl">ชื่อ <span class="req">*</span></label><input class="finp" id="regFirst" placeholder="ชื่อ"></div>
+            <div class="fgg"><label class="flbl">นามสกุล <span class="req">*</span></label><input class="finp" id="regLast" placeholder="นามสกุล"></div>
+          </div>
+          <div class="fgg"><label class="flbl">Email องค์กร <span class="req">*</span></label><input class="finp" id="regEmail" type="email" placeholder="email@company.com"></div>
+          <div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" id="regEmpId" placeholder="EMP-XXXXX (ถ้ามี)"></div>
+          <div class="fg f2" style="gap:12px">
+            <div class="fgg"><label class="flbl">แผนก</label><select class="fsel" id="regDept"><option value="">— เลือก —</option><option>การเงิน</option><option>HR</option><option>ไอที</option><option>ปฏิบัติการ</option><option>การขาย</option><option>การตลาด</option><option>กฎหมาย</option></select></div>
+            <div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" id="regPhone" placeholder="0XX-XXX-XXXX"></div>
+          </div>
+          <div class="fgg"><label class="flbl">รหัสผ่าน <span class="req">*</span></label><input class="finp" id="regPass" type="password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
+          <div class="fgg"><label class="flbl">ยืนยันรหัสผ่าน <span class="req">*</span></label><input class="finp" id="regPass2" type="password" placeholder="ยืนยันรหัสผ่าน"></div>
+          <div id="regError" style="display:none;color:var(--red-600);font-size:12.5px;background:var(--red-50);padding:10px 13px;border-radius:var(--r)"></div>
+        </div>
+        <button class="btn pri lg cw mt16" style="justify-content:center" onclick="doRegister()"><i class="ti ti-user-plus"></i>ลงทะเบียน</button>
+      </div>
+
+      <!-- ── VIEW: Forgot password ── -->
+      <div id="lv-forgot" style="display:none">
+        <button class="btn ghost mb16" onclick="showView('lv-manual')" style="padding:6px 10px;font-size:12px"><i class="ti ti-arrow-left"></i>กลับ</button>
+        <div class="lform-hdr mb16"><h1>ลืมรหัสผ่าน</h1><p>ระบบจะส่งลิงก์รีเซ็ตไปยัง Email</p></div>
+        <div class="fgg mb16"><label class="flbl">Email <span class="req">*</span></label><input class="finp" id="forgotEmail" type="email" placeholder="email@company.com"></div>
+        <div id="forgotMsg" style="display:none;font-size:12.5px;padding:10px 13px;border-radius:var(--r)"></div>
+        <button class="btn pri lg cw mt12" style="justify-content:center" onclick="doForgotPassword()"><i class="ti ti-send"></i>ส่งลิงก์รีเซ็ต</button>
+      </div>
+
+      <!-- ── VIEW: Set new password (from reset link) ── -->
+      <div id="lv-reset" style="display:none">
+        <div class="lform-hdr mb16"><h1>ตั้งรหัสผ่านใหม่</h1></div>
+        <div class="fgg mb12"><label class="flbl">รหัสผ่านใหม่ <span class="req">*</span></label><input class="finp" id="resetPass" type="password" placeholder="อย่างน้อย 8 ตัวอักษร"></div>
+        <div class="fgg mb16"><label class="flbl">ยืนยัน <span class="req">*</span></label><input class="finp" id="resetPass2" type="password" placeholder="ยืนยัน"></div>
+        <button class="btn pri lg cw" style="justify-content:center" onclick="doResetPassword()"><i class="ti ti-check"></i>บันทึกรหัสผ่านใหม่</button>
+      </div>
+
+      <!-- Loading overlay -->
+      <div id="lLoading" style="display:none;text-align:center;padding:40px 0">
+        <div style="width:40px;height:40px;border:3px solid var(--b0);border-top-color:var(--blue-600);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px"></div>
+        <div id="lLoadMsg" style="font-size:13px;color:var(--t2)">กำลังเข้าสู่ระบบ...</div>
+      </div>
+
+      <div class="lfoot">🔒 TLS 1.3 · OAuth 2.0 · SHA-256</div>
     </div>
   </div>
 </div>
 
-<!-- ==================== APP ==================== -->
 <div class="app">
 
 <!-- ============ SIDEBAR : USER ============ -->
@@ -1422,7 +1534,7 @@ document.fonts.ready.then(function() {
 
 <div class="mov" id="profileM" onclick="if(event.target===this)closeM('profileM')">
   <div class="mdl msm"><div class="mhdr"><h3>โปรไฟล์</h3><button class="mcl" onclick="closeM('profileM')"><i class="ti ti-x"></i></button></div>
-  <div class="mbdy"><div class="df ic g14 mb16"><div class="av av-xl" id="profAv" style="background:var(--blue-600)">AU</div><div><div style="font-size:18px;font-weight:800" id="profName">Admin User</div><div class="xs mu mt4" id="profRole">Administrator · ไอที</div></div></div><div class="fgg mb10"><label class="flbl">อีเมล</label><input class="finp" value="admin@company.co.th"></div><div class="fgg mb10"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-000-0000"></div><div class="fgg mb10"><label class="flbl">รหัสผ่านใหม่</label><input class="finp" type="password" placeholder="รหัสผ่านใหม่..."></div><div class="fgg"><label class="flbl">ยืนยันรหัสผ่าน</label><input class="finp" type="password" placeholder="ยืนยัน..."></div></div>
+  <div class="mbdy"><div class="df ic g14 mb16"><div class="av av-xl" id="profAv" style="background:var(--blue-600)">AU</div><div><div style="font-size:18px;font-weight:800" id="profName">Admin User</div><div class="xs mu mt4" id="profRole">Administrator · ไอที</div><span class="xs mu" id="profProvBadge"></span></div></div><div class="fgg mb10"><label class="flbl">อีเมล</label><input class="finp" value="admin@company.co.th"></div><div class="fgg mb10"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-000-0000"></div><div class="fgg mb10"><label class="flbl">รหัสผ่านใหม่</label><input class="finp" type="password" placeholder="รหัสผ่านใหม่..."></div><div class="fgg"><label class="flbl">ยืนยันรหัสผ่าน</label><input class="finp" type="password" placeholder="ยืนยัน..."></div></div>
   <div class="mftr"><button class="btn dan" onclick="logout()"><i class="ti ti-logout"></i>ออกจากระบบ</button><button class="btn pri" onclick="closeM('profileM');toast('บันทึกโปรไฟล์','success','')"><i class="ti ti-check"></i>บันทึก</button></div></div>
 </div>
 
@@ -2198,7 +2310,8 @@ function renderDashboard(){
   if(el) el.textContent=`วัน${d[now.getDay()]}ที่ ${now.getDate()} ${m[now.getMonth()]} ${now.getFullYear()+543}`;
 
   const s=document.getElementById('dSla');
-  if(s) s.innerHTML=SLA_WARN.map(x=>`
+  const SLA_WARN_D = getSlaWarnings();
+  if(s) s.innerHTML=SLA_WARN_D.map(x=>`
     <div style="padding:10px 0;border-bottom:1px solid var(--b0)">
       <div class="df jb xs mb6"><span class="w7" style="color:var(--blue-600);cursor:pointer" onclick="nav('detail')">${x.id}</span><span class="w7" style="color:${x.col}">${x.pct}% · ${x.time}</span></div>
       <div class="xs mu tr mb8">${x.sub}</div>
@@ -2206,7 +2319,7 @@ function renderDashboard(){
     </div>`).join('');
 
   const t=document.getElementById('dTech');
-  if(t) t.innerHTML=TECHS.map(x=>`
+  if(t) t.innerHTML=getTechLoad().map(x=>`
     <div class="df ic g10" style="padding:9px 0;border-bottom:1px solid var(--b0)">
       <div class="av av-sm" style="background:${x.bg}">${x.init}</div>
       <div style="flex:1;min-width:0"><div class="sm w6 tr">${x.name}</div><div class="xs mu">${x.load} tickets</div><div class="prg mt4"><div class="prgf" style="width:${Math.round(x.load/x.max*100)}%;background:${x.bg}"></div></div></div>
@@ -2214,15 +2327,15 @@ function renderDashboard(){
     </div>`).join('');
 
   const a=document.getElementById('dAct');
-  if(a) a.innerHTML=ACTIVITIES.map(x=>`
+  if(a) a.innerHTML=getActivities().map(x=>`
     <div class="ait"><div class="aic" style="background:${x.bg}"><i class="ti ${x.ic}" style="color:${x.col}"></i></div><div class="aib"><div class="aitx">${x.txt}</div><div class="aits">${x.time}</div></div></div>`).join('');
 
   const f=document.getElementById('dFreq');
-  if(f) f.innerHTML='<div class="dfc g6px">'+FREQ.map((x,i)=>`
+  if(f) f.innerHTML='<div class="dfc g6px">'+getFreqIssues().map((x,i)=>`
     <div class="df ic g10 sm"><span style="width:18px;text-align:right;color:var(--t2);font-size:11px">${i+1}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.n}</span><div style="width:90px;height:5px;background:var(--b0);border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--blue-400);width:${x.p}%"></div></div><span style="width:24px;text-align:right;font-weight:700;color:var(--t1)">${x.c}</span></div>`).join('')+'</div>';
 
   const top=document.getElementById('dTop');
-  if(top) top.innerHTML=TECHS.map((x,i)=>`
+  if(top) top.innerHTML=getTechLoad().map((x,i)=>`
     <div class="df ic g12" style="padding:9px 0;border-bottom:1px solid var(--b0)">
       <div style="width:22px;text-align:center;font-weight:800;color:${i===0?'#F5A623':i===1?'#9CA3AF':i===2?'#CD7C2F':'var(--t2)'}">${['🥇','🥈','🥉','#4'][i]||`#${i+1}`}</div>
       <div class="av av-sm" style="background:${x.bg}">${x.init}</div>
@@ -2411,7 +2524,7 @@ function renderSLA(){
 }
 function renderReports(){
   const rt=document.getElementById('rTech');
-  if(rt) rt.innerHTML=TECHS.map(t=>`<div class="df ic g12" style="padding:10px 0;border-bottom:1px solid var(--b0)"><div class="av av-sm" style="background:${t.bg}">${t.init}</div><div style="flex:1"><div class="sm w6">${t.name}</div><div class="xs mu">${t.tickets} tickets · ${t.avg}</div><div class="prg mt4"><div class="prgf" style="width:${t.sla}%;background:${t.sla>=92?'var(--green-500)':t.sla>=85?'var(--amber-500)':'var(--red-500)'}"></div></div></div><span class="badge ${t.sla>=92?'bre':t.sla>=85?'bw':'bca'}">SLA ${t.sla}%</span></div>`).join('');
+  if(rt) rt.innerHTML=getTechLoad().map(t=>`<div class="df ic g12" style="padding:10px 0;border-bottom:1px solid var(--b0)"><div class="av av-sm" style="background:${t.bg}">${t.init}</div><div style="flex:1"><div class="sm w6">${t.name}</div><div class="xs mu">${t.tickets} tickets · ${t.avg}</div><div class="prg mt4"><div class="prgf" style="width:${t.sla}%;background:${t.sla>=92?'var(--green-500)':t.sla>=85?'var(--amber-500)':'var(--red-500)'}"></div></div></div><span class="badge ${t.sla>=92?'bre':t.sla>=85?'bw':'bca'}">SLA ${t.sla}%</span></div>`).join('');
   const rc=document.getElementById('rCat');
   const cats=[{n:'Network',c:68,p:24},{n:'Microsoft Office',c:54,p:19},{n:'Hardware',c:48,p:17},{n:'Printer',c:32,p:11},{n:'Teams',c:28,p:10},{n:'อื่นๆ',c:54,p:19}];
   if(rc) rc.innerHTML=cats.map(c=>`<div class="kl"><span>${c.n}</span><div class="df ic g10"><div style="width:80px;height:5px;border-radius:3px;background:var(--b0);overflow:hidden"><div style="height:100%;background:var(--blue-400);width:${c.p*4}%"></div></div><span class="sm w7">${c.c}</span><span class="xs mu">(${c.p}%)</span></div></div>`).join('');
@@ -2432,7 +2545,7 @@ function renderCategories(){
 function renderNotifs(){
   const el=document.getElementById('notifList');
   if(!el) return;
-  el.innerHTML=NOTIFS.map(n=>`<div class="nit ${n.unread?'ur':''}" onclick="toast('เปิด','info','')"><div class="nic" style="background:${n.bg}"><i class="ti ${n.ic}" style="color:${n.col}"></i></div><div style="flex:1"><div class="sm w7">${n.title}</div><div class="xs" style="color:var(--t1);margin-top:3px;line-height:1.5">${n.desc}</div><div class="xs mu mt4">${n.time}</div></div>${n.unread?'<div class="udot"></div>':''}</div>`).join('');
+  el.innerHTML=getNotifications().map(n=>`<div class="nit ${n.unread?'ur':''}" onclick="toast('เปิด','info','')"><div class="nic" style="background:${n.bg}"><i class="ti ${n.ic}" style="color:${n.col}"></i></div><div style="flex:1"><div class="sm w7">${n.title}</div><div class="xs" style="color:var(--t1);margin-top:3px;line-height:1.5">${n.desc}</div><div class="xs mu mt4">${n.time}</div></div>${n.unread?'<div class="udot"></div>':''}</div>`).join('');
 }
 function renderAudit(){
   const el=document.getElementById('auditBody');
@@ -2452,7 +2565,7 @@ function renderUHome(){
       <div class="uticket-meta"><span><i class="ti ti-calendar"></i>${t.cr}</span><span><i class="ti ti-category"></i>${t.cat}</span><span style="color:${slaTC(t.sla)};font-weight:700"><i class="ti ti-clock"></i>SLA ${t.sla}%</span></div>
     </div>`).join('');
   const fi=document.getElementById('uFreqIssues');
-  if(fi) fi.innerHTML=U_FREQ.map(f=>`<div class="df ic g8 p8 mb6" style="background:var(--s1);border-radius:var(--r);cursor:pointer" onclick="navU('u-create')"><i class="ti ti-arrow-right-circle" style="color:var(--blue-600);flex-shrink:0"></i><span class="sm">${f}</span></div>`).join('');
+  if(fi) fi.innerHTML=U_getFreqIssues().map(f=>`<div class="df ic g8 p8 mb6" style="background:var(--s1);border-radius:var(--r);cursor:pointer" onclick="navU('u-create')"><i class="ti ti-arrow-right-circle" style="color:var(--blue-600);flex-shrink:0"></i><span class="sm">${f}</span></div>`).join('');
 }
 function renderUTickets(filter='all'){
   const el=document.getElementById('uTicketList');
@@ -2961,6 +3074,611 @@ async function testConnection() {
     toast('เชื่อมต่อไม่ได้: '+e.message,'error','ทดสอบล้มเหลว');
   }
 }
+</script>
+
+
+<script>
+// ============================================================
+//  CONFIGURATION — แก้ค่าเหล่านี้ใน Settings หรือ config
+// ============================================================
+const CFG = {
+  // Google OAuth Client ID
+  // สร้างได้ที่ console.cloud.google.com → APIs → Credentials → OAuth 2.0
+  GOOGLE_CLIENT_ID: localStorage.getItem('itdesk_google_client_id') || '',
+
+  // Microsoft App (client) ID
+  // สร้างได้ที่ portal.azure.com → App registrations
+  MS_CLIENT_ID    : localStorage.getItem('itdesk_ms_client_id') || '',
+  MS_TENANT_ID    : localStorage.getItem('itdesk_ms_tenant_id') || 'common',
+
+  // Google Sheets Web App URL (จาก installer)
+  SHEET_URL: localStorage.getItem('itdesk_sheet_url') || '',
+};
+
+// ============================================================
+//  AUTH STATE
+// ============================================================
+let currentUser  = JSON.parse(sessionStorage.getItem('itdesk_user') || 'null');
+let msalInstance = null;
+let selectedRole = 'user';
+
+// ── Check reset token in URL ────────────────────────────────
+(function checkResetToken() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('reset') && params.get('uid')) {
+    window._resetToken = params.get('reset');
+    window._resetUid   = params.get('uid');
+    // Show reset view after page load
+    window.addEventListener('DOMContentLoaded', () => showView('lv-reset'));
+  }
+})();
+
+// ── Check existing session ──────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  initMsal();
+  checkGSIConfig();
+
+  if (currentUser) {
+    // Already logged in — go straight to app
+    enterApp(currentUser, false);
+  } else if (window._resetToken) {
+    showView('lv-reset');
+  }
+
+  // Load live stats on login page
+  loadLoginStats();
+});
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function showView(id) {
+  ['lv-choose','lv-manual','lv-register','lv-forgot','lv-reset','lLoading']
+    .forEach(v => {
+      const el = document.getElementById(v);
+      if (el) el.style.display = v === id ? '' : 'none';
+    });
+}
+function showLoading(msg='กำลังเข้าสู่ระบบ...') {
+  showView('lLoading');
+  document.getElementById('lLoadMsg').textContent = msg;
+}
+function showLoginError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+function tpwd() {
+  const i = document.getElementById('lPass');
+  const e = document.getElementById('ei');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  e.className = i.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
+}
+function pickRole(r) {
+  selectedRole = r;
+  document.getElementById('roleOptUser').classList.toggle('on',  r==='user');
+  document.getElementById('roleOptAdmin').classList.toggle('on', r==='admin');
+}
+async function sha256(str) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function loadLoginStats() {
+  if (!CFG.SHEET_URL) return;
+  try {
+    const res = await fetch(`${CFG.SHEET_URL}?action=getStats`);
+    const d   = await res.json();
+    if (d.ok) {
+      const el = id => document.getElementById(id);
+      if (el('lStatTk'))  el('lStatTk').textContent  = d.data.total || '—';
+      if (el('lStatSla')) el('lStatSla').textContent = (d.data.slaCompliance||'—') + '%';
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+//  GOOGLE SIGN-IN
+// ============================================================
+function checkGSIConfig() {
+  // If no Google Client ID configured, show fallback button
+  const configured = !!CFG.GOOGLE_CLIENT_ID && CFG.GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
+  const gsiDiv  = document.querySelector('.g_id_signin');
+  const fbBtn   = document.getElementById('googleFallbackBtn');
+  const onload  = document.getElementById('g_id_onload');
+
+  if (!configured) {
+    if (gsiDiv)  gsiDiv.style.display  = 'none';
+    if (onload)  onload.setAttribute('data-client_id', 'placeholder');
+    if (fbBtn)   fbBtn.style.display = '';
+    return;
+  }
+  // Update client_id dynamically
+  if (onload) onload.setAttribute('data-client_id', CFG.GOOGLE_CLIENT_ID);
+}
+
+function googleSignInFallback() {
+  // If no Client ID configured — show setup hint
+  if (!CFG.GOOGLE_CLIENT_ID || CFG.GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+    const id = prompt(
+      'กรอก Google OAuth Client ID:\n(console.cloud.google.com → APIs & Services → Credentials)\n\nหรือกด Cancel เพื่อใช้ Manual Login แทน',
+      ''
+    );
+    if (id && id.trim()) {
+      localStorage.setItem('itdesk_google_client_id', id.trim());
+      CFG.GOOGLE_CLIENT_ID = id.trim();
+      location.reload();
+    } else {
+      showView('lv-manual');
+    }
+    return;
+  }
+  // If configured but GSI button not showing — fallback popup
+  const w = 500, h = 600;
+  const l = window.screenLeft + (window.innerWidth - w) / 2;
+  const t = window.screenTop  + (window.innerHeight - h) / 2;
+  window.open(
+    `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CFG.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(location.href)}&response_type=token&scope=openid%20email%20profile`,
+    'google_auth',
+    `width=${w},height=${h},left=${l},top=${t}`
+  );
+}
+
+/** Called by Google Identity Services after sign-in */
+async function handleGoogleCredential(response) {
+  showLoading('กำลังยืนยันบัญชี Google...');
+  try {
+    // Decode JWT payload (client-side only for display; server validates)
+    const parts   = response.credential.split('.');
+    const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/,'/')));
+
+    const userData = {
+      email    : payload.email,
+      name     : payload.name,
+      firstName: payload.given_name  || payload.name.split(' ')[0],
+      lastName : payload.family_name || payload.name.split(' ').slice(1).join(' '),
+      picture  : payload.picture || '',
+      provider : 'google',
+      idToken  : response.credential,
+    };
+
+    await oauthLoginToSheets(userData);
+  } catch(e) {
+    showView('lv-choose');
+    toast('เข้าสู่ระบบ Google ไม่สำเร็จ: ' + e.message, 'error', 'Google Sign-In');
+  }
+}
+
+// ============================================================
+//  MICROSOFT SIGN-IN
+// ============================================================
+function initMsal() {
+  if (!window.msal) return;
+  const tenantId = CFG.MS_TENANT_ID || 'common';
+  const clientId = CFG.MS_CLIENT_ID;
+  if (!clientId) return;
+
+  try {
+    msalInstance = new msal.PublicClientApplication({
+      auth: {
+        clientId,
+        authority  : `https://login.microsoftonline.com/${tenantId}`,
+        redirectUri: window.location.href.split('?')[0],
+      },
+      cache: { cacheLocation: 'sessionStorage' },
+    });
+  } catch(e) { console.warn('MSAL init error:', e); }
+}
+
+async function msSignIn() {
+  if (!CFG.MS_CLIENT_ID) {
+    const id = prompt(
+      'กรอก Microsoft App (client) ID:\n(portal.azure.com → App registrations)\n\nหรือกด Cancel เพื่อใช้ Manual Login แทน',
+      ''
+    );
+    if (id && id.trim()) {
+      localStorage.setItem('itdesk_ms_client_id', id.trim());
+      CFG.MS_CLIENT_ID = id.trim();
+      initMsal();
+      msSignIn();
+    } else {
+      showView('lv-manual');
+    }
+    return;
+  }
+  if (!msalInstance) { initMsal(); }
+  if (!msalInstance) {
+    toast('MSAL ไม่พร้อม — ใช้ Manual Login แทน', 'warning', '');
+    showView('lv-manual');
+    return;
+  }
+
+  showLoading('กำลังเปิดหน้า Microsoft Login...');
+  try {
+    const result = await msalInstance.loginPopup({
+      scopes: ['openid', 'profile', 'email', 'User.Read'],
+    });
+    const acc = result.account;
+    const userData = {
+      email    : acc.username,
+      name     : acc.name || acc.username,
+      firstName: acc.name?.split(' ')[0]  || '',
+      lastName : acc.name?.split(' ').slice(1).join(' ') || '',
+      picture  : '',
+      provider : 'microsoft',
+    };
+    await oauthLoginToSheets(userData);
+  } catch(e) {
+    showView('lv-choose');
+    if (e.errorCode !== 'user_cancelled')
+      toast('Microsoft Login ไม่สำเร็จ: ' + (e.errorMessage || e.message), 'error', 'Microsoft');
+  }
+}
+
+// ============================================================
+//  OAUTH → SHEETS
+// ============================================================
+async function oauthLoginToSheets(userData) {
+  showLoading(`กำลังยืนยัน ${userData.provider === 'google' ? 'Google' : 'Microsoft'} Account...`);
+
+  // If no Sheets URL — use local demo mode
+  if (!CFG.SHEET_URL) {
+    const demoUser = {
+      id        : 'DEMO-001',
+      name      : userData.name,
+      firstName : userData.firstName,
+      lastName  : userData.lastName,
+      email     : userData.email,
+      role      : selectedRole === 'admin' ? 'admin' : 'req',
+      dept      : 'ทั่วไป',
+      branch    : 'สำนักงานใหญ่',
+      employeeId: '',
+      phone     : '',
+      avatar    : userData.picture || '',
+      provider  : userData.provider,
+    };
+    enterApp(demoUser, true);
+    return;
+  }
+
+  try {
+    const res = await fetch(CFG.SHEET_URL, {
+      method : 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body   : JSON.stringify({ action: 'oauthLogin', data: userData }),
+    });
+    const d = await res.json();
+    if (d.ok) {
+      // If admin portal selected, verify role
+      if (selectedRole === 'admin' && !['admin','tech','manager'].includes(d.user.role)) {
+        showView('lv-choose');
+        toast('บัญชีนี้ไม่มีสิทธิ์เข้าระบบ Admin — ติดต่อ IT Admin', 'error', 'สิทธิ์ไม่เพียงพอ');
+        return;
+      }
+      d.user.avatar = userData.picture || '';
+      enterApp(d.user, true);
+    } else {
+      showView('lv-choose');
+      toast(d.error || 'ไม่สามารถเข้าสู่ระบบได้', 'error', 'Login Error');
+    }
+  } catch(e) {
+    showView('lv-choose');
+    toast('เชื่อมต่อ Sheets ไม่ได้: ' + e.message, 'error', 'Connection Error');
+  }
+}
+
+// ============================================================
+//  MANUAL LOGIN
+// ============================================================
+async function doManualLogin() {
+  const emailVal = document.getElementById('lEmail')?.value.trim();
+  const passVal  = document.getElementById('lPass')?.value;
+  document.getElementById('lError').style.display = 'none';
+
+  if (!emailVal || !passVal) {
+    showLoginError('lError', 'กรุณากรอก Email และรหัสผ่าน');
+    return;
+  }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  showLoading('กำลังตรวจสอบ...');
+
+  try {
+    const hash = await sha256(passVal);
+
+    if (!CFG.SHEET_URL) {
+      // Demo mode
+      const demoUsers = {
+        'admin@company.co.th'    : { role:'admin',   name:'Admin User',    firstName:'Admin',  lastName:'User' },
+        'krit.s@company.co.th'   : { role:'tech',    name:'กฤต แสงทอง',    firstName:'กฤต',   lastName:'แสงทอง' },
+        'somchai.j@company.co.th': { role:'req',     name:'สมชาย ใจดี',    firstName:'สมชาย', lastName:'ใจดี' },
+        'admin': { role:'admin', name:'Admin User', firstName:'Admin', lastName:'User' },
+      };
+      const found = demoUsers[emailVal];
+      if (found) {
+        const user = { id:'DEMO-001', email:emailVal, dept:'ไอที', branch:'สำนักงานใหญ่', employeeId:'', phone:'', avatar:'', ...found };
+        if (selectedRole==='admin' && !['admin','tech','manager'].includes(user.role)) {
+          showView('lv-manual');
+          btn.disabled = false;
+          showLoginError('lError','บัญชีนี้ไม่มีสิทธิ์เข้าระบบ Admin');
+          return;
+        }
+        enterApp(user, true);
+      } else {
+        showView('lv-manual');
+        btn.disabled = false;
+        showLoginError('lError', 'ไม่พบบัญชีผู้ใช้ในโหมด Demo');
+      }
+      return;
+    }
+
+    const res = await fetch(CFG.SHEET_URL, {
+      method : 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body   : JSON.stringify({
+        action: 'manualLogin',
+        data  : { email: emailVal, passwordHash: hash, method: 'manual' },
+      }),
+    });
+    const d = await res.json();
+    if (d.ok) {
+      if (selectedRole==='admin' && !['admin','tech','manager'].includes(d.user.role)) {
+        showView('lv-manual');
+        btn.disabled = false;
+        showLoginError('lError','บัญชีนี้ไม่มีสิทธิ์เข้าระบบ Admin — ติดต่อ IT Admin');
+        return;
+      }
+      enterApp(d.user, true);
+    } else {
+      showView('lv-manual');
+      btn.disabled = false;
+      showLoginError('lError', d.error || 'อีเมล/รหัสผ่านไม่ถูกต้อง');
+    }
+  } catch(e) {
+    showView('lv-manual');
+    btn.disabled = false;
+    showLoginError('lError', 'เชื่อมต่อ Server ไม่ได้: ' + e.message);
+  }
+}
+
+// ============================================================
+//  REGISTER
+// ============================================================
+async function doRegister() {
+  const first  = document.getElementById('regFirst')?.value.trim();
+  const last   = document.getElementById('regLast')?.value.trim();
+  const email  = document.getElementById('regEmail')?.value.trim();
+  const empId  = document.getElementById('regEmpId')?.value.trim();
+  const dept   = document.getElementById('regDept')?.value;
+  const phone  = document.getElementById('regPhone')?.value.trim();
+  const pass   = document.getElementById('regPass')?.value;
+  const pass2  = document.getElementById('regPass2')?.value;
+  document.getElementById('regError').style.display='none';
+
+  if (!first || !last || !email || !pass) { showLoginError('regError','กรุณากรอกข้อมูลให้ครบ'); return; }
+  if (pass.length < 8)  { showLoginError('regError','รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร'); return; }
+  if (pass !== pass2)   { showLoginError('regError','รหัสผ่านไม่ตรงกัน'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showLoginError('regError','รูปแบบ Email ไม่ถูกต้อง'); return; }
+
+  showLoading('กำลังสร้างบัญชี...');
+  try {
+    const hash = await sha256(pass);
+    const data = { firstName:first, lastName:last, email, employeeId:empId, dept, phone,
+                   role:'req', provider:'manual', passwordHash:hash };
+
+    if (!CFG.SHEET_URL) {
+      // Demo mode
+      const user = { id:'NEW-001', name:`${first} ${last}`, firstName:first, lastName:last,
+                     email, dept, phone, role:'req', employeeId:empId, branch:'สำนักงานใหญ่', avatar:'', provider:'manual' };
+      toast('ลงทะเบียนสำเร็จ (Demo Mode)', 'success', 'ยินดีต้อนรับ');
+      enterApp(user, true);
+      return;
+    }
+
+    const res = await fetch(CFG.SHEET_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'createUser', data }),
+    });
+    const d = await res.json();
+    if (d.ok) {
+      // Auto-login after register
+      const user = { id:d.id||'NEW-001', name:`${first} ${last}`, firstName:first, lastName:last,
+                     email, dept, phone, role:'req', employeeId:empId, branch:'สำนักงานใหญ่', avatar:'', provider:'manual' };
+      toast('ลงทะเบียนสำเร็จ! ยินดีต้อนรับ', 'success', 'ยินดีต้อนรับ');
+      enterApp(user, true);
+    } else {
+      showView('lv-register');
+      showLoginError('regError', d.error || 'ลงทะเบียนไม่สำเร็จ');
+    }
+  } catch(e) {
+    showView('lv-register');
+    showLoginError('regError', 'เชื่อมต่อ Server ไม่ได้: ' + e.message);
+  }
+}
+
+// ============================================================
+//  FORGOT PASSWORD
+// ============================================================
+async function doForgotPassword() {
+  const email = document.getElementById('forgotEmail')?.value.trim();
+  if (!email) { toast('กรุณากรอก Email','error',''); return; }
+
+  const msgEl = document.getElementById('forgotMsg');
+  msgEl.style.cssText = 'display:block;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-700);padding:10px 13px;border-radius:var(--r);font-size:12.5px';
+  msgEl.textContent = 'กำลังส่ง...';
+
+  try {
+    if (!CFG.SHEET_URL) {
+      msgEl.style.cssText = 'display:block;background:var(--green-50);border:1px solid #B5E6A0;color:var(--green-700);padding:10px 13px;border-radius:var(--r);font-size:12.5px';
+      msgEl.textContent = '✅ ส่งลิงก์รีเซ็ตไปยัง ' + email + ' แล้ว (Demo Mode)';
+      return;
+    }
+    const res = await fetch(CFG.SHEET_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'resetPassword', data:{ email, appUrl: location.href.split('?')[0] } }),
+    });
+    const d = await res.json();
+    if (d.ok) {
+      msgEl.style.cssText = 'display:block;background:var(--green-50);border:1px solid #B5E6A0;color:var(--green-700);padding:10px 13px;border-radius:var(--r);font-size:12.5px';
+      msgEl.textContent = '✅ ' + d.message;
+    } else {
+      msgEl.style.cssText = 'display:block;background:var(--red-50);border:1px solid #F5B8B8;color:var(--red-700);padding:10px 13px;border-radius:var(--r);font-size:12.5px';
+      msgEl.textContent = '❌ ' + (d.error || 'ไม่สำเร็จ');
+    }
+  } catch(e) {
+    msgEl.textContent = '❌ เชื่อมต่อไม่ได้';
+  }
+}
+
+// ============================================================
+//  RESET PASSWORD
+// ============================================================
+async function doResetPassword() {
+  const p1 = document.getElementById('resetPass')?.value;
+  const p2 = document.getElementById('resetPass2')?.value;
+  if (!p1 || p1.length < 8) { toast('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร','error',''); return; }
+  if (p1 !== p2)             { toast('รหัสผ่านไม่ตรงกัน','error',''); return; }
+  if (!window._resetToken || !window._resetUid) { toast('Token ไม่ถูกต้อง','error',''); return; }
+
+  showLoading('กำลังอัปเดตรหัสผ่าน...');
+  try {
+    const hash = await sha256(p1);
+    const res = await fetch(CFG.SHEET_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'setPassword', data:{ userId: window._resetUid, hash } }),
+    });
+    const d = await res.json();
+    if (d.ok) {
+      toast('อัปเดตรหัสผ่านสำเร็จ! กรุณาเข้าสู่ระบบใหม่','success','');
+      window.history.replaceState({}, '', location.pathname);
+      showView('lv-manual');
+    } else {
+      showView('lv-reset');
+      toast('ไม่สำเร็จ','error','');
+    }
+  } catch(e) {
+    showView('lv-reset');
+    toast('เชื่อมต่อไม่ได้','error','');
+  }
+}
+
+// ============================================================
+//  ENTER APP — called after any successful login
+// ============================================================
+function enterApp(user, saveSession=true) {
+  currentUser  = user;
+  currentRole  = ['admin','tech','manager'].includes(user.role) ? 'admin' : 'user';
+
+  if (saveSession) {
+    sessionStorage.setItem('itdesk_user', JSON.stringify(user));
+    if (document.getElementById('lRemember')?.checked)
+      localStorage.setItem('itdesk_user_persist', JSON.stringify(user));
+  }
+
+  // Update header UI
+  const initials = (user.firstName?.[0]||'') + (user.lastName?.[0]||'') || user.name?.[0] || 'U';
+  const avatarBg = currentRole==='admin' ? 'var(--blue-600)' : 'var(--green-600)';
+  const avEl = document.getElementById('hdrAv');
+  if (avEl) {
+    if (user.avatar) {
+      avEl.style.background = 'transparent';
+      avEl.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+    } else {
+      avEl.style.background = avatarBg;
+      avEl.textContent = initials;
+    }
+  }
+
+  const nameEl = document.getElementById('hdrName');
+  const roleEl = document.getElementById('hdrRole');
+  if (nameEl) nameEl.textContent = user.name || user.firstName + ' ' + user.lastName;
+  if (roleEl) roleEl.textContent = {admin:'Administrator',tech:'IT Technician',manager:'IT Manager',req:'พนักงาน'}[user.role] || user.role;
+
+  // Sidebar footer
+  const sfAv = document.querySelector('.sfoot .av');
+  const sfName = document.querySelector('.sftxt strong');
+  const sfSub  = document.querySelector('.sftxt span');
+  if (sfAv)   sfAv.textContent = initials;
+  if (sfName) sfName.textContent = user.name || (user.firstName + ' ' + user.lastName);
+  if (sfSub)  sfSub.textContent = user.dept || (currentRole==='admin' ? 'IT Admin' : 'พนักงาน');
+
+  // Update profile modal
+  const profAv   = document.getElementById('profAv');
+  const profName = document.getElementById('profName');
+  const profRole = document.getElementById('profRole');
+  if (profAv)   profAv.textContent   = initials;
+  if (profName) profName.textContent = user.name || (user.firstName + ' ' + user.lastName);
+  if (profRole) profRole.textContent = {admin:'Administrator',tech:'IT Technician',manager:'IT Manager',req:'พนักงาน'}[user.role] || '';
+
+  // Provider badge
+  const provMap = { google:'🔵 Google', microsoft:'🟪 Microsoft', manual:'🔑 Manual' };
+  const provBadge = document.getElementById('profProvBadge');
+  if (provBadge) provBadge.textContent = provMap[user.provider] || '';
+
+  // Hide login, show app
+  document.getElementById('lw').classList.add('out');
+
+  // Show correct sidebar
+  const isAdmin = currentRole === 'admin';
+  document.getElementById('sidebarUser').style.display  = isAdmin ? 'none' : 'flex';
+  document.getElementById('sidebarAdmin').style.display = isAdmin ? 'flex' : 'none';
+
+  // Navigate
+  if (isAdmin) nav('dashboard'); else navU('u-home');
+
+  // Toast
+  const timeNow = new Date().getHours();
+  const greeting = timeNow < 12 ? 'อรุณสวัสดิ์' : timeNow < 17 ? 'สวัสดีตอนบ่าย' : 'สวัสดีตอนเย็น';
+  toast(`${greeting} ${user.firstName || user.name}! 👋`, 'success', 'เข้าสู่ระบบสำเร็จ');
+
+  // Load data from Sheets
+  setTimeout(() => { initAll(); loadFromSheets(); }, 300);
+}
+
+// ============================================================
+//  LOGOUT
+// ============================================================
+function logout() {
+  closeM('profileM');
+
+  // Sign out from Google
+  if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
+
+  // Sign out from Microsoft
+  if (msalInstance) {
+    try { msalInstance.logoutPopup(); } catch(e) {}
+  }
+
+  sessionStorage.removeItem('itdesk_user');
+  localStorage.removeItem('itdesk_user_persist');
+  currentUser = null;
+
+  // Show login
+  document.getElementById('lw').classList.remove('out');
+  document.getElementById('sidebarUser').style.display  = 'none';
+  document.getElementById('sidebarAdmin').style.display = 'none';
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+
+  showView('lv-choose');
+  toast('ออกจากระบบแล้ว', 'info', '');
+}
+
+// ── Override old doLogin to use new enterApp ──────────────────
+function doLogin()  { /* replaced by new auth */ }
+function doMs()     { msSignIn(); }
+
+// ── Check persistent session ──────────────────────────────────
+(function checkPersist() {
+  if (currentUser) return; // sessionStorage already handled
+  const persisted = localStorage.getItem('itdesk_user_persist');
+  if (persisted) {
+    try {
+      currentUser = JSON.parse(persisted);
+      // Will be handled in DOMContentLoaded
+    } catch(e) { localStorage.removeItem('itdesk_user_persist'); }
+  }
+})();
 </script>
 
 </body>
