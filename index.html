@@ -501,6 +501,7 @@ tbody tr.rc{cursor:pointer}
 
 /* QUICK ACTION CARDS */
 .qa-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:var(--r-lg);border:1px solid var(--b0);background:var(--s0);cursor:pointer;transition:all var(--t-base) var(--ease)}
+.qa-card.sel{border-color:var(--blue-600);border-width:2px;background:var(--blue-50);box-shadow:0 0 0 3px rgba(24,96,196,.12)}
 .qa-card:hover{box-shadow:var(--sh-md);transform:translateY(-3px);border-color:var(--b1)}
 .qa-ic{width:44px;height:44px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:22px}
 .qa-title{font-size:13.5px;font-weight:700}
@@ -757,10 +758,10 @@ tbody tr.rc{cursor:pointer}
   <div class="nsec">
     <div class="ni on" data-p="u-home" onclick="navU('u-home',this)"><i class="ti ti-home"></i><span class="ntxt">หน้าแรก</span></div>
     <div class="ni" data-p="u-create" onclick="navU('u-create',this)"><i class="ti ti-circle-plus"></i><span class="ntxt">แจ้งปัญหาใหม่</span></div>
-    <div class="ni" data-p="u-mytickets" onclick="navU('u-mytickets',this)"><i class="ti ti-list-details"></i><span class="ntxt">Ticket ของฉัน</span><span class="nbdg">5</span></div>
+    <div class="ni" data-p="u-mytickets" onclick="navU('u-mytickets',this)"><i class="ti ti-list-details"></i><span class="ntxt">Ticket ของฉัน</span><span class="nbdg nbadge" id="myTicketsBadge" style="display:none">0</span></div>
     <div class="ni" data-p="u-detail" onclick="navU('u-detail',this)"><i class="ti ti-file-description"></i><span class="ntxt">รายละเอียด Ticket</span></div>
     <div class="ni" data-p="u-kb" onclick="navU('u-kb',this)"><i class="ti ti-book-2"></i><span class="ntxt">คลังความรู้</span></div>
-    <div class="ni" data-p="u-notif" onclick="navU('u-notif',this)"><i class="ti ti-bell"></i><span class="ntxt">การแจ้งเตือน</span><span class="nbdg">3</span></div>
+    <div class="ni" data-p="u-notif" onclick="navU('u-notif',this)"><i class="ti ti-bell"></i><span class="ntxt">การแจ้งเตือน</span><span class="nbdg nbadge" id="uNotifBadge" style="display:none">0</span></div>
   </div>
   <div class="sp"></div>
   <div class="sb-promo">
@@ -780,7 +781,7 @@ tbody tr.rc{cursor:pointer}
   <div class="nsec">
     <div class="ni on" data-p="dashboard" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard"></i><span class="ntxt">Dashboard</span></div>
     <div class="ni" data-p="create" onclick="nav('create',this)"><i class="ti ti-plus"></i><span class="ntxt">สร้าง Ticket</span></div>
-    <div class="ni" data-p="tickets" onclick="nav('tickets',this)"><i class="ti ti-list-details"></i><span class="ntxt">Ticket ทั้งหมด</span><span class="nbdg">24</span></div>
+    <div class="ni" data-p="tickets" onclick="nav('tickets',this)"><i class="ti ti-list-details"></i><span class="ntxt">Ticket ทั้งหมด</span><span class="nbdg nbadge" id="allTicketsBadge" style="display:none">0</span></div>
     <div class="ni" data-p="assigned" onclick="nav('assigned',this)"><i class="ti ti-clipboard-check"></i><span class="ntxt">งานที่ได้รับ</span></div>
     <div class="ni" data-p="detail" onclick="nav('detail',this)"><i class="ti ti-file-description"></i><span class="ntxt">รายละเอียด Ticket</span></div>
   </div>
@@ -788,12 +789,12 @@ tbody tr.rc{cursor:pointer}
     <div class="nlbl">สินทรัพย์ & เอกสาร</div>
     <div class="ni" data-p="assets" onclick="nav('assets',this)"><i class="ti ti-device-laptop"></i><span class="ntxt">สินทรัพย์ (CMDB)</span></div>
     <div class="ni" data-p="assetdetail" onclick="nav('assetdetail',this)"><i class="ti ti-clipboard-list"></i><span class="ntxt">รายละเอียดสินทรัพย์</span></div>
-    <div class="ni" data-p="documents" onclick="nav('documents',this)"><i class="ti ti-folder"></i><span class="ntxt">คลังเอกสาร</span><span class="nbdg">12</span></div>
+    <div class="ni" data-p="documents" onclick="nav('documents',this)"><i class="ti ti-folder"></i><span class="ntxt">คลังเอกสาร</span><span class="nbdg nbadge" id="docsBadge" style="display:none">0</span></div>
     <div class="ni" data-p="kb" onclick="nav('kb',this)"><i class="ti ti-book-2"></i><span class="ntxt">Knowledge Base</span></div>
   </div>
   <div class="nsec">
     <div class="nlbl">บริหารจัดการ</div>
-    <div class="ni" data-p="approval" onclick="nav('approval',this)"><i class="ti ti-check"></i><span class="ntxt">ระบบอนุมัติ</span><span class="nbdg">3</span></div>
+    <div class="ni" data-p="approval" onclick="nav('approval',this)"><i class="ti ti-check"></i><span class="ntxt">ระบบอนุมัติ</span><span class="nbdg nbadge" id="approvalBadge" style="display:none">0</span></div>
     <div class="ni" data-p="sla" onclick="nav('sla',this)"><i class="ti ti-alarm"></i><span class="ntxt">SLA Management</span></div>
     <div class="ni" data-p="reports" onclick="nav('reports',this)"><i class="ti ti-chart-bar"></i><span class="ntxt">รายงาน</span></div>
     <div class="ni" data-p="exec" onclick="nav('exec',this)"><i class="ti ti-chart-dots"></i><span class="ntxt">Executive Dashboard</span></div>
@@ -802,7 +803,7 @@ tbody tr.rc{cursor:pointer}
     <div class="nlbl">ระบบ</div>
     <div class="ni" data-p="users" onclick="nav('users',this)"><i class="ti ti-users"></i><span class="ntxt">ผู้ใช้งาน</span></div>
     <div class="ni" data-p="categories" onclick="nav('categories',this)"><i class="ti ti-category"></i><span class="ntxt">หมวดหมู่</span></div>
-    <div class="ni" data-p="notif" onclick="nav('notif',this)"><i class="ti ti-bell"></i><span class="ntxt">การแจ้งเตือน</span><span class="nbdg">5</span></div>
+    <div class="ni" data-p="notif" onclick="nav('notif',this)"><i class="ti ti-bell"></i><span class="ntxt">การแจ้งเตือน</span><span class="nbdg nbadge" id="adminNotifBadge" style="display:none">0</span></div>
     <div class="ni" data-p="audit" onclick="nav('audit',this)"><i class="ti ti-history"></i><span class="ntxt">Audit Logs</span></div>
     <div class="ni" data-p="settings" onclick="nav('settings',this)"><i class="ti ti-settings"></i><span class="ntxt">ตั้งค่า</span></div>
   </div>
@@ -936,10 +937,10 @@ tbody tr.rc{cursor:pointer}
       <div class="card">
         <div class="ctit mb14"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div>
         <div class="dfc g10" style="font-size:13px">
-          <div class="df ic g10"><div class="av av-sm" style="background:var(--green-600)">สจ</div><div><div class="w7" id="sfName2">—</div><div class="xs mu">EMP-00412</div></div></div>
-          <div class="inr"><i class="ti ti-building"></i>แผนกการเงิน · สำนักงานใหญ่</div>
-          <div class="inr"><i class="ti ti-mail"></i>somchai.j@company.co.th</div>
-          <div class="inr"><i class="ti ti-phone"></i>081-234-5678</div>
+          <div class="df ic g10"><div class="av av-sm" style="background:var(--green-600)" id="uCreateReqAv2">—</div><div><div class="w7" id="uCreateReqName2">—</div><div class="xs mu" id="uCreateReqEmpId">—</div></div></div>
+          <div class="inr"><i class="ti ti-building"></i><span id="uCreateReqDeptBranch">—</span></div>
+          <div class="inr"><i class="ti ti-mail"></i><span id="uCreateReqEmail">—</span></div>
+          <div class="inr"><i class="ti ti-phone"></i><span id="uCreateReqPhone">—</span></div>
         </div>
         <div class="xs mu mt10">ข้อมูลนี้ดึงจากระบบอัตโนมัติ หากไม่ถูกต้องโปรดติดต่อ HR</div>
       </div>
@@ -1102,7 +1103,7 @@ tbody tr.rc{cursor:pointer}
   <div class="card csm mb16"><div class="slbl_ mb8">Workflow</div><div class="sf_"><div class="sfn cur">Draft</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">New</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Open</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Assigned</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">In Progress</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Testing</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Resolved</div><i class="ti ti-arrow-right sfarr"></i><div class="sfn">Closed</div></div></div>
   <div class="gr21">
     <div>
-      <div class="card mb16"><div class="ctit mb16"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div><div class="fg f2"><div class="fgg"><label class="flbl">ชื่อ-นามสกุล <span class="req">*</span></label><input class="finp" id="profFullName" placeholder="ชื่อ-นามสกุล"></div><div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" value="EMP-00412"></div><div class="fgg"><label class="flbl">อีเมล <span class="req">*</span></label><input class="finp" type="email" value="somchai.j@company.co.th"></div><div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-234-5678"></div><div class="fgg"><label class="flbl">แผนก <span class="req">*</span></label><select class="fsel"><option>การเงิน</option><option>HR</option><option>ไอที</option><option>ปฏิบัติการ</option><option>การขาย</option><option>การตลาด</option></select></div><div class="fgg"><label class="flbl">สาขา</label><select class="fsel"><option>สำนักงานใหญ่</option></select></div></div></div>
+      <div class="card mb16"><div class="ctit mb16"><i class="ti ti-user"></i>ข้อมูลผู้แจ้ง</div><div class="fg f2"><div class="fgg"><label class="flbl">ชื่อ-นามสกุล <span class="req">*</span></label><input class="finp" id="profFullName" placeholder="ชื่อ-นามสกุล"></div><div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" id="profEmpId" value=""></div><div class="fgg"><label class="flbl">อีเมล <span class="req">*</span></label><input class="finp" id="profEmail" type="email" value=""></div><div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" id="profPhone" value=""></div><div class="fgg"><label class="flbl">แผนก <span class="req">*</span></label><select class="fsel"><option>การเงิน</option><option>HR</option><option>ไอที</option><option>ปฏิบัติการ</option><option>การขาย</option><option>การตลาด</option></select></div><div class="fgg"><label class="flbl">สาขา</label><select class="fsel"><option>สำนักงานใหญ่</option></select></div></div></div>
       <div class="card mb16"><div class="ctit mb16"><i class="ti ti-ticket"></i>รายละเอียด Ticket</div><div class="fg f2 mb16"><div class="fgg"><label class="flbl">หมวดหมู่ <span class="req">*</span></label><select class="fsel" id="catSel" onchange="updSub()"><option value="">เลือก...</option><option>Microsoft Office</option><option>Microsoft Teams</option><option>Network / VPN</option><option>เครื่องพิมพ์</option><option>Active Directory</option><option>Hardware</option><option>Application</option><option>Security</option><option>อื่นๆ</option></select></div><div class="fgg"><label class="flbl">หมวดหมู่ย่อย</label><select class="fsel" id="subSel"><option>เลือก...</option></select></div></div><div class="fgg mb16"><label class="flbl">หัวข้อ <span class="req">*</span></label><input class="finp" placeholder="อธิบายปัญหาโดยย่อ..."></div><div class="fgg mb16"><label class="flbl">รายละเอียด <span class="req">*</span></label><textarea class="fta" style="min-height:110px" placeholder="อธิบายปัญหาอย่างละเอียด..."></textarea></div><div class="fg f3"><div class="fgg"><label class="flbl">Priority <span class="req">*</span></label><select class="fsel"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div><div class="fgg"><label class="flbl">Impact</label><select class="fsel"><option>ผู้ใช้คนเดียว</option><option>ทั้งแผนก</option><option>ทั้งบริษัท</option></select></div><div class="fgg"><label class="flbl">Urgency</label><select class="fsel"><option>ต่ำ</option><option selected>ปานกลาง</option><option>สูง</option></select></div></div></div>
       <div class="card"><div class="ctit mb14"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div class="upz" onclick="toast('เปิด File Browser','info','')" ondragover="this.classList.add('drg');event.preventDefault()" ondragleave="this.classList.remove('drg')" ondrop="this.classList.remove('drg');event.preventDefault()"><i class="ti ti-cloud-upload"></i><div style="font-size:14px;font-weight:600;margin-bottom:6px">ลากไฟล์หรือ <span style="color:var(--blue-600)">คลิกเลือก</span></div><div class="xs mu">PDF, DOCX, XLSX, ZIP, PNG, JPEG · สูงสุด 50MB</div></div></div>
     </div>
@@ -1169,7 +1170,7 @@ tbody tr.rc{cursor:pointer}
       <div class="card"><div class="ctit mb16"><i class="ti ti-timeline"></i>Timeline</div><div class="tl" id="dTl"></div></div>
     </div>
     <div class="dfc g16">
-      <div class="card"><div class="ctit mb12"><i class="ti ti-user"></i>ผู้แจ้ง</div><div class="df ic g12 mb12"><div class="av av-md" style="background:var(--green-600)" id="tkReqAv">—</div><div><div class="w7" id="tkReqName">ผู้แจ้ง</div><div class="xs mu" id="tkReqDept">—</div></div></div><div class="dfc g4px"><div class="inr"><i class="ti ti-mail"></i>somchai.j@company.co.th</div><div class="inr"><i class="ti ti-phone"></i>081-234-5678</div></div></div>
+      <div class="card"><div class="ctit mb12"><i class="ti ti-user"></i>ผู้แจ้ง</div><div class="df ic g12 mb12"><div class="av av-md" style="background:var(--green-600)" id="tkReqAv">—</div><div><div class="w7" id="tkReqName">ผู้แจ้ง</div><div class="xs mu" id="tkReqDept">—</div></div></div><div class="dfc g4px"><div class="inr"><i class="ti ti-mail"></i><span id="tkReqEmail">—</span></div><div class="inr"><i class="ti ti-phone"></i><span id="tkReqPhone">—</span></div></div></div>
       <div class="card"><div class="ctit mb12"><i class="ti ti-device-laptop"></i>สินทรัพย์</div><div class="dfc g4px xs"><div><strong id="asDetailCode">—</strong></div><div class="mu" id="asDetailName">—</div><div class="mu">Win 11 · 16GB · 512GB</div><span class="badge bact mt6">ใช้งานปกติ</span></div></div>
       <div class="card"><div class="ctit mb10"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div class="ach mb6" onclick="toast('ดาวน์โหลด...','info','')"><i class="ti ti-file-type-png" style="font-size:22px;color:var(--blue-600)"></i><div style="flex:1;min-width:0"><div class="xs w6 tr">screenshot_vpn.png</div><div class="xs mu">248 KB</div></div><i class="ti ti-download" style="color:var(--t2)"></i></div></div>
       <div class="card"><div class="ctit mb10"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb10"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="tkAssignSel" onchange="toast('มอบหมาย: '+this.value,'success','')"><option value="">— เลือกช่าง —</option></select></div><button class="btn dan cw" style="justify-content:center" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate ไปยัง IT Manager</button></div>
@@ -1569,7 +1570,7 @@ tbody tr.rc{cursor:pointer}
 
 <div class="mov" id="profileM" onclick="if(event.target===this)closeM('profileM')">
   <div class="mdl msm"><div class="mhdr"><h3>โปรไฟล์</h3><button class="mcl" onclick="closeM('profileM')"><i class="ti ti-x"></i></button></div>
-  <div class="mbdy"><div class="df ic g14 mb16"><div class="av av-xl" id="profAv" style="background:var(--blue-600)">AU</div><div><div style="font-size:18px;font-weight:800" id="profName">Admin User</div><div class="xs mu mt4" id="profRole">Administrator · ไอที</div><span class="xs mu" id="profProvBadge"></span></div></div><div class="fgg mb10"><label class="flbl">อีเมล</label><input class="finp" value="admin@company.co.th"></div><div class="fgg mb10"><label class="flbl">เบอร์โทร</label><input class="finp" value="081-000-0000"></div><div class="fgg mb10"><label class="flbl">รหัสผ่านใหม่</label><input class="finp" type="password" placeholder="รหัสผ่านใหม่..."></div><div class="fgg"><label class="flbl">ยืนยันรหัสผ่าน</label><input class="finp" type="password" placeholder="ยืนยัน..."></div></div>
+  <div class="mbdy"><div class="df ic g14 mb16"><div class="av av-xl" id="profAv" style="background:var(--blue-600)">AU</div><div><div style="font-size:18px;font-weight:800" id="profName">Admin User</div><div class="xs mu mt4" id="profRole">Administrator · ไอที</div><span class="xs mu" id="profProvBadge"></span></div></div><div class="fgg mb10"><label class="flbl">อีเมล</label><input class="finp" id="profModalEmail" value=""></div><div class="fgg mb10"><label class="flbl">เบอร์โทร</label><input class="finp" id="profModalPhone" value=""></div><div class="fgg mb10"><label class="flbl">รหัสผ่านใหม่</label><input class="finp" type="password" placeholder="รหัสผ่านใหม่..."></div><div class="fgg"><label class="flbl">ยืนยันรหัสผ่าน</label><input class="finp" type="password" placeholder="ยืนยัน..."></div></div>
   <div class="mftr"><button class="btn dan" onclick="logout()"><i class="ti ti-logout"></i>ออกจากระบบ</button><button class="btn pri" onclick="closeM('profileM');toast('บันทึกโปรไฟล์','success','')"><i class="ti ti-check"></i>บันทึก</button></div></div>
 </div>
 
@@ -1621,6 +1622,123 @@ function setSyncStatus(state) {
 }
 
 // ── Load ALL data from Sheets into DB ─────────────────────────
+
+// ============================================================
+//  DATA NORMALIZATION — Sheets uses full field names (subject,
+//  category, priority, slaPercent...) but the UI render layer
+//  expects short aliases (sub, cat, pri, sla...). Normalize once
+//  at the point data enters DB so every render fn works correctly.
+// ============================================================
+
+// ============================================================
+//  DYNAMIC DASHBOARD DATA — derived entirely from DB (real data)
+// ============================================================
+function getSlaWarnings() {
+  return DB.tickets
+    .filter(t => !['resolved','closed'].includes(t.status))
+    .map(t => ({
+      id : t.id, sub: t.sub || '',
+      pct: Number(t.sla ?? 100),
+      col: Number(t.sla ?? 100) < 25 ? 'var(--red-600)' : 'var(--amber-600)',
+      time: '—',
+    }))
+    .sort((a,b) => a.pct - b.pct)
+    .slice(0, 5);
+}
+
+function getTechLoad() {
+  const techs = DB.users.filter(u => u.role === 'tech');
+  return techs.map(u => {
+    const fullName = `${u.firstName||''} ${u.lastName||''}`.trim();
+    const openCount = DB.tickets.filter(t => t.tech===fullName && !['resolved','closed'].includes(t.status)).length;
+    return {
+      name: fullName || u.email || 'ไม่ระบุชื่อ',
+      init: ((u.firstName||'?')[0] + (u.lastName||'?')[0]).toUpperCase(),
+      bg  : '#1A6FC4',
+      load: openCount, max: 12,
+      tickets: Number(u.ticketCount || 0),
+      sla : 92, avg: '—',
+    };
+  });
+}
+
+function getActivities() {
+  return DB.tickets.slice(0, 5).map(t => ({
+    ic:'ti-ticket', bg:'var(--blue-50)', col:'var(--blue-600)',
+    txt: `${t.id}: ${(t.sub||'').substring(0,40)}`,
+    time: t.cr || '—',
+  }));
+}
+
+function getFreqIssues() {
+  const counts = {};
+  DB.tickets.forEach(t => {
+    const k = t.cat || 'อื่นๆ';
+    counts[k] = (counts[k]||0) + 1;
+  });
+  const max = Math.max(...Object.values(counts), 1);
+  return Object.entries(counts)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0, 10)
+    .map(([n,c]) => ({ n, c, p: Math.round(c/max*100) }));
+}
+
+function getNotifications() {
+  const live = (window._liveNotifs || []);
+  const slaWarn = DB.tickets
+    .filter(t => Number(t.sla ?? 100) < 25 && !['resolved','closed'].includes(t.status))
+    .slice(0, 3)
+    .map(t => ({
+      ic:'ti-alert-triangle', bg:'var(--red-50)', col:'var(--red-600)',
+      title:'SLA Warning', desc:`${t.id} — ${(t.sub||'').substring(0,50)}`,
+      time:'ตอนนี้', unread:true,
+    }));
+  const recent = DB.tickets.slice(0, 3).map(t => ({
+    ic:'ti-ticket', bg:'var(--blue-50)', col:'var(--blue-600)',
+    title:'Ticket', desc:`${t.id} — ${(t.sub||'').substring(0,50)}`,
+    time: t.cr || '—', unread:false,
+  }));
+  return [...live, ...slaWarn, ...recent].slice(0, 10);
+}
+
+function normalizeTicket(t) {
+  return {
+    ...t,
+    id     : t.id,
+    sub    : t.sub    ?? t.subject ?? '',
+    req    : t.req    ?? t.requester ?? '',
+    dept   : t.dept   ?? '',
+    cat    : t.cat    ?? t.category ?? 'อื่นๆ',
+    pri    : t.pri    ?? t.priority ?? 'medium',
+    status : t.status ?? 'new',
+    tech   : t.tech   ?? t.technicianName ?? '—',
+    sla    : t.sla    ?? Number(t.slaPercent ?? 100),
+    cr     : t.cr     ?? (t.createdAt ? new Date(t.createdAt).toLocaleString('th-TH') : ''),
+  };
+}
+function normalizeAsset(a) {
+  return {
+    ...a,
+    code    : a.code,
+    name    : a.name ?? '',
+    type    : a.type ?? 'notebook',
+    brand   : a.brand ?? '',
+    user    : a.user ?? a.userName ?? '',
+    status  : a.status ?? 'active',
+    warranty: a.warranty ?? a.warrantyExpiry ?? '',
+    tickets : a.tickets ?? 0,
+    location: a.location ?? '',
+  };
+}
+function normalizeDoc(d) {
+  return {
+    ...d,
+    type  : d.type  ?? d.docType ?? 'other',
+    date  : d.date  ?? d.docDate ?? '',
+    amount: d.amount ?? '—',
+  };
+}
+
 async function loadFromSheets() {
   if (!useSheets) { loadFromLocal(); setSyncStatus('offline'); return; }
   setSyncStatus('syncing');
@@ -1632,9 +1750,9 @@ async function loadFromSheets() {
       sheetGET('getUsers'),
       sheetGET('getStats'),
     ]);
-    if (tkRes?.ok) DB.tickets   = tkRes.data;
-    if (asRes?.ok) DB.assets    = asRes.data;
-    if (doRes?.ok) DB.documents = doRes.data;
+    if (tkRes?.ok) DB.tickets   = tkRes.data.map(normalizeTicket);
+    if (asRes?.ok) DB.assets    = asRes.data.map(normalizeAsset);
+    if (doRes?.ok) DB.documents = doRes.data.map(normalizeDoc);
     if (usRes?.ok) DB.users     = usRes.data;
     if (stRes?.ok) DB.stats     = stRes.data;
     saveToLocal();
@@ -1653,24 +1771,66 @@ async function loadFromSheets() {
 
 // ── CREATE ────────────────────────────────────────────────────
 async function apiCreateTicket(data) {
-  // Optimistic update
+  // Optimistic update — normalize immediately so it renders correctly
   const tmpId = '#TK-' + Date.now();
   const now   = new Date().toLocaleString('th-TH');
-  DB.tickets.unshift({ id:tmpId, ...data, status:'new', sla:100, cr:now });
-  scheduleSync();
+  DB.tickets.unshift(normalizeTicket({ id:tmpId, ...data, status:'new', sla:100, cr:now }));
+  saveToLocal(); scheduleSync();
+
+  // Fire a notification immediately (works even offline / demo mode)
+  pushNotification({
+    ic:'ti-ticket', bg:'var(--blue-50)', col:'var(--blue-600)',
+    title:'ส่ง Ticket สำเร็จ', desc:`${tmpId} — ${data.subject}`,
+    time:'ตอนนี้', unread:true,
+  });
+
   if (!useSheets) return { ok:true, id:tmpId };
   setSyncStatus('syncing');
   try {
     const res = await sheetPOST('createTicket', data);
     if (res?.ok) {
-      // Replace tmp entry with real ID
-      DB.tickets = DB.tickets.map(t => t.id===tmpId ? {...t, id:res.id} : t);
+      // Replace tmp entry with real ID + real normalized data from Sheets
+      DB.tickets = DB.tickets.map(t => t.id===tmpId ? normalizeTicket({...t, ...(res.data||{}), id:res.id}) : t);
       saveToLocal();
       setSyncStatus('ok');
       return res;
     }
+    setSyncStatus('error');
   } catch(e) { setSyncStatus('error'); }
   return { ok:true, id:tmpId };
+}
+
+// ── Simple in-memory + persisted notification feed ─────────────
+function pushNotification(n) {
+  window._liveNotifs = window._liveNotifs || [];
+  window._liveNotifs.unshift({ ...n, id: 'N'+Date.now() });
+  window._liveNotifs = window._liveNotifs.slice(0, 30);
+  try { localStorage.setItem('itdesk_notifs', JSON.stringify(window._liveNotifs)); } catch(e){}
+  updateNotifBadge();
+}
+function updateNotifBadge() {
+  const notifs = window._liveNotifs || [];
+  const unread = notifs.filter(n=>n.unread).length;
+  document.querySelectorAll('.ndot, #ndotEl').forEach(el=>{
+    el.style.display = unread>0 ? 'block' : 'none';
+  });
+
+  // Bell icon badges (notification dropdown counts)
+  const setBadge = (id, count) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = count;
+    el.style.display = count > 0 ? '' : 'none';
+  };
+
+  setBadge('uNotifBadge',     unread);
+  setBadge('adminNotifBadge', unread);
+
+  // Sidebar counts — derived from real DB data
+  setBadge('allTicketsBadge', DB.tickets.length);
+  setBadge('myTicketsBadge',  DB.tickets.filter(t => t.email === currentUser?.email).length);
+  setBadge('docsBadge',       DB.documents.length);
+  setBadge('approvalBadge',   DB.tickets.filter(t => t.status === 'waiting').length);
 }
 async function apiCreateAsset(data) {
   DB.assets.push({ ...data, status: data.status||'active' });
@@ -2070,19 +2230,60 @@ function setupUrgencyEta(){
   };
 }
 async function submitUserTicket(){
-  const subj = document.querySelector('#pg-u-create .finp[placeholder*="ปัญหา"]')?.value || 'ปัญหาจากผู้ใช้';
+  // Correct selectors matching the actual HTML in #pg-u-create
+  const subjInput = document.querySelector('#pg-u-create input.finp[placeholder*="คอมพิวเตอร์เปิดไม่ติด"]');
+  const descInput = document.querySelector('#pg-u-create textarea.fta');
+  const subj = subjInput?.value?.trim() || '';
+  const desc = descInput?.value?.trim() || '';
   const urg  = document.getElementById('uUrgSel')?.value || 'medium';
+
+  // Validation
+  if (!subj) {
+    toast('กรุณากรอกหัวข้อปัญหา','error','ข้อมูลไม่ครบ');
+    subjInput?.focus();
+    return;
+  }
+  if (!desc) {
+    toast('กรุณาอธิบายปัญหาโดยละเอียด','error','ข้อมูลไม่ครบ');
+    descInput?.focus();
+    return;
+  }
+  if (!selectedTicketCategory) {
+    toast('กรุณาเลือกประเภทปัญหาที่พบ','error','ข้อมูลไม่ครบ');
+    document.getElementById('uCatGrid')?.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
   const data = {
     subject: subj,
-    requester: (currentUser?.firstName||'') + ' ' + (currentUser?.lastName||''),
+    requester: currentUser ? `${currentUser.firstName||''} ${currentUser.lastName||''}`.trim() : '',
     email: currentUser?.email || '',
-    dept: currentUser?.dept || '', branch: currentUser?.branch || '', category:'อื่นๆ', subcategory:'',
-    priority: urg, impact:'ผู้ใช้คนเดียว', urgency: urg, description: subj, tags:''
+    dept: currentUser?.dept || '', branch: currentUser?.branch || 'สำนักงานใหญ่',
+    category: selectedTicketCategory.cat, subcategory: selectedTicketCategory.sub,
+    priority: urg, impact: urg==='critical'?'ทั้งองค์กร':urg==='high'?'ทั้งแผนก':'ผู้ใช้คนเดียว',
+    urgency: urg, description: desc, tags: selectedTicketCategory.n,
   };
+
+  const btn = document.querySelector('#pg-u-create button.pri.lg');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> กำลังส่ง...'; }
+
   toast('กำลังส่งเรื่อง...','info','');
-  const res = await apiCreateTicket(data);
-  toast(`ส่งเรื่องสำเร็จ! หมายเลข ${res.id}`,'success','แจ้งปัญหาแล้ว');
-  setTimeout(()=>{ navU('u-mytickets'); renderUTickets(); }, 800);
+  try {
+    const res = await apiCreateTicket(data);
+    toast(`ส่งเรื่องสำเร็จ! หมายเลข ${res.id}`,'success','แจ้งปัญหาแล้ว');
+
+    // Reset form
+    if (subjInput) subjInput.value = '';
+    if (descInput) descInput.value = '';
+    selectedTicketCategory = null;
+    document.querySelectorAll('#uCatGrid .qa-card').forEach(el=>el.classList.remove('sel'));
+
+    setTimeout(()=>{ navU('u-mytickets'); renderUTickets(); }, 800);
+  } catch(e) {
+    toast('ส่งเรื่องไม่สำเร็จ: ' + e.message, 'error', 'เกิดข้อผิดพลาด');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i>ส่งเรื่องแจ้งปัญหา'; }
+  }
 }
 
 // ============================================================
@@ -2435,7 +2636,7 @@ function renderUHome(){
       <div class="uticket-meta"><span><i class="ti ti-calendar"></i>${t.cr}</span><span><i class="ti ti-category"></i>${t.cat}</span><span style="color:${slaTC(t.sla)};font-weight:700"><i class="ti ti-clock"></i>SLA ${t.sla}%</span></div>
     </div>`).join('');
   const fi=document.getElementById('uFreqIssues');
-  if(fi) fi.innerHTML=U_getFreqIssues().map(f=>`<div class="df ic g8 p8 mb6" style="background:var(--s1);border-radius:var(--r);cursor:pointer" onclick="navU('u-create')"><i class="ti ti-arrow-right-circle" style="color:var(--blue-600);flex-shrink:0"></i><span class="sm">${f}</span></div>`).join('');
+  if(fi) fi.innerHTML=getFreqIssues().slice(0,5).map(f=>`<div class="df ic g8 p8 mb6" style="background:var(--s1);border-radius:var(--r);cursor:pointer" onclick="navU('u-create')"><i class="ti ti-arrow-right-circle" style="color:var(--blue-600);flex-shrink:0"></i><span class="sm">${f.n}</span></div>`).join('') || '<div class="xs mu">ยังไม่มีข้อมูล</div>';
 }
 function renderUTickets(filter='all'){
   const el=document.getElementById('uTicketList');
@@ -2455,16 +2656,33 @@ function renderUDetail(){
   if(!el) return;
   el.innerHTML=TL_ITEMS.map(x=>`<div class="tli"><div class="tleft"><div class="tldot ${x.dot}"></div><div class="tlln"></div></div><div class="tlb"><div class="tlt">${x.t}</div><div class="tlts">${x.time}</div>${x.sub?`<div class="tlsb">${x.sub}</div>`:''}</div></div>`).join('');
 }
-const U_CAT_ICONS=[];
+const U_CAT_ICONS=[
+  {ic:'ti-mail',bg:'var(--blue-50)',col:'var(--blue-600)',n:'อีเมล & Outlook',eg:'เข้าไม่ได้ ส่งไม่ออก',cat:'Microsoft Office',sub:'Outlook'},
+  {ic:'ti-wifi',bg:'var(--green-50)',col:'var(--green-600)',n:'เครือข่าย & VPN',eg:'WiFi หลุด ต่อ VPN ไม่ได้',cat:'Network / VPN',sub:'WiFi'},
+  {ic:'ti-brand-teams',bg:'var(--purple-50)',col:'var(--purple-600)',n:'Microsoft Teams',eg:'Meeting ไม่ได้ยิน ค้าง',cat:'Microsoft Teams',sub:'Meeting'},
+  {ic:'ti-device-laptop',bg:'var(--amber-50)',col:'var(--amber-600)',n:'คอมพิวเตอร์',eg:'เปิดไม่ติด ช้า จอดับ',cat:'Hardware',sub:'Notebook'},
+  {ic:'ti-printer',bg:'var(--teal-50)',col:'var(--teal-600)',n:'เครื่องพิมพ์',eg:'พิมพ์ไม่ออก กระดาษติด',cat:'เครื่องพิมพ์',sub:'Driver'},
+  {ic:'ti-lock',bg:'var(--red-50)',col:'var(--red-600)',n:'รหัสผ่าน & สิทธิ์',eg:'ลืมรหัส บัญชีถูกล็อก',cat:'Active Directory',sub:'รีเซ็ตรหัสผ่าน'},
+  {ic:'ti-apps',bg:'var(--s2)',col:'var(--t2)',n:'ซอฟต์แวร์',eg:'เปิดโปรแกรมไม่ได้ Error',cat:'Application',sub:'Error'},
+  {ic:'ti-help',bg:'var(--s2)',col:'var(--t2)',n:'อื่นๆ',eg:'ปัญหาที่ไม่อยู่ในหมวดข้างต้น',cat:'อื่นๆ',sub:'อื่นๆ'},
+];
+let selectedTicketCategory = null;
 function renderUCatGrid(){
   const el=document.getElementById('uCatGrid');
   if(!el) return;
-  el.innerHTML=U_CAT_ICONS.map(c=>`
-    <div class="qa-card" onclick="toast('เลือก: ${c.n}','info','')">
+  el.innerHTML=U_CAT_ICONS.map((c,i)=>`
+    <div class="qa-card" id="qaCard${i}" onclick="selectTicketCategory(${i})">
       <div class="qa-ic" style="background:${c.bg}"><i class="ti ${c.ic}" style="color:${c.col}"></i></div>
       <div class="qa-title">${c.n}</div>
       <div class="qa-desc">${c.eg}</div>
     </div>`).join('');
+}
+function selectTicketCategory(i){
+  selectedTicketCategory = U_CAT_ICONS[i];
+  document.querySelectorAll('#uCatGrid .qa-card').forEach((el,idx)=>{
+    el.classList.toggle('sel', idx===i);
+  });
+  toast('เลือกหมวดหมู่: '+selectedTicketCategory.n,'info','');
 }
 function renderUKB(){
   const el=document.getElementById('uKbCats');
@@ -3575,6 +3793,42 @@ function populateDynamicDropdowns() {
     if (uReqAv)   uReqAv.textContent   = initials || '—';
     if (uReqName) uReqName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
     if (uReqDept) uReqDept.textContent = `${currentUser.dept||''} · ${currentUser.employeeId||currentUser.email||''}`;
+
+    // Create-ticket sidebar card (2nd set of ids)
+    const uReqAv2   = document.getElementById('uCreateReqAv2');
+    const uReqName2 = document.getElementById('uCreateReqName2');
+    const uReqEmpId = document.getElementById('uCreateReqEmpId');
+    const uReqDeptBranch = document.getElementById('uCreateReqDeptBranch');
+    const uReqEmail = document.getElementById('uCreateReqEmail');
+    const uReqPhone = document.getElementById('uCreateReqPhone');
+    if (uReqAv2)   uReqAv2.textContent   = initials || '—';
+    if (uReqName2) uReqName2.textContent = `${currentUser.firstName||''} ${currentUser.lastName||''}`.trim() || '—';
+    if (uReqEmpId) uReqEmpId.textContent = currentUser.employeeId || '—';
+    if (uReqDeptBranch) uReqDeptBranch.textContent = `${currentUser.dept||'—'} · ${currentUser.branch||'สำนักงานใหญ่'}`;
+    if (uReqEmail) uReqEmail.textContent = currentUser.email || '—';
+    if (uReqPhone) uReqPhone.textContent = currentUser.phone || '—';
+
+    // Profile modal (popup) — email/phone fields
+    const profModalEmail = document.getElementById('profModalEmail');
+    const profModalPhone = document.getElementById('profModalPhone');
+    if (profModalEmail) profModalEmail.value = currentUser.email || '';
+    if (profModalPhone) profModalPhone.value = currentUser.phone || '';
+
+    // Settings-page full profile form
+    const profEmpId = document.getElementById('profEmpId');
+    const profEmail = document.getElementById('profEmail');
+    const profPhone = document.getElementById('profPhone');
+    const profFullName = document.getElementById('profFullName');
+    if (profEmpId) profEmpId.value = currentUser.employeeId || '';
+    if (profEmail) profEmail.value = currentUser.email || '';
+    if (profPhone) profPhone.value = currentUser.phone || '';
+    if (profFullName) profFullName.value = `${currentUser.firstName||''} ${currentUser.lastName||''}`.trim();
+
+    // Ticket-detail requester card (uses currentUser as viewer context fallback)
+    const tkReqEmail = document.getElementById('tkReqEmail');
+    const tkReqPhone = document.getElementById('tkReqPhone');
+    if (tkReqEmail) tkReqEmail.textContent = currentUser.email || '—';
+    if (tkReqPhone) tkReqPhone.textContent = currentUser.phone || '—';
   }
 }
 
@@ -3583,6 +3837,7 @@ const _origLoadFromSheets = loadFromSheets;
 loadFromSheets = async function() {
   await _origLoadFromSheets();
   populateDynamicDropdowns();
+  updateNotifBadge();
 };
 
 // ── Override initAll to call populateDynamicDropdowns ──
@@ -3590,6 +3845,12 @@ const _origInitAll = initAll;
 initAll = function() {
   _origInitAll();
   populateDynamicDropdowns();
+  // Restore persisted notifications then refresh all badges
+  try {
+    const saved = localStorage.getItem('itdesk_notifs');
+    if (saved) window._liveNotifs = JSON.parse(saved);
+  } catch(e) {}
+  updateNotifBadge();
 };
 
 // ── Empty state renderers ──────────────────────────────────────
