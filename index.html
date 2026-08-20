@@ -588,6 +588,27 @@ tbody tr.rc{cursor:pointer}
   .lfoot{ margin-top:20px; text-align:center; font-size:11px; color:var(--t3); padding-bottom:8px; }
   @media(max-width:820px){ .lbrand{ display:none; } }
 
+
+  /* ── PRINT STYLES — show only ticket detail content ── */
+  @media print {
+    body * { visibility: hidden !important; }
+    #pg-detail, #pg-detail * { visibility: visible !important; }
+    #pg-detail {
+      position: absolute !important; left: 0; top: 0; width: 100% !important;
+      padding: 20px !important; background: #fff !important;
+    }
+    .sb, .hdr, .pact, .btn, .mov, .toast, select, #tkNewComment, #tkNewComment + button,
+    #csStars, #tkCsatNote, #tkCsatNote + button, #tkAssignSel, #tkAssignSel + button,
+    .card:has(#tkAssignSel) button { display: none !important; }
+    #tkResolution, #tkRootCause {
+      border: 1px solid #ccc !important; resize: none !important; background: #fff !important;
+      color: #000 !important; -webkit-print-color-adjust: exact;
+    }
+    .gr31 { display: block !important; }
+    .card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; margin-bottom: 12px !important; }
+    h2 { font-size: 20px !important; }
+  }
+
 </style>
 
 
@@ -971,10 +992,10 @@ tbody tr.rc{cursor:pointer}
 <div class="pg" id="pg-u-mytickets">
   <div class="phdr"><div><h2>Ticket ของฉัน</h2><p>ติดตามสถานะปัญหาที่เคยแจ้งไว้ทั้งหมด</p></div><button class="btn pri" onclick="navU('u-create')"><i class="ti ti-plus"></i>แจ้งปัญหาใหม่</button></div>
   <div class="tabs">
-    <div class="tab on" onclick="uFilterTab('all',this)">ทั้งหมด<span class="tbc">12</span></div>
-    <div class="tab" onclick="uFilterTab('active',this)">กำลังดำเนินการ<span class="tbc">3</span></div>
-    <div class="tab" onclick="uFilterTab('resolved',this)">แก้ไขแล้ว<span class="tbc">8</span></div>
-    <div class="tab" onclick="uFilterTab('draft',this)">แบบร่าง<span class="tbc">1</span></div>
+    <div class="tab on" onclick="uFilterTab('all',this)">ทั้งหมด<span class="tbc" id="tbAll">0</span></div>
+    <div class="tab" onclick="uFilterTab('active',this)">กำลังดำเนินการ<span class="tbc" id="tbActive">0</span></div>
+    <div class="tab" onclick="uFilterTab('resolved',this)">แก้ไขแล้ว<span class="tbc" id="tbResolved">0</span></div>
+    <div class="tab" onclick="uFilterTab('draft',this)">แบบร่าง<span class="tbc" id="tbDraft">0</span></div>
   </div>
   <div class="dfc g12" id="uTicketList"></div>
 </div>
@@ -1224,7 +1245,7 @@ tbody tr.rc{cursor:pointer}
     <div class="pact">
       <button class="btn xs" onclick="toast('พิมพ์ QR Label','info','')"><i class="ti ti-qrcode"></i>QR Label</button>
       <button class="btn xs" onclick="toast('Print Asset Card','info','')"><i class="ti ti-printer"></i>ใบครุภัณฑ์</button>
-      <button class="btn" onclick="openM('addAsM')"><i class="ti ti-edit"></i>แก้ไข</button>
+      <button class="btn" onclick="openEditAsset(window.currentAssetCode)"><i class="ti ti-edit"></i>แก้ไข</button>
       <button class="btn dan" onclick="toast('ยืนยันการจำหน่าย?','warning','')"><i class="ti ti-trash"></i>จำหน่าย</button>
     </div>
   </div>
@@ -1234,7 +1255,7 @@ tbody tr.rc{cursor:pointer}
       <div class="tabs">
         <div class="tab on" onclick="asTab('info',this)">ข้อมูลทั่วไป</div>
         <div class="tab" onclick="asTab('docs',this)">เอกสาร<span class="tbc" id="docCnt">5</span></div>
-        <div class="tab" onclick="asTab('tickets',this)">Ticket History<span class="tbc">3</span></div>
+        <div class="tab" onclick="asTab('tickets',this)">Ticket History<span class="tbc" id="asTkCnt">0</span></div>
         <div class="tab" onclick="asTab('history',this)">ประวัติการใช้งาน</div>
       </div>
 
@@ -1286,11 +1307,11 @@ tbody tr.rc{cursor:pointer}
         </div>
         <!-- DOC TYPE TABS -->
         <div class="tabs" style="margin-bottom:16px">
-          <div class="tab on" onclick="docTab('all',this)">ทั้งหมด<span class="tbc">5</span></div>
-          <div class="tab" onclick="docTab('receipt',this)">ใบเสร็จ<span class="tbc">1</span></div>
-          <div class="tab" onclick="docTab('warranty',this)">ใบรับประกัน<span class="tbc">2</span></div>
-          <div class="tab" onclick="docTab('manual',this)">คู่มือ<span class="tbc">1</span></div>
-          <div class="tab" onclick="docTab('other',this)">อื่นๆ<span class="tbc">1</span></div>
+          <div class="tab on" onclick="docTab('all',this)">ทั้งหมด<span class="tbc" id="docTabAll">0</span></div>
+          <div class="tab" onclick="docTab('receipt',this)">ใบเสร็จ<span class="tbc" id="docTabReceipt">0</span></div>
+          <div class="tab" onclick="docTab('warranty',this)">ใบรับประกัน<span class="tbc" id="docTabWarranty">0</span></div>
+          <div class="tab" onclick="docTab('manual',this)">คู่มือ<span class="tbc" id="docTabManual">0</span></div>
+          <div class="tab" onclick="docTab('other',this)">อื่นๆ<span class="tbc" id="docTabOther">0</span></div>
         </div>
         <div class="sg g3" id="docGrid"></div>
         <!-- Empty State (hidden by default) -->
@@ -1404,8 +1425,8 @@ tbody tr.rc{cursor:pointer}
 
 <div class="pg" id="pg-users">
   <div class="phdr"><div><h2>ผู้ใช้งาน</h2></div><div class="pact"><button class="btn" onclick="toast('Import','info','')"><i class="ti ti-file-import"></i>Import</button><button class="btn" onclick="toast('AD Sync','info','')"><i class="ti ti-refresh"></i>AD Sync</button><button class="btn pri" onclick="openM('addUsrM')"><i class="ti ti-plus"></i>เพิ่มผู้ใช้</button></div></div>
-  <div class="tabs mb-0"><div class="tab on">ทั้งหมด<span class="tbc">128</span></div><div class="tab">ช่างเทคนิค<span class="tbc">12</span></div><div class="tab">IT Manager<span class="tbc">3</span></div><div class="tab">Requester<span class="tbc">113</span></div></div>
-  <div class="card" style="border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg)"><div class="fbar mb14"><div class="sbx" style="flex:1;max-width:280px"><i class="ti ti-search"></i><input type="text" placeholder="ค้นหาผู้ใช้..."></div><select class="fsel" style="width:auto"><option>ทุกแผนก</option><option>การเงิน</option><option>ไอที</option></select></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>แผนก</th><th>Role</th><th>สถานะ</th><th>Login ล่าสุด</th><th>Ticket</th><th>Actions</th></tr></thead><tbody id="usrBody"></tbody></table></div></div>
+  <div class="tabs mb-0"><div class="tab on" onclick="filterUsersByRole('all',this)">ทั้งหมด</div><div class="tab" onclick="filterUsersByRole('tech',this)">ช่างเทคนิค</div><div class="tab" onclick="filterUsersByRole('manager',this)">IT Manager</div><div class="tab" onclick="filterUsersByRole('req',this)">Requester</div></div>
+  <div class="card" style="border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg)"><div class="fbar mb14"><div class="sbx" style="flex:1;max-width:280px"><i class="ti ti-search"></i><input type="text" placeholder="ค้นหาผู้ใช้..." oninput="renderUsers()"></div><select class="fsel" style="width:auto"><option>ทุกแผนก</option><option>การเงิน</option><option>ไอที</option></select></div><div class="tw"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>แผนก</th><th>Role</th><th>สถานะ</th><th>Login ล่าสุด</th><th>Ticket</th><th>Actions</th></tr></thead><tbody id="usrBody"></tbody></table></div></div>
 </div>
 
 <div class="pg" id="pg-categories">
@@ -1415,7 +1436,7 @@ tbody tr.rc{cursor:pointer}
 
 <div class="pg" id="pg-notif">
   <div class="phdr"><div><h2>การแจ้งเตือน</h2></div><div class="pact"><button class="btn" onclick="toast('อ่านทั้งหมด','success','')"><i class="ti ti-check-all"></i>อ่านทั้งหมด</button><button class="btn" onclick="toast('ล้าง','info','')"><i class="ti ti-trash"></i>ล้าง</button></div></div>
-  <div class="tabs mb-0"><div class="tab on">ทั้งหมด<span class="tbc">8</span></div><div class="tab">ยังไม่อ่าน<span class="tbc">5</span></div><div class="tab">SLA Warning</div><div class="tab">มอบหมาย</div></div>
+  <div class="tabs mb-0"><div class="tab on">ทั้งหมด<span class="tbc" id="notifTabAll">0</span></div><div class="tab">ยังไม่อ่าน<span class="tbc" id="notifTabUnread">0</span></div><div class="tab">SLA Warning</div><div class="tab">มอบหมาย</div></div>
   <div class="card p0" style="border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg)"><div id="notifList"></div></div>
 </div>
 
@@ -2437,16 +2458,16 @@ function renderTickets(){
     <tr class="rc" onclick="viewTicketDetail('${t.id}')">
       <td><input type="checkbox" onclick="event.stopPropagation()"></td>
       <td class="tid">${t.id}</td>
-      <td class="ttr">${t.sub}</td>
-      <td style="font-size:12px">${t.req}</td>
-      <td class="xs mu">${t.dept}</td>
-      <td class="xs mu">${t.cat}</td>
+      <td class="ttr">${t.sub||'—'}</td>
+      <td style="font-size:12px">${t.req||'—'}</td>
+      <td class="xs mu">${t.dept||'—'}</td>
+      <td class="xs mu">${t.cat||'—'}</td>
       <td>${priBadge(t.pri)}</td>
       <td>${statusBadge(t.status)}</td>
       <td class="xs">${t.tech}</td>
       <td style="min-width:80px"><div class="df ic g6px"><div style="width:7px;height:7px;border-radius:50%;background:${slaTC(t.sla)};flex-shrink:0"></div><div style="flex:1"><div class="xs w7" style="color:${slaTC(t.sla)}">${t.sla}%</div><div class="slaw mt2"><div class="slab" style="min-width:50px"><div class="slaf ${slaCol(t.sla)}" style="width:${t.sla}%"></div></div></div></div></div></td>
       <td class="xs mu">${t.cr}</td>
-      <td><div class="df g4px"><button class="btn xs ghost" onclick="event.stopPropagation();viewTicketDetail('${t.id}')"><i class="ti ti-eye"></i></button><button class="btn xs ghost" onclick="event.stopPropagation();toast('แก้ไข','info','')"><i class="ti ti-edit"></i></button></div></td>
+      <td><div class="df g4px"><button class="btn xs ghost" onclick="event.stopPropagation();viewTicketDetail('${t.id}')" title="ดู"><i class="ti ti-eye"></i></button><button class="btn xs ghost" onclick="event.stopPropagation();viewTicketDetail('${t.id}')" title="แก้ไข"><i class="ti ti-edit"></i></button></div></td>
     </tr>`).join(''):`<tr><td colspan="12"><div class="est"><i class="ti ti-search"></i><h3>ไม่พบ Ticket</h3><p>ลองเปลี่ยนคำค้นหา</p></div></td></tr>`;
   const lbl=document.getElementById('tkLbl');
   if(lbl) lbl.textContent=`${data.length} รายการ`;
@@ -2498,7 +2519,7 @@ function renderAssets(q=''){
       <td>${a.tickets>0?`<span class="badge bhi">${a.tickets}</span>`:`<span class="mu xs">—</span>`}</td>
       <td><div class="df g4px">
         <button class="btn xs ghost" onclick="nav('assetdetail')" title="รายละเอียด"><i class="ti ti-eye"></i></button>
-        <button class="btn xs ghost" onclick="openM('addAsM')" title="แก้ไข"><i class="ti ti-edit"></i></button>
+        <button class="btn xs ghost" onclick="openEditAsset('${a.code}')" title="แก้ไข"><i class="ti ti-edit"></i></button>
         <button class="btn xs ghost" onclick="toast('QR','info','')" title="QR"><i class="ti ti-qrcode"></i></button>
       </div></td>
     </tr>`;}).join(''):`<tr><td colspan="13"><div class="est"><i class="ti ti-search"></i><h3>ไม่พบสินทรัพย์</h3></div></td></tr>`;
@@ -2602,11 +2623,50 @@ function renderReports(){
   setTimeout(initRepCharts,80);
 }
 function renderExec(){ setTimeout(initExecCharts,80); }
+let usersRoleFilter = 'all';
 function renderUsers(){
   const el=document.getElementById('usrBody');
   if(!el) return;
-  el.innerHTML=DB.users.map(u=>`<tr><td><div class="df ic g10"><div class="av av-xs" style="background:${u.bg}">${u.init}</div><div class="sm w6">${u.n}</div></div></td><td class="xs mu">${u.email}</td><td class="xs">${u.dept}</td><td>${roleBadge(u.role)}</td><td><span class="badge ${u.st==='active'?'bact':'bsus'}">${u.st==='active'?'ใช้งาน':'ระงับ'}</span></td><td class="xs mu">${u.login}</td><td class="xs w7" style="color:${u.tkt>0?'var(--blue-600)':'var(--t2)'}">${u.tkt||'—'}</td><td><div class="df g4px"><button class="btn xs" onclick="toast('แก้ไข: ${u.n}','info','')"><i class="ti ti-edit"></i></button>${u.st==='active'?`<button class="btn xs dan" onclick="toast('ระงับ: ${u.n}','warning','')"><i class="ti ti-ban"></i></button>`:`<button class="btn xs suc" onclick="toast('เปิดใช้: ${u.n}','success','')"><i class="ti ti-check"></i></button>`}</div></td></tr>`).join('');
+  const q = (document.querySelector('#pg-users .sbx input')?.value || '').toLowerCase();
+  const data = DB.users.filter(u => {
+    const name = `${u.firstName||''} ${u.lastName||''}`.trim().toLowerCase();
+    const mq = !q || name.includes(q) || (u.email||'').toLowerCase().includes(q);
+    const mr = usersRoleFilter==='all' || u.role===usersRoleFilter;
+    return mq && mr;
+  });
+  el.innerHTML = data.length ? data.map(u=>{
+    const name = `${u.firstName||''} ${u.lastName||''}`.trim() || '(ไม่ระบุชื่อ)';
+    const init = ((u.firstName||'?')[0] + (u.lastName||'?')[0]).toUpperCase();
+    const bg   = {admin:'#1860C4',tech:'#4F44B8',manager:'#22640A',req:'#6B7088'}[u.role] || '#6B7088';
+    const isActive = (u.status||'active') === 'active';
+    const login = u.lastLogin ? new Date(u.lastLogin).toLocaleString('th-TH') : '—';
+    return `<tr>
+      <td><div class="df ic g10"><div class="av av-xs" style="background:${bg}">${init}</div><div class="sm w6">${name}</div></div></td>
+      <td class="xs mu">${u.email||'—'}</td>
+      <td class="xs">${u.dept||'—'}</td>
+      <td>${roleBadge(u.role)}</td>
+      <td><span class="badge ${isActive?'bact':'bsus'}">${isActive?'ใช้งาน':'ระงับ'}</span></td>
+      <td class="xs mu">${login}</td>
+      <td class="xs w7" style="color:${Number(u.ticketCount)>0?'var(--blue-600)':'var(--t2)'}">${u.ticketCount||'—'}</td>
+      <td><div class="df g4px">
+        <button class="btn xs" onclick="openEditUser('${u.id}')"><i class="ti ti-edit"></i></button>
+        ${isActive
+          ? `<button class="btn xs dan" onclick="toggleUserStatus('${u.id}','suspended')"><i class="ti ti-ban"></i></button>`
+          : `<button class="btn xs suc" onclick="toggleUserStatus('${u.id}','active')"><i class="ti ti-check"></i></button>`}
+      </div></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div class="est"><i class="ti ti-users"></i><h3>ไม่พบผู้ใช้งาน</h3></div></td></tr>`;
+
+  // Update tab counts (numbers removed from HTML but keep filter working)
+  const setCount = (sel, n) => { const el2 = document.querySelector(sel); if (el2) el2.dataset.count = n; };
 }
+function filterUsersByRole(role, el) {
+  usersRoleFilter = role;
+  document.querySelectorAll('#pg-users .tabs .tab').forEach(t=>t.classList.remove('on'));
+  if (el) el.classList.add('on');
+  renderUsers();
+}
+function rnUsers(q) { renderUsers(); }
 function renderCategories(){
   const el=document.getElementById('catTree');
   if(!el) return;
@@ -2967,12 +3027,13 @@ async function saveNewUser() {
   renderUsers();
 }
 
-async function saveNewAsset() {
+async function saveNewAsset(isEdit) {
   const modal  = document.getElementById('addAsM');
   const inputs = modal.querySelectorAll('.finp');
   const sels   = modal.querySelectorAll('.fsel');
+  const editCode = window._editingAssetCode;
   const data = {
-    code         : inputs[0]?.value || '',
+    code         : editCode || inputs[0]?.value || '',
     name         : inputs[1]?.value || '',
     type         : sels[0]?.value   || 'notebook',
     brand        : inputs[2]?.value || '',
@@ -2982,7 +3043,7 @@ async function saveNewAsset() {
     ram          : inputs[6]?.value || '',
     storage      : inputs[7]?.value || '',
     os           : sels[1]?.value   || 'Windows 11 Pro',
-    userName     : sels[2]?.value   || '',
+    userId       : sels[2]?.value   || '',
     status       : sels[3]?.value   || 'active',
     purchasePrice: inputs[8]?.value || '',
     purchaseDate : inputs[9]?.value || '',
@@ -2994,9 +3055,22 @@ async function saveNewAsset() {
   };
   if (!data.code || !data.brand) { toast('กรุณากรอกรหัสสินทรัพย์และยี่ห้อ','error',''); return; }
   closeM('addAsM');
-  toast('กำลังเพิ่มสินทรัพย์...','info','');
-  await apiCreateAsset(data);
-  toast(`เพิ่ม ${data.brand} ${data.model} (${data.code}) สำเร็จ`,'success','สินทรัพย์');
+
+  if (isEdit && editCode) {
+    toast('กำลังบันทึกการแก้ไข...','info','');
+    const idx = DB.assets.findIndex(a => a.code === editCode);
+    if (idx >= 0) DB.assets[idx] = normalizeAsset({ ...DB.assets[idx], ...data });
+    saveToLocal(); scheduleSync();
+    if (useSheets) {
+      try { await sheetPOST('updateAsset', data); setSyncStatus('ok'); } catch(e) { setSyncStatus('error'); }
+    }
+    toast(`บันทึกการแก้ไข ${data.code} สำเร็จ`,'success','สินทรัพย์');
+  } else {
+    toast('กำลังเพิ่มสินทรัพย์...','info','');
+    await apiCreateAsset(data);
+    toast(`เพิ่ม ${data.brand} ${data.model} (${data.code}) สำเร็จ`,'success','สินทรัพย์');
+  }
+  window._editingAssetCode = null;
   renderAssets();
 }
 
@@ -4247,6 +4321,258 @@ renderAssetDetail = function(...args) {
   _origRenderAssetDetail(...args);
   updateAssetTicketHistory(window.currentAssetCode || '');
 };
+</script>
+
+
+<script>
+// ============================================================
+//  DASHBOARD MAIN STAT CARDS — was never wired to real DB data.
+//  This is why closing a ticket never reflected on Dashboard.
+// ============================================================
+function updateDashboardMainStats() {
+  const now = new Date();
+  const mon0 = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const total    = DB.tickets.length;
+  const open     = DB.tickets.filter(t => ['open','progress','assigned','new'].includes(t.status)).length;
+  const waiting  = DB.tickets.filter(t => t.status === 'waiting').length;
+  const breached = DB.tickets.filter(t => Number(t.sla??100) <= 0 && !['resolved','closed'].includes(t.status)).length;
+  const resolvedThisMonth = DB.tickets.filter(t => {
+    if (!['resolved','closed'].includes(t.status)) return false;
+    if (!t.updatedAt) return true; // count if we can't tell the date
+    return new Date(t.updatedAt) >= mon0;
+  }).length;
+  const critical = DB.tickets.filter(t => t.pri === 'critical' && !['resolved','closed'].includes(t.status)).length;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('statTotal', total);
+  set('statTotalMeta', total ? `${DB.tickets.filter(t=>['resolved','closed'].includes(t.status)).length} ปิดแล้ว` : 'ยังไม่มีข้อมูล');
+  set('statOpen', open);
+  set('statOpenMeta', total ? `${open} รายการ` : '—');
+  set('statWaiting', waiting);
+  set('statWaitingMeta', waiting ? `${waiting} รอดำเนินการ` : '—');
+  set('statSLABreach', breached);
+  set('statSLAMeta', breached ? '⚠ ต้องดำเนินการด่วน' : 'ไม่มีรายการด่วน');
+  set('statResolved', resolvedThisMonth);
+  set('statResolvedMeta', total ? 'เดือนนี้' : '—');
+  set('statCritical', critical);
+  set('statCriticalMeta', critical ? 'ต้องดำเนินการทันที' : '—');
+  set('statAvgTime', '—');
+  set('statCsat', '—');
+
+  // Also refresh tab-count badges across the app (My Tickets, Docs, Notifications)
+  if (typeof updateTabBadges === 'function') updateTabBadges();
+}
+
+function updateTabBadges() {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const myTickets = currentUser ? DB.tickets.filter(t => t.email === currentUser.email) : [];
+  set('tbAll', myTickets.length);
+  set('tbActive', myTickets.filter(t => ['open','progress','assigned','waiting'].includes(t.status)).length);
+  set('tbResolved', myTickets.filter(t => ['resolved','closed'].includes(t.status)).length);
+  set('tbDraft', myTickets.filter(t => t.status === 'draft').length);
+
+  const docs = DB.documents;
+  set('docTabAll', docs.length);
+  set('docTabReceipt', docs.filter(d=>d.type==='receipt').length);
+  set('docTabWarranty', docs.filter(d=>d.type==='warranty').length);
+  set('docTabManual', docs.filter(d=>d.type==='manual').length);
+  set('docTabOther', docs.filter(d=>!['receipt','warranty','manual'].includes(d.type)).length);
+
+  const notifs = window._liveNotifs || [];
+  set('notifTabAll', notifs.length);
+  set('notifTabUnread', notifs.filter(n=>n.unread).length);
+
+  set('asTkCnt', window.currentAssetCode ? DB.tickets.filter(t=>t.assetCode===window.currentAssetCode).length : 0);
+}
+
+// Hook into renderDashboard + changeTicketStatus so Closing a ticket
+// immediately reflects everywhere (Dashboard, tab badges).
+const _origRenderDash2 = renderDashboard;
+renderDashboard = function() { _origRenderDash2(); updateDashboardMainStats(); };
+
+const _origChangeStatus = changeTicketStatus;
+changeTicketStatus = async function(newStatus) {
+  await _origChangeStatus(newStatus);
+  updateDashboardMainStats();
+  updateTabBadges();
+};
+
+// ============================================================
+//  USER NORMALIZATION + REAL EDIT MODAL
+// ============================================================
+function normalizeUser(u) {
+  return {
+    ...u,
+    id: u.id, firstName: u.firstName||'', lastName: u.lastName||'',
+    email: u.email||'', dept: u.dept||'', role: u.role||'req',
+    status: u.status||'active', employeeId: u.employeeId||'',
+    branch: u.branch||'สำนักงานใหญ่', phone: u.phone||'',
+    ticketCount: Number(u.ticketCount||0),
+  };
+}
+
+async function toggleUserStatus(userId, newStatus) {
+  const u = DB.users.find(x => x.id === userId);
+  if (!u) return;
+  u.status = newStatus;
+  saveToLocal();
+  renderUsers();
+  if (useSheets) {
+    try {
+      await sheetPOST('updateUser', { id: userId, status: newStatus });
+      setSyncStatus('ok');
+    } catch(e) { setSyncStatus('error'); }
+  }
+  toast(newStatus==='active' ? 'เปิดใช้งานบัญชีแล้ว' : 'ระงับบัญชีแล้ว', newStatus==='active'?'success':'warning', '');
+}
+
+function openEditUser(userId) {
+  const u = DB.users.find(x => x.id === userId);
+  if (!u) { toast('ไม่พบผู้ใช้', 'error', ''); return; }
+
+  let m = document.getElementById('editUsrM');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mov';
+    m.id = 'editUsrM';
+    m.onclick = function(e){ if(e.target===this) closeM('editUsrM'); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="mdl"><div class="mhdr"><h3><i class="ti ti-user-edit" style="color:var(--blue-600)"></i> แก้ไขผู้ใช้งาน</h3><button class="mcl" onclick="closeM('editUsrM')"><i class="ti ti-x"></i></button></div>
+  <div class="mbdy"><div class="fg f2" style="gap:13px">
+    <div class="fgg"><label class="flbl">ชื่อ</label><input class="finp" id="euFirst" value="${(u.firstName||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fgg"><label class="flbl">นามสกุล</label><input class="finp" id="euLast" value="${(u.lastName||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fgg"><label class="flbl">อีเมล</label><input class="finp" id="euEmail" type="email" value="${(u.email||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fgg"><label class="flbl">รหัสพนักงาน</label><input class="finp" id="euEmpId" value="${(u.employeeId||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fgg"><label class="flbl">แผนก</label><input class="finp" id="euDept" value="${(u.dept||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fgg"><label class="flbl">Role</label><select class="fsel" id="euRole">
+      <option value="req" ${u.role==='req'?'selected':''}>Requester</option>
+      <option value="tech" ${u.role==='tech'?'selected':''}>IT Technician</option>
+      <option value="manager" ${u.role==='manager'?'selected':''}>IT Manager</option>
+      <option value="admin" ${u.role==='admin'?'selected':''}>Administrator</option>
+    </select></div>
+    <div class="fgg"><label class="flbl">เบอร์โทร</label><input class="finp" id="euPhone" value="${(u.phone||'').replace(/"/g,'&quot;')}"></div>
+  </div></div>
+  <div class="mftr"><button class="btn" onclick="closeM('editUsrM')">ยกเลิก</button><button class="btn pri" onclick="saveEditUser('${u.id}')"><i class="ti ti-check"></i>บันทึก</button></div></div>`;
+  openM('editUsrM');
+}
+
+async function saveEditUser(userId) {
+  const u = DB.users.find(x => x.id === userId);
+  if (!u) return;
+  const get = id => document.getElementById(id)?.value || '';
+
+  u.firstName  = get('euFirst');
+  u.lastName   = get('euLast');
+  u.email      = get('euEmail');
+  u.employeeId = get('euEmpId');
+  u.dept       = get('euDept');
+  u.role       = get('euRole');
+  u.phone      = get('euPhone');
+
+  saveToLocal();
+  closeM('editUsrM');
+  renderUsers();
+
+  if (useSheets) {
+    try {
+      await sheetPOST('updateUser', { id:userId, firstName:u.firstName, lastName:u.lastName,
+        email:u.email, employeeId:u.employeeId, dept:u.dept, role:u.role, phone:u.phone });
+      setSyncStatus('ok');
+    } catch(e) { setSyncStatus('error'); }
+  }
+  toast('บันทึกข้อมูลผู้ใช้แล้ว', 'success', '');
+}
+
+// Apply normalizeUser whenever users load from Sheets
+const _origLoadFromSheets2 = loadFromSheets;
+loadFromSheets = async function() {
+  await _origLoadFromSheets2();
+  DB.users = DB.users.map(normalizeUser);
+  updateDashboardMainStats();
+  updateTabBadges();
+};
+</script>
+
+
+<script>
+// ============================================================
+//  ASSET EDIT — pre-fill addAsM modal with existing data
+// ============================================================
+window._editingAssetCode = null;
+
+function openEditAsset(code) {
+  const a = DB.assets.find(x => x.code === code);
+  if (!a) { toast('ไม่พบสินทรัพย์', 'error', ''); openM('addAsM'); return; }
+  window._editingAssetCode = code;
+
+  const modal = document.getElementById('addAsM');
+  const titleEl = modal.querySelector('.mhdr h3');
+  if (titleEl) titleEl.innerHTML = '<i class="ti ti-device-laptop" style="color:var(--blue-600)"></i> แก้ไขสินทรัพย์ — ' + code;
+
+  const inputs = modal.querySelectorAll('.finp');
+  const sels   = modal.querySelectorAll('.fsel');
+  const set = (el, val) => { if (el) el.value = val || ''; };
+
+  set(inputs[0], a.code);   inputs[0].disabled = true; // code shouldn't change
+  set(inputs[1], a.name);
+  set(inputs[2], a.brand);
+  set(inputs[3], a.model);
+  set(inputs[4], a.serialNo);
+  set(inputs[5], a.cpu);
+  set(inputs[6], a.ram);
+  set(inputs[7], a.storage);
+  set(inputs[8], a.purchasePrice);
+  set(inputs[9], a.purchaseDate);
+  set(inputs[10], a.vendor);
+  set(inputs[11], a.warrantyExpiry || a.warranty);
+  set(inputs[12], a.floor);
+
+  if (sels[0]) sels[0].value = a.type || 'notebook';
+  if (sels[1]) sels[1].value = a.os || 'Windows 11 Pro';
+  if (sels[2]) sels[2].value = a.userId || '';
+  if (sels[3]) sels[3].value = a.status || 'active';
+  if (sels[4]) sels[4].value = a.location || 'สำนักงานใหญ่';
+
+  const notesEl = modal.querySelector('.fta');
+  if (notesEl) notesEl.value = a.notes || '';
+
+  // Swap the save button to call update instead of create
+  const saveBtn = modal.querySelector('.mftr .btn.pri');
+  if (saveBtn) {
+    saveBtn.setAttribute('onclick', 'saveNewAsset(true)');
+    saveBtn.innerHTML = '<i class="ti ti-check"></i>บันทึกการแก้ไข';
+  }
+
+  openM('addAsM');
+}
+
+// Reset modal to "Add" mode whenever it's explicitly opened fresh (not edit)
+function resetAssetModalToAddMode() {
+  window._editingAssetCode = null;
+  const modal = document.getElementById('addAsM');
+  if (!modal) return;
+  const titleEl = modal.querySelector('.mhdr h3');
+  if (titleEl) titleEl.innerHTML = '<i class="ti ti-device-laptop" style="color:var(--blue-600)"></i> เพิ่มสินทรัพย์ใหม่';
+  const inputs = modal.querySelectorAll('.finp');
+  inputs.forEach(i => { i.value = ''; i.disabled = false; });
+  modal.querySelectorAll('.fta').forEach(t => t.value = '');
+  const saveBtn = modal.querySelector('.mftr .btn.pri');
+  if (saveBtn) {
+    saveBtn.setAttribute('onclick', 'saveNewAsset(false)');
+    saveBtn.innerHTML = '<i class="ti ti-check"></i>เพิ่มสินทรัพย์';
+  }
+}
+
+// Wire the "+ เพิ่มสินทรัพย์" buttons to reset first
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[onclick*="openM(\'addAsM\')"]').forEach(btn => {
+    if (!btn.getAttribute('onclick').includes('resetAssetModalToAddMode')) {
+      btn.setAttribute('onclick', "resetAssetModalToAddMode();openM('addAsM')");
+    }
+  });
+});
 </script>
 
 </body>
