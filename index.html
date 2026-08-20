@@ -609,7 +609,7 @@ tbody tr.rc{cursor:pointer}
     <div class="lbrand-stats">
       <div class="lbrand-stat"><strong id="lStatTk">—</strong><span>Tickets</span></div>
       <div class="lbrand-stat"><strong id="lStatSla">—</strong><span>SLA Compliance</span></div>
-      <div class="lbrand-stat"><strong id="lStatCsat">4.6★</strong><span>CSAT</span></div>
+      <div class="lbrand-stat"><strong id="lStatCsat">—</strong><span>CSAT</span></div>
     </div>
   </div>
 
@@ -984,32 +984,32 @@ tbody tr.rc{cursor:pointer}
      ====================================================== -->
 <div class="pg" id="pg-u-detail">
   <div class="phdr">
-    <div><div class="xs mu mb4"><span class="bcl" onclick="navU('u-mytickets')" style="cursor:pointer">Ticket ของฉัน</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> #TK-0074</div><h2>VPN หลุดทุก 30 นาที</h2></div>
+    <div><div class="xs mu mb4"><span class="bcl" onclick="navU('u-mytickets')" style="cursor:pointer">Ticket ของฉัน</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> <span id="uTkDetailId">—</span></div><h2 id="uTkDetailSubject">—</h2></div>
   </div>
   <div class="gr21">
     <div class="dfc g16">
       <div class="card">
         <div class="df ic jb mb16">
-          <span class="badge bpr" style="font-size:13px;padding:7px 14px"><span class="bd"></span>กำลังดำเนินการ</span>
-          <div class="xs mu">อัปเดตล่าสุด: 2 ชั่วโมงที่แล้ว</div>
+          <span id="uTkStatusBadge" style="font-size:13px;padding:7px 14px">—</span>
+          <div class="xs mu" id="uTkUpdated">—</div>
         </div>
         <div class="mg mb16">
-          <div><div class="mk">หมายเลข Ticket</div><div class="mv">#TK-0074</div></div>
-          <div><div class="mk">วันที่แจ้ง</div><div class="mv">24 มิ.ย. 2026</div></div>
-          <div><div class="mk">ความเร่งด่วน</div><div><span class="badge bhi">เร่งด่วน</span></div></div>
-          <div><div class="mk">ผู้ดูแล</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)">KS</div><span class="mv">ทีม Network</span></div></div>
+          <div><div class="mk">หมายเลข Ticket</div><div class="mv" id="uTkId2">—</div></div>
+          <div><div class="mk">วันที่แจ้ง</div><div class="mv" id="uTkDate">—</div></div>
+          <div><div class="mk">ความเร่งด่วน</div><div id="uTkPriBadge">—</div></div>
+          <div><div class="mk">ผู้ดูแล</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)" id="uTkTechAv">—</div><span class="mv" id="uTkTechName">ยังไม่มอบหมาย</span></div></div>
         </div>
         <div class="div"></div>
         <div class="slbl_ mb8">รายละเอียดที่คุณแจ้ง</div>
-        <div style="font-size:13.5px;line-height:1.8">VPN หลุดหลังใช้งานประมาณ 30 นาที เกิดขึ้นทั้งตอนใช้ WiFi และสาย LAN ทำให้ไม่สามารถเข้าระบบบริษัทระหว่างทำงานนอกสถานที่ได้</div>
+        <div style="font-size:13.5px;line-height:1.8" id="uTkDescription">—</div>
       </div>
 
-      <div class="card" style="background:var(--green-50);border-color:#C5E6B5">
+      <div class="card" id="uTkProgressCard" style="background:var(--green-50);border-color:#C5E6B5;display:none">
         <div class="df ic g12">
           <div class="sic ig" style="margin:0"><i class="ti ti-message-2"></i></div>
           <div style="flex:1">
             <div class="w7" style="color:var(--green-700);font-size:13.5px">ทีม IT กำลังดำเนินการ</div>
-            <div class="xs" style="color:var(--green-700);opacity:.85;margin-top:3px">"ตรวจสอบและพบสาเหตุแล้ว กำลังแก้ไข timeout setting คาดว่าจะแล้วเสร็จภายในวันนี้" — <span class="tkCommentAuthor">ผู้รับผิดชอบ</span></div>
+            <div class="xs" style="color:var(--green-700);opacity:.85;margin-top:3px" id="uTkProgressNote">—</div>
           </div>
         </div>
       </div>
@@ -1017,9 +1017,9 @@ tbody tr.rc{cursor:pointer}
       <div class="card">
         <div class="ctit mb14"><i class="ti ti-message-dots"></i>เพิ่มข้อมูลเพิ่มเติม</div>
         <div class="df g10 is">
-          <div class="av av-sm" style="background:var(--green-600);flex-shrink:0">สจ</div>
-          <textarea class="fta" style="flex:1;min-height:64px" placeholder="หากมีข้อมูลเพิ่มเติมหรือคำถาม พิมพ์ที่นี่..."></textarea>
-          <button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="toast('ส่งข้อความแล้ว','success','')"><i class="ti ti-send"></i></button>
+          <div class="av av-sm" style="background:var(--green-600);flex-shrink:0" id="uTkMyAv">—</div>
+          <textarea class="fta" id="uTkNewMsg" style="flex:1;min-height:64px" placeholder="หากมีข้อมูลเพิ่มเติมหรือคำถาม พิมพ์ที่นี่..."></textarea>
+          <button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="postUserTicketMessage()"><i class="ti ti-send"></i></button>
         </div>
       </div>
 
@@ -1030,8 +1030,8 @@ tbody tr.rc{cursor:pointer}
     </div>
     <div class="dfc g16">
       <div class="card">
-        <div class="ctit mb12"><i class="ti ti-paperclip"></i>ไฟล์ที่แนบ (1)</div>
-        <div class="ach"><i class="ti ti-file-type-png" style="font-size:22px;color:var(--blue-600)"></i><div style="flex:1;min-width:0"><div class="xs w6 tr">screenshot_error.png</div><div class="xs mu">248 KB</div></div></div>
+        <div class="ctit mb12"><i class="ti ti-paperclip"></i>ไฟล์ที่แนบ</div>
+        <div id="uTkAttachList"><div class="xs mu">ไม่มีไฟล์แนบ</div></div>
       </div>
       <div class="card">
         <div class="ctit mb12"><i class="ti ti-headset"></i>ต้องการความช่วยเหลือเพิ่ม?</div>
@@ -1069,16 +1069,16 @@ tbody tr.rc{cursor:pointer}
 <div class="pg" id="pg-dashboard">
   <div class="phdr"><div><h2>Dashboard</h2><p id="ddate">ภาพรวมระบบ IT Helpdesk</p></div><div class="pact"><button class="btn" onclick="toast('กำลังรีเฟรช...','info','')"><i class="ti ti-refresh"></i>รีเฟรช</button><button class="btn pri" onclick="nav('create')"><i class="ti ti-plus"></i>สร้าง Ticket</button></div></div>
   <div class="sg g4 mb16">
-    <div class="sc"><div class="spls"></div><div class="sic ib"><i class="ti ti-ticket"></i></div><div class="slbl">Ticket ทั้งหมด</div><div class="sval">1,284</div><div class="smeta"><span class="sup">↑ 12%</span> เดือนนี้</div></div>
-    <div class="sc"><div class="sic ib"><i class="ti ti-circle"></i></div><div class="slbl">Open / In Progress</div><div class="sval" style="color:var(--blue-600)">251</div><div class="smeta">Open 187 · InProg 64</div></div>
-    <div class="sc"><div class="sic ia"><i class="ti ti-hourglass"></i></div><div class="slbl">Waiting</div><div class="sval" style="color:var(--amber-600)">38</div><div class="smeta">รอผู้ใช้ 24 · Vendor 14</div></div>
-    <div class="sc"><div class="sic ir"><i class="ti ti-alert-triangle"></i></div><div class="slbl">เกิน SLA</div><div class="sval" style="color:var(--red-600)">23</div><div class="smeta"><span class="sdn">⚠ ต้องดำเนินการด่วน</span></div></div>
+    <div class="sc"><div class="spls" id="dPulseDot" style="display:none"></div><div class="sic ib"><i class="ti ti-ticket"></i></div><div class="slbl">Ticket ทั้งหมด</div><div class="sval" id="statTotal">0</div><div class="smeta" id="statTotalMeta">ยังไม่มีข้อมูล</div></div>
+    <div class="sc"><div class="sic ib"><i class="ti ti-circle"></i></div><div class="slbl">Open / In Progress</div><div class="sval" style="color:var(--blue-600)" id="statOpen">0</div><div class="smeta" id="statOpenMeta">—</div></div>
+    <div class="sc"><div class="sic ia"><i class="ti ti-hourglass"></i></div><div class="slbl">Waiting</div><div class="sval" style="color:var(--amber-600)" id="statWaiting">0</div><div class="smeta" id="statWaitingMeta">—</div></div>
+    <div class="sc"><div class="sic ir"><i class="ti ti-alert-triangle"></i></div><div class="slbl">เกิน SLA</div><div class="sval" style="color:var(--red-600)" id="statSLABreach">0</div><div class="smeta" id="statSLAMeta">ไม่มีรายการด่วน</div></div>
   </div>
   <div class="sg g4 mb20">
-    <div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">Resolved เดือนนี้</div><div class="sval" style="color:var(--green-600)">142</div><div class="smeta"><span class="sup">↑ 8%</span></div></div>
-    <div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">เวลาแก้ไขเฉลี่ย</div><div class="sval">4.2h</div><div class="smeta"><span class="sup">↓ 0.5h</span></div></div>
-    <div class="sc"><div class="sic ia"><i class="ti ti-star"></i></div><div class="slbl">CSAT</div><div class="sval">4.6<span style="font-size:14px;color:var(--t2)">/5</span></div><div class="smeta">จาก 312 ราย</div></div>
-    <div class="sc"><div class="sic ir"><i class="ti ti-flame"></i></div><div class="slbl">Critical</div><div class="sval" style="color:var(--red-600)">7</div><div class="smeta">ต้องดำเนินการทันที</div></div>
+    <div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">Resolved เดือนนี้</div><div class="sval" style="color:var(--green-600)" id="statResolved">0</div><div class="smeta" id="statResolvedMeta">—</div></div>
+    <div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">เวลาแก้ไขเฉลี่ย</div><div class="sval" id="statAvgTime">—</div><div class="smeta" id="statAvgTimeMeta">—</div></div>
+    <div class="sc"><div class="sic ia"><i class="ti ti-star"></i></div><div class="slbl">CSAT</div><div class="sval" id="statCsat">—<span style="font-size:14px;color:var(--t2)">/5</span></div><div class="smeta" id="statCsatMeta">ยังไม่มีข้อมูล</div></div>
+    <div class="sc"><div class="sic ir"><i class="ti ti-flame"></i></div><div class="slbl">Critical</div><div class="sval" style="color:var(--red-600)" id="statCritical">0</div><div class="smeta" id="statCriticalMeta">—</div></div>
   </div>
   <div class="gr2 mb16">
     <div class="card"><div class="chdr"><div class="ctit"><i class="ti ti-chart-line"></i>แนวโน้ม Ticket</div><select class="fsel" style="width:auto;font-size:11px;padding:5px 24px 5px 8px"><option>12 เดือน</option><option>6 เดือน</option></select></div><div class="chw" style="height:200px"><canvas id="cTrend"></canvas></div></div>
@@ -1154,26 +1154,26 @@ tbody tr.rc{cursor:pointer}
      ====================================================== -->
 <div class="pg" id="pg-detail">
   <div class="phdr">
-    <div><div class="xs mu mb4"><span class="bcl" onclick="nav('tickets')" style="cursor:pointer">Ticket ทั้งหมด</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> #TK-0074</div><h2>VPN หลุดทุก 30 นาที</h2></div>
-    <div class="pact"><button class="btn xs" onclick="toast('QR Code','success','')"><i class="ti ti-qrcode"></i>QR</button><button class="btn xs" onclick="toast('Print','info','')"><i class="ti ti-printer"></i>พิมพ์</button><select class="fsel" style="width:auto;font-size:13px" onchange="toast('เปลี่ยนสถานะ: '+this.value,'success','Status')"><option>In Progress</option><option>Waiting</option><option>Testing</option><option>Resolved</option><option>Closed</option></select><button class="btn pri" onclick="toast('บันทึกแล้ว','success','')"><i class="ti ti-device-floppy"></i>บันทึก</button></div>
+    <div><div class="xs mu mb4"><span class="bcl" onclick="nav('tickets')" style="cursor:pointer">Ticket ทั้งหมด</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> <span id="tkDetailId">—</span></div><h2 id="tkDetailSubject">—</h2></div>
+    <div class="pact"><button class="btn xs" onclick="showTicketQR()"><i class="ti ti-qrcode"></i>QR</button><button class="btn xs" onclick="printTicket()"><i class="ti ti-printer"></i>พิมพ์</button><select class="fsel" style="width:auto;font-size:13px" id="tkStatusSel" onchange="changeTicketStatus(this.value)"><option value="new">New</option><option value="open">Open</option><option value="assigned">Assigned</option><option value="progress">In Progress</option><option value="waiting">Waiting</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select><button class="btn pri" onclick="saveTicketDetail()"><i class="ti ti-device-floppy"></i>บันทึก</button></div>
   </div>
-  <div style="background:var(--amber-50);border:1.5px solid #F5CFA0;border-radius:var(--r-lg);padding:13px 18px;margin-bottom:18px;display:flex;align-items:center;gap:13px"><i class="ti ti-clock-exclamation" style="font-size:21px;color:var(--amber-600)"></i><div style="flex:1;font-size:13.5px;color:var(--amber-700)"><strong>SLA Warning:</strong> เหลือ <strong>2h 14m</strong> ก่อนเกิน SLA</div><button class="btn sm warn" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate</button></div>
+  <div id="tkSlaBanner" style="background:var(--amber-50);border:1.5px solid #F5CFA0;border-radius:var(--r-lg);padding:13px 18px;margin-bottom:18px;display:flex;align-items:center;gap:13px"><i class="ti ti-clock-exclamation" style="font-size:21px;color:var(--amber-600)"></i><div style="flex:1;font-size:13.5px;color:var(--amber-700)"><strong>SLA Warning:</strong> เหลือ <strong id="tkSlaText">—</strong> ก่อนเกิน SLA</div><button class="btn sm warn" onclick="escalateTicket()"><i class="ti ti-arrow-up"></i>Escalate</button></div>
   <div class="gr31">
     <div class="dfc g16">
-      <div class="card"><div class="mg mb16"><div><div class="mk">Priority</div><div><span class="badge bhi">🟠 High</span></div></div><div><div class="mk">Status</div><div><span class="badge bpr"><span class="bd"></span>In Progress</span></div></div><div><div class="mk">หมวดหมู่</div><div class="mv">Network › VPN</div></div><div><div class="mk">แผนก</div><div class="mv">การเงิน</div></div><div><div class="mk">ช่างเทคนิค</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)" id="tkTechAv">—</div><span class="mv" id="tkTechName">ยังไม่มอบหมาย</span></div></div><div><div class="mk">วันที่สร้าง</div><div class="mv">24 มิ.ย. 2026</div></div><div><div class="mk">SLA คงเหลือ</div><div style="color:var(--amber-600);font-weight:800;font-size:20px">2h 14m</div><div class="slaw mt4"><div class="slab"><div class="slaf sfa" style="width:28%"></div></div><span class="spa">28%</span></div></div><div><div class="mk">กำหนดส่ง</div><div class="mv" style="color:var(--amber-600)">25 มิ.ย. 2026</div></div></div>
-        <div class="div"></div><div class="slbl_ mb8">รายละเอียด</div><div style="font-size:13.5px;line-height:1.8">VPN หลุดหลังใช้งาน ~30 นาที Error: <code style="background:var(--s1);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--blue-600)">"The remote connection was lost."</code></div>
+      <div class="card"><div class="mg mb16"><div><div class="mk">Priority</div><div id="tkPriBadge">—</div></div><div><div class="mk">Status</div><div id="tkStatusBadge">—</div></div><div><div class="mk">หมวดหมู่</div><div class="mv" id="tkCategory">—</div></div><div><div class="mk">แผนก</div><div class="mv" id="tkDept">—</div></div><div><div class="mk">ช่างเทคนิค</div><div class="df ic g8"><div class="av av-xs" style="background:var(--blue-600)" id="tkTechAv">—</div><span class="mv" id="tkTechName">ยังไม่มอบหมาย</span></div></div><div><div class="mk">วันที่สร้าง</div><div class="mv" id="tkCreatedDate">—</div></div><div><div class="mk">SLA คงเหลือ</div><div style="color:var(--amber-600);font-weight:800;font-size:20px" id="tkSlaPct">—</div><div class="slaw mt4"><div class="slab"><div class="slaf sfa" id="tkSlaBar" style="width:0%"></div></div><span class="spa" id="tkSlaPctSpan">—</span></div></div><div><div class="mk">กำหนดส่ง</div><div class="mv" style="color:var(--amber-600)" id="tkDeadline">—</div></div></div>
+        <div class="div"></div><div class="slbl_ mb8">รายละเอียด</div><div style="font-size:13.5px;line-height:1.8" id="tkDescription">—</div>
         <div class="div"></div>
-        <div class="fg f2"><div class="fgg"><label class="flbl">Resolution</label><textarea class="fta" style="min-height:80px" placeholder="วิธีแก้..."></textarea></div><div class="fgg"><label class="flbl">Root Cause</label><textarea class="fta" style="min-height:80px" placeholder="สาเหตุ..."></textarea></div></div>
+        <div class="fg f2"><div class="fgg"><label class="flbl">Resolution</label><textarea class="fta" id="tkResolution" style="min-height:80px" placeholder="วิธีแก้..."></textarea></div><div class="fgg"><label class="flbl">Root Cause</label><textarea class="fta" id="tkRootCause" style="min-height:80px" placeholder="สาเหตุ..."></textarea></div></div>
       </div>
-      <div class="card"><div class="chdr"><div class="ctit"><i class="ti ti-message-dots"></i>ความคิดเห็น</div><div class="df g6px"><div class="fc on" style="font-size:11px;padding:3px 10px">สาธารณะ</div><div class="fc" style="font-size:11px;padding:3px 10px">Internal Note</div></div></div><div class="df g12 is" style="padding:12px 0;border-bottom:1px solid var(--b0)"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0" id="cmtAv">—</div><div style="flex:1"><div class="xs mu mb4" id="cmtAuthor">ผู้รับผิดชอบ</div><div style="font-size:13.5px;line-height:1.6">ตรวจสอบและ reproduce ปัญหาได้แล้ว กำลังแก้ไข VPN timeout setting ครับ</div></div></div><div class="df g10 is mt12"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0">AU</div><textarea class="fta" style="flex:1;min-height:64px" placeholder="เพิ่มความคิดเห็น..."></textarea><button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="toast('โพสต์แล้ว','success','')"><i class="ti ti-send"></i></button></div></div>
-      <div class="card"><div class="ctit mb12"><i class="ti ti-star"></i>ประเมิน CSAT</div><div id="csStars" class="df g6px mb10" onmouseleave="rsStars()"><span class="star" onclick="setR(1)" onmouseover="hlR(1)">★</span><span class="star" onclick="setR(2)" onmouseover="hlR(2)">★</span><span class="star" onclick="setR(3)" onmouseover="hlR(3)">★</span><span class="star" onclick="setR(4)" onmouseover="hlR(4)">★</span><span class="star" onclick="setR(5)" onmouseover="hlR(5)">★</span></div><textarea class="fta" style="min-height:56px" placeholder="ความคิดเห็น..."></textarea><button class="btn pri mt8" onclick="toast('ส่งการประเมินแล้ว','success','CSAT')"><i class="ti ti-send"></i>ส่ง</button></div>
+      <div class="card"><div class="chdr"><div class="ctit"><i class="ti ti-message-dots"></i>ความคิดเห็น</div><div class="df g6px"><div class="fc on" style="font-size:11px;padding:3px 10px">สาธารณะ</div><div class="fc" style="font-size:11px;padding:3px 10px">Internal Note</div></div></div><div id="tkCommentsList"><div class="xs mu" style="padding:12px 0">ยังไม่มีความคิดเห็น</div></div><div class="df g10 is mt12"><div class="av av-sm" style="background:var(--blue-600);flex-shrink:0" id="tkMyAv">—</div><textarea class="fta" id="tkNewComment" style="flex:1;min-height:64px" placeholder="เพิ่มความคิดเห็น..."></textarea><button class="btn pri" style="flex-shrink:0;align-self:flex-end" onclick="postTicketComment()"><i class="ti ti-send"></i></button></div></div>
+      <div class="card"><div class="ctit mb12"><i class="ti ti-star"></i>ประเมิน CSAT</div><div id="csStars" class="df g6px mb10" onmouseleave="rsStars()"><span class="star" onclick="setR(1)" onmouseover="hlR(1)">★</span><span class="star" onclick="setR(2)" onmouseover="hlR(2)">★</span><span class="star" onclick="setR(3)" onmouseover="hlR(3)">★</span><span class="star" onclick="setR(4)" onmouseover="hlR(4)">★</span><span class="star" onclick="setR(5)" onmouseover="hlR(5)">★</span></div><textarea class="fta" id="tkCsatNote" style="min-height:56px" placeholder="ความคิดเห็น..."></textarea><button class="btn pri mt8" onclick="submitCsat()"><i class="ti ti-send"></i>ส่ง</button></div>
       <div class="card"><div class="ctit mb16"><i class="ti ti-timeline"></i>Timeline</div><div class="tl" id="dTl"></div></div>
     </div>
     <div class="dfc g16">
       <div class="card"><div class="ctit mb12"><i class="ti ti-user"></i>ผู้แจ้ง</div><div class="df ic g12 mb12"><div class="av av-md" style="background:var(--green-600)" id="tkReqAv">—</div><div><div class="w7" id="tkReqName">ผู้แจ้ง</div><div class="xs mu" id="tkReqDept">—</div></div></div><div class="dfc g4px"><div class="inr"><i class="ti ti-mail"></i><span id="tkReqEmail">—</span></div><div class="inr"><i class="ti ti-phone"></i><span id="tkReqPhone">—</span></div></div></div>
-      <div class="card"><div class="ctit mb12"><i class="ti ti-device-laptop"></i>สินทรัพย์</div><div class="dfc g4px xs"><div><strong id="asDetailCode">—</strong></div><div class="mu" id="asDetailName">—</div><div class="mu">Win 11 · 16GB · 512GB</div><span class="badge bact mt6">ใช้งานปกติ</span></div></div>
-      <div class="card"><div class="ctit mb10"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div class="ach mb6" onclick="toast('ดาวน์โหลด...','info','')"><i class="ti ti-file-type-png" style="font-size:22px;color:var(--blue-600)"></i><div style="flex:1;min-width:0"><div class="xs w6 tr">screenshot_vpn.png</div><div class="xs mu">248 KB</div></div><i class="ti ti-download" style="color:var(--t2)"></i></div></div>
-      <div class="card"><div class="ctit mb10"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb10"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="tkAssignSel" onchange="toast('มอบหมาย: '+this.value,'success','')"><option value="">— เลือกช่าง —</option></select></div><button class="btn dan cw" style="justify-content:center" onclick="toast('Escalate แล้ว','warning','')"><i class="ti ti-arrow-up"></i>Escalate ไปยัง IT Manager</button></div>
+      <div class="card" id="tkAssetCard" style="display:none"><div class="ctit mb12"><i class="ti ti-device-laptop"></i>สินทรัพย์</div><div class="dfc g4px xs"><div><strong id="asDetailCode">—</strong></div><div class="mu" id="asDetailName">—</div></div></div>
+      <div class="card"><div class="ctit mb10"><i class="ti ti-paperclip"></i>ไฟล์แนบ</div><div id="tkAttachList"><div class="xs mu">ไม่มีไฟล์แนบ</div></div></div>
+      <div class="card"><div class="ctit mb10"><i class="ti ti-user-check"></i>มอบหมาย</div><div class="fgg mb10"><label class="flbl">ช่างเทคนิค</label><select class="fsel" id="tkAssignSel" onchange="assignTechnician(this.value)"><option value="">— เลือกช่าง —</option></select></div><button class="btn dan cw" style="justify-content:center" onclick="escalateTicket()"><i class="ti ti-arrow-up"></i>Escalate ไปยัง IT Manager</button></div>
     </div>
   </div>
 </div>
@@ -1184,10 +1184,10 @@ tbody tr.rc{cursor:pointer}
 <div class="pg" id="pg-assets">
   <div class="phdr"><div><h2>สินทรัพย์ IT (CMDB)</h2><p>จัดการอุปกรณ์และสินทรัพย์ทั้งหมดขององค์กร</p></div><div class="pact"><button class="btn" onclick="exportTickets()"><i class="ti ti-file-export"></i>Export</button><button class="btn" onclick="toast('QR Scan','info','')"><i class="ti ti-qrcode"></i>QR Scan</button><button class="btn pri" onclick="openM('addAsM')"><i class="ti ti-plus"></i>เพิ่มสินทรัพย์</button></div></div>
   <div class="sg g4 mb16">
-    <div class="sc"><div class="sic ib"><i class="ti ti-devices"></i></div><div class="slbl">ทั้งหมด</div><div class="sval">842</div><div class="smeta">อุปกรณ์ทั้งสิ้น</div></div>
-    <div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">ใช้งาน</div><div class="sval" style="color:var(--green-600)">756</div><div class="smeta">ปกติ 90%</div></div>
-    <div class="sc"><div class="sic ia"><i class="ti ti-tool"></i></div><div class="slbl">ซ่อมบำรุง</div><div class="sval" style="color:var(--amber-600)">48</div><div class="smeta">5.7%</div></div>
-    <div class="sc"><div class="sic ir"><i class="ti ti-calendar-off"></i></div><div class="slbl">ประกันใกล้หมด</div><div class="sval" style="color:var(--red-600)">23</div><div class="smeta">ภายใน 90 วัน</div></div>
+    <div class="sc"><div class="sic ib"><i class="ti ti-devices"></i></div><div class="slbl">ทั้งหมด</div><div class="sval" id="asStatTotal">0</div><div class="smeta">อุปกรณ์ทั้งสิ้น</div></div>
+    <div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">ใช้งาน</div><div class="sval" style="color:var(--green-600)" id="asStatActive">0</div><div class="smeta" id="asStatActiveMeta">—</div></div>
+    <div class="sc"><div class="sic ia"><i class="ti ti-tool"></i></div><div class="slbl">ซ่อมบำรุง</div><div class="sval" style="color:var(--amber-600)" id="asStatRepair">0</div><div class="smeta" id="asStatRepairMeta">—</div></div>
+    <div class="sc"><div class="sic ir"><i class="ti ti-calendar-off"></i></div><div class="slbl">ประกันใกล้หมด</div><div class="sval" style="color:var(--red-600)" id="asStatWarranty">0</div><div class="smeta">ภายใน 90 วัน</div></div>
   </div>
   <div class="card">
     <div class="fbar">
@@ -1300,7 +1300,7 @@ tbody tr.rc{cursor:pointer}
       <!-- TICKETS TAB -->
       <div id="asTab-tickets" style="display:none">
         <div class="card"><div class="tw"><table><thead><tr><th>Ticket #</th><th>หัวข้อ</th><th>Status</th><th>วันที่</th><th>ช่าง</th></tr></thead>
-          <tbody><tr class="rc" onclick="nav('detail')"><td class="tid">#TK-0074</td><td class="ttr">VPN หลุดทุก 30 นาที</td><td><span class="badge bpr"><span class="bd"></span>In Progress</span></td><td class="xs mu">24 มิ.ย. 2026</td><td class="xs">กฤต ส.</td></tr><tr class="rc" onclick="nav('detail')"><td class="tid">#TK-0058</td><td class="ttr">Network timeout บ่อย</td><td><span class="badge bre"><span class="bd"></span>Resolved</span></td><td class="xs mu">10 มิ.ย. 2026</td><td class="xs">ณัฐยา ว.</td></tr><tr class="rc" onclick="nav('detail')"><td class="tid">#TK-0041</td><td class="ttr">ลง VPN Client ใหม่หลัง format</td><td><span class="badge bre"><span class="bd"></span>Resolved</span></td><td class="xs mu">22 พ.ค. 2026</td><td class="xs">กฤต ส.</td></tr></tbody>
+          <tbody id="asTicketHistBody"><tr><td colspan="5"><div class="est"><i class="ti ti-ticket"></i><h3>ไม่มี Ticket</h3></div></td></tr></tbody>
         </table></div></div>
       </div>
 
@@ -1343,10 +1343,10 @@ tbody tr.rc{cursor:pointer}
 <div class="pg" id="pg-documents">
   <div class="phdr"><div><h2>คลังเอกสาร Asset</h2><p>เอกสารสินทรัพย์ทั้งหมด — ใบเสร็จ, ใบรับประกัน, คู่มือ</p></div><div class="pact"><button class="btn" onclick="toast('Export รายการ','info','')"><i class="ti ti-file-export"></i>Export</button><button class="btn pri" onclick="openM('addDocM')"><i class="ti ti-upload"></i>อัปโหลดเอกสาร</button></div></div>
   <div class="sg g4 mb16">
-    <div class="sc"><div class="sic ib"><i class="ti ti-files"></i></div><div class="slbl">เอกสารทั้งหมด</div><div class="sval">284</div></div>
-    <div class="sc"><div class="sic ig"><i class="ti ti-receipt"></i></div><div class="slbl">ใบเสร็จ</div><div class="sval" style="color:var(--green-600)">98</div></div>
-    <div class="sc"><div class="sic ia"><i class="ti ti-shield-check"></i></div><div class="slbl">ใบรับประกัน</div><div class="sval" style="color:var(--amber-600)">124</div></div>
-    <div class="sc"><div class="sic ip"><i class="ti ti-book"></i></div><div class="slbl">คู่มือ & อื่นๆ</div><div class="sval" style="color:var(--purple-600)">62</div></div>
+    <div class="sc"><div class="sic ib"><i class="ti ti-files"></i></div><div class="slbl">เอกสารทั้งหมด</div><div class="sval" id="docStatTotal">0</div></div>
+    <div class="sc"><div class="sic ig"><i class="ti ti-receipt"></i></div><div class="slbl">ใบเสร็จ</div><div class="sval" style="color:var(--green-600)" id="docStatReceipt">0</div></div>
+    <div class="sc"><div class="sic ia"><i class="ti ti-shield-check"></i></div><div class="slbl">ใบรับประกัน</div><div class="sval" style="color:var(--amber-600)" id="docStatWarranty">0</div></div>
+    <div class="sc"><div class="sic ip"><i class="ti ti-book"></i></div><div class="slbl">คู่มือ & อื่นๆ</div><div class="sval" style="color:var(--purple-600)" id="docStatOther">0</div></div>
   </div>
   <div class="card mb16">
     <div class="fbar">
@@ -1375,7 +1375,7 @@ tbody tr.rc{cursor:pointer}
 
 <div class="pg" id="pg-approval">
   <div class="phdr"><div><h2>ระบบอนุมัติ</h2></div></div>
-  <div class="sg g4 mb16"><div class="sc"><div class="sic ia"><i class="ti ti-hourglass"></i></div><div class="slbl">รอการอนุมัติ</div><div class="sval" style="color:var(--amber-600)">3</div></div><div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">อนุมัติแล้ว</div><div class="sval" style="color:var(--green-600)">28</div></div><div class="sc"><div class="sic ir"><i class="ti ti-x"></i></div><div class="slbl">ปฏิเสธ</div><div class="sval" style="color:var(--red-600)">4</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">เวลาเฉลี่ย</div><div class="sval">2.1h</div></div></div>
+  <div class="sg g4 mb16"><div class="sc"><div class="sic ia"><i class="ti ti-hourglass"></i></div><div class="slbl">รอการอนุมัติ</div><div class="sval" style="color:var(--amber-600)" id="apvStatPending">0</div></div><div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">อนุมัติแล้ว</div><div class="sval" style="color:var(--green-600)" id="apvStatApproved">0</div></div><div class="sc"><div class="sic ir"><i class="ti ti-x"></i></div><div class="slbl">ปฏิเสธ</div><div class="sval" style="color:var(--red-600)" id="apvStatRejected">0</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">เวลาเฉลี่ย</div><div class="sval" id="apvStatAvg">—</div></div></div>
   <div class="gr2"><div class="card"><div class="ctit mb16"><i class="ti ti-clipboard-list"></i>รอการอนุมัติ</div><div id="apvList"></div></div><div class="card"><div class="ctit mb16"><i class="ti ti-settings-cog"></i>Workflow Builder</div><div id="wfBldr"></div><button class="btn mt8" onclick="toast('เพิ่ม Step','info','')"><i class="ti ti-plus"></i>เพิ่ม Step</button></div></div>
 </div>
 
@@ -1390,14 +1390,14 @@ tbody tr.rc{cursor:pointer}
 
 <div class="pg" id="pg-reports">
   <div class="phdr"><div><h2>รายงาน</h2></div><div class="pact"><select class="fsel" style="width:auto"><option>มิถุนายน 2026</option><option>พฤษภาคม 2026</option><option>Q2 2026</option></select><button class="btn" onclick="toast('PDF','info','')"><i class="ti ti-file-type-pdf"></i>PDF</button><button class="btn" onclick="toast('Excel','info','')"><i class="ti ti-table"></i>Excel</button></div></div>
-  <div class="sg g4 mb16"><div class="sc"><div class="sic ib"><i class="ti ti-ticket"></i></div><div class="slbl">Ticket เดือนนี้</div><div class="sval">284</div><div class="smeta"><span class="sup">↑ 8%</span></div></div><div class="sc"><div class="sic ig"><i class="ti ti-shield-check"></i></div><div class="slbl">SLA Compliance</div><div class="sval">91.4%</div><div class="smeta">เป้า 95%</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">First Response</div><div class="sval">18m</div><div class="smeta"><span class="sup">↓ 4m</span></div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock-hour-4"></i></div><div class="slbl">เวลาแก้ไขเฉลี่ย</div><div class="sval">4.2h</div></div></div>
+  <div class="sg g4 mb16"><div class="sc"><div class="sic ib"><i class="ti ti-ticket"></i></div><div class="slbl">Ticket เดือนนี้</div><div class="sval" id="repStatTotal">0</div><div class="smeta" id="repStatTotalMeta">—</div></div><div class="sc"><div class="sic ig"><i class="ti ti-shield-check"></i></div><div class="slbl">SLA Compliance</div><div class="sval" id="repStatSla">—</div><div class="smeta">เป้า 95%</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">First Response</div><div class="sval" id="repStatFirst">—</div><div class="smeta">—</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock-hour-4"></i></div><div class="slbl">เวลาแก้ไขเฉลี่ย</div><div class="sval" id="repStatAvg">—</div></div></div>
   <div class="gr2 mb16"><div class="card"><div class="ctit mb14"><i class="ti ti-chart-bar"></i>Ticket รายเดือน</div><div class="chw" style="height:220px"><canvas id="cRepBar"></canvas></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-chart-area"></i>SLA Trend</div><div class="chw" style="height:220px"><canvas id="cSlaLine"></canvas></div></div></div>
   <div class="gr2"><div class="card"><div class="ctit mb14"><i class="ti ti-users"></i>ประสิทธิภาพช่าง</div><div id="rTech"></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-tag"></i>สถิติหมวดหมู่</div><div id="rCat"></div></div></div>
 </div>
 
 <div class="pg" id="pg-exec">
   <div class="phdr"><div><h2>📊 Executive Dashboard</h2><p>ภาพรวมสำหรับผู้บริหาร</p></div><div class="pact"><button class="btn" onclick="toast('รีเฟรช','info','')"><i class="ti ti-refresh"></i>Refresh</button><button class="btn pri" onclick="toast('ส่งรายงาน Email','success','')"><i class="ti ti-mail"></i>ส่งรายงาน</button></div></div>
-  <div class="sg g6 mb16"><div class="sc csm"><div class="slbl">SLA Compliance</div><div class="sval" style="font-size:22px;color:var(--green-600)">91.4%</div></div><div class="sc csm"><div class="slbl">CSAT</div><div class="sval" style="font-size:22px;color:#F5A623">4.6★</div></div><div class="sc csm"><div class="slbl">Open</div><div class="sval" style="font-size:22px;color:var(--blue-600)">251</div></div><div class="sc csm"><div class="slbl">Critical</div><div class="sval" style="font-size:22px;color:var(--red-600)">7</div></div><div class="sc csm"><div class="slbl">Res.Time</div><div class="sval" style="font-size:22px">4.2h</div></div><div class="sc csm"><div class="slbl">Resolved</div><div class="sval" style="font-size:22px;color:var(--green-600)">142</div></div></div>
+  <div class="sg g6 mb16"><div class="sc csm"><div class="slbl">SLA Compliance</div><div class="sval" style="font-size:22px;color:var(--green-600)" id="exStatSla">—</div></div><div class="sc csm"><div class="slbl">CSAT</div><div class="sval" style="font-size:22px;color:#F5A623" id="exStatCsat">—</div></div><div class="sc csm"><div class="slbl">Open</div><div class="sval" style="font-size:22px;color:var(--blue-600)" id="exStatOpen">0</div></div><div class="sc csm"><div class="slbl">Critical</div><div class="sval" style="font-size:22px;color:var(--red-600)" id="exStatCritical">0</div></div><div class="sc csm"><div class="slbl">Res.Time</div><div class="sval" style="font-size:22px" id="exStatAvg">—</div></div><div class="sc csm"><div class="slbl">Resolved</div><div class="sval" style="font-size:22px;color:var(--green-600)" id="exStatResolved">0</div></div></div>
   <div class="gr2 mb16"><div class="card"><div class="ctit mb14"><i class="ti ti-chart-line"></i>Volume Trend</div><div class="chw" style="height:240px"><canvas id="cExTrend"></canvas></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-chart-radar"></i>Department Performance</div><div class="chw" style="height:240px"><canvas id="cExRadar"></canvas></div></div></div>
   <div class="gr2"><div class="card"><div class="ctit mb14"><i class="ti ti-star"></i>CSAT รายเดือน</div><div class="chw" style="height:200px"><canvas id="cCsat"></canvas></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-chart-pie"></i>Priority Distribution</div><div class="chw" style="height:200px"><canvas id="cPri"></canvas></div></div></div>
 </div>
@@ -2384,7 +2384,7 @@ function renderDashboard(){
   const SLA_WARN_D = getSlaWarnings();
   if(s) s.innerHTML=SLA_WARN_D.map(x=>`
     <div style="padding:10px 0;border-bottom:1px solid var(--b0)">
-      <div class="df jb xs mb6"><span class="w7" style="color:var(--blue-600);cursor:pointer" onclick="nav('detail')">${x.id}</span><span class="w7" style="color:${x.col}">${x.pct}% · ${x.time}</span></div>
+      <div class="df jb xs mb6"><span class="w7" style="color:var(--blue-600);cursor:pointer" onclick="viewTicketDetail('${x.id}')">${x.id}</span><span class="w7" style="color:${x.col}">${x.pct}% · ${x.time}</span></div>
       <div class="xs mu tr mb8">${x.sub}</div>
       <div class="slaw"><div class="slab"><div class="slaf ${x.pct<30?'sfr':'sfa'}" style="width:${x.pct}%"></div></div></div>
     </div>`).join('');
@@ -2434,7 +2434,7 @@ function renderTickets(){
   const el=document.getElementById('tkBody');
   if(!el) return;
   el.innerHTML=data.length?data.map(t=>`
-    <tr class="rc" onclick="nav('detail')">
+    <tr class="rc" onclick="viewTicketDetail('${t.id}')">
       <td><input type="checkbox" onclick="event.stopPropagation()"></td>
       <td class="tid">${t.id}</td>
       <td class="ttr">${t.sub}</td>
@@ -2446,7 +2446,7 @@ function renderTickets(){
       <td class="xs">${t.tech}</td>
       <td style="min-width:80px"><div class="df ic g6px"><div style="width:7px;height:7px;border-radius:50%;background:${slaTC(t.sla)};flex-shrink:0"></div><div style="flex:1"><div class="xs w7" style="color:${slaTC(t.sla)}">${t.sla}%</div><div class="slaw mt2"><div class="slab" style="min-width:50px"><div class="slaf ${slaCol(t.sla)}" style="width:${t.sla}%"></div></div></div></div></div></td>
       <td class="xs mu">${t.cr}</td>
-      <td><div class="df g4px"><button class="btn xs ghost" onclick="event.stopPropagation();nav('detail')"><i class="ti ti-eye"></i></button><button class="btn xs ghost" onclick="event.stopPropagation();toast('แก้ไข','info','')"><i class="ti ti-edit"></i></button></div></td>
+      <td><div class="df g4px"><button class="btn xs ghost" onclick="event.stopPropagation();viewTicketDetail('${t.id}')"><i class="ti ti-eye"></i></button><button class="btn xs ghost" onclick="event.stopPropagation();toast('แก้ไข','info','')"><i class="ti ti-edit"></i></button></div></td>
     </tr>`).join(''):`<tr><td colspan="12"><div class="est"><i class="ti ti-search"></i><h3>ไม่พบ Ticket</h3><p>ลองเปลี่ยนคำค้นหา</p></div></td></tr>`;
   const lbl=document.getElementById('tkLbl');
   if(lbl) lbl.textContent=`${data.length} รายการ`;
@@ -2458,10 +2458,10 @@ function renderAssigned(){
   const el=document.getElementById('asnBody');
   if(!el) return;
   el.innerHTML=DB.tickets.filter(t=>t.tech!=='—').slice(0,6).map(t=>`
-    <tr class="rc" onclick="nav('detail')">
+    <tr class="rc" onclick="viewTicketDetail('${t.id}')">
       <td class="tid">${t.id}</td><td class="ttr">${t.sub}</td><td class="xs">${t.req}</td><td>${priBadge(t.pri)}</td><td>${statusBadge(t.status)}</td>
       <td><div class="df ic g6px"><div style="width:7px;height:7px;border-radius:50%;background:${slaTC(t.sla)}"></div><span class="xs w7" style="color:${slaTC(t.sla)}">${t.sla}%</span><div class="slab" style="width:50px"><div class="slaf ${slaCol(t.sla)}" style="width:${t.sla}%"></div></div></div></td>
-      <td><button class="btn xs pri" onclick="event.stopPropagation();nav('detail')"><i class="ti ti-edit"></i>อัปเดต</button></td>
+      <td><button class="btn xs pri" onclick="event.stopPropagation();viewTicketDetail('${t.id}')"><i class="ti ti-edit"></i>อัปเดต</button></td>
     </tr>`).join('');
 }
 
@@ -2631,7 +2631,7 @@ const U_FREQ=[];
 function renderUHome(){
   const rec=document.getElementById('uRecentTickets');
   if(rec) rec.innerHTML=DB.tickets.slice(0,4).map(t=>`
-    <div class="uticket-card mb8" onclick="navU('u-detail')">
+    <div class="uticket-card mb8" onclick="viewTicketDetail('${t.id}')">
       <div class="uticket-top"><div><div class="uticket-id">${t.id}</div><div class="uticket-title">${t.sub}</div></div>${statusBadge(t.status)}</div>
       <div class="uticket-meta"><span><i class="ti ti-calendar"></i>${t.cr}</span><span><i class="ti ti-category"></i>${t.cat}</span><span style="color:${slaTC(t.sla)};font-weight:700"><i class="ti ti-clock"></i>SLA ${t.sla}%</span></div>
     </div>`).join('');
@@ -2645,7 +2645,7 @@ function renderUTickets(filter='all'){
   const allowed=map[filter];
   const data=DB.tickets.filter(t=>!allowed||allowed.includes(t.status));
   el.innerHTML=data.length?data.map(t=>`
-    <div class="uticket-card" onclick="navU('u-detail')">
+    <div class="uticket-card" onclick="viewTicketDetail('${t.id}')">
       <div class="uticket-top"><div><div class="uticket-id">${t.id}</div><div class="uticket-title">${t.sub}</div></div><div class="df g8px">${priBadge(t.pri)} ${statusBadge(t.status)}</div></div>
       <div class="uticket-meta"><span><i class="ti ti-calendar"></i>${t.cr}</span><span><i class="ti ti-category"></i>${t.cat}</span>${t.tech!=='—'?`<span><i class="ti ti-user-check"></i>${t.tech}</span>`:''}</span><span style="color:${slaTC(t.sla)};font-weight:700"><i class="ti ti-clock"></i>SLA ${t.sla}%</span></div>
       <div class="slaw mt10"><div class="slab"><div class="slaf ${slaCol(t.sla)}" style="width:${t.sla}%"></div></div></div>
@@ -3873,6 +3873,379 @@ const _origRenderDash = renderDashboard;
 renderDashboard = function() {
   _origRenderDash();
   renderEmptyDashboard();
+};
+</script>
+
+
+<script>
+// ============================================================
+//  TICKET DETAIL — fully dynamic, driven by DB.tickets
+// ============================================================
+window.currentTicketId = null;
+
+function viewTicketDetail(ticketId) {
+  window.currentTicketId = ticketId;
+  currentRole === 'admin' ? nav('detail') : navU('u-detail');
+}
+
+function findTicket(id) {
+  return DB.tickets.find(t => t.id === id) || DB.tickets[0] || null;
+}
+
+function renderTicketDetailPage() {
+  const t = findTicket(window.currentTicketId);
+  if (!t) {
+    const el = document.getElementById('tkDetailSubject');
+    if (el) el.textContent = 'ไม่พบ Ticket';
+    return;
+  }
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
+  const setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+  set('tkDetailId', t.id);
+  set('tkDetailSubject', t.sub || '(ไม่มีหัวข้อ)');
+  setHtml('tkPriBadge', priBadge(t.pri));
+  setHtml('tkStatusBadge', statusBadge(t.status));
+  set('tkCategory', `${t.cat || '—'}${t.subcategory ? ' › ' + t.subcategory : ''}`);
+  set('tkDept', t.dept || '—');
+  set('tkTechName', t.tech && t.tech !== '—' ? t.tech : 'ยังไม่มอบหมาย');
+  const techAv = document.getElementById('tkTechAv');
+  if (techAv) techAv.textContent = (t.tech && t.tech !== '—') ? t.tech.split(' ').map(w=>w[0]).join('').substring(0,2) : '—';
+  set('tkCreatedDate', t.cr || '—');
+
+  const slaPct = Number(t.sla ?? 100);
+  set('tkSlaPct', slaPct + '%');
+  set('tkSlaPctSpan', slaPct + '%');
+  const bar = document.getElementById('tkSlaBar');
+  if (bar) { bar.style.width = slaPct + '%'; bar.className = 'slaf ' + slaCol(slaPct); }
+  set('tkSlaText', slaPct < 25 ? 'ใกล้หมดเวลา' : slaPct + '% เหลือ');
+  set('tkDeadline', t.slaDeadline ? new Date(t.slaDeadline).toLocaleDateString('th-TH') : '—');
+
+  const banner = document.getElementById('tkSlaBanner');
+  if (banner) banner.style.display = (slaPct < 40 && !['resolved','closed'].includes(t.status)) ? 'flex' : 'none';
+
+  set('tkDescription', t.description || t.sub || 'ไม่มีรายละเอียดเพิ่มเติม');
+  document.getElementById('tkResolution') && (document.getElementById('tkResolution').value = t.resolution || '');
+  document.getElementById('tkRootCause') && (document.getElementById('tkRootCause').value = t.rootCause || '');
+
+  // Status dropdown
+  const statusSel = document.getElementById('tkStatusSel');
+  if (statusSel) statusSel.value = t.status || 'new';
+
+  // Requester info
+  set('tkReqName', t.req || t.requester || 'ไม่ระบุ');
+  set('tkReqDept', t.dept || '—');
+  set('tkReqEmail', t.email || '—');
+  set('tkReqPhone', t.phone || '—');
+  const reqAv = document.getElementById('tkReqAv');
+  if (reqAv) reqAv.textContent = (t.req||t.requester||'? ?').split(' ').map(w=>w[0]).join('').substring(0,2);
+
+  // Asset card
+  const assetCard = document.getElementById('tkAssetCard');
+  if (t.assetCode) {
+    const asset = DB.assets.find(a => a.code === t.assetCode);
+    if (assetCard) assetCard.style.display = 'block';
+    set('asDetailCode', t.assetCode);
+    set('asDetailName', asset ? `${asset.brand||''} ${asset.model||asset.name||''}`.trim() : '—');
+  } else if (assetCard) {
+    assetCard.style.display = 'none';
+  }
+
+  // Current user avatar for comment box
+  if (currentUser) {
+    const myAv = document.getElementById('tkMyAv');
+    if (myAv) myAv.textContent = ((currentUser.firstName||'?')[0]+(currentUser.lastName||'?')[0]).toUpperCase();
+  }
+
+  // Timeline — build from what we actually know
+  const tl = document.getElementById('dTl');
+  if (tl) {
+    const items = [
+      { t:`สร้าง Ticket โดย ${t.req||t.requester||'ผู้ใช้'}`, time:t.cr||'—', dot:'f' },
+    ];
+    if (t.tech && t.tech !== '—') items.push({ t:`มอบหมายให้ ${t.tech}`, time:'—', dot:'f' });
+    if (['progress','waiting','testing'].includes(t.status)) items.push({ t:`สถานะปัจจุบัน: ${t.status}`, time:'—', dot:'' });
+    if (['resolved','closed'].includes(t.status)) items.push({ t:'แก้ไขเสร็จสิ้น', time:t.updatedAt ? new Date(t.updatedAt).toLocaleString('th-TH') : '—', dot:'g' });
+    tl.innerHTML = items.map(x=>`<div class="tli"><div class="tleft"><div class="tldot ${x.dot}"></div><div class="tlln"></div></div><div class="tlb"><div class="tlt">${x.t}</div><div class="tlts">${x.time}</div></div></div>`).join('');
+  }
+
+  // Assign dropdown — select current tech if any
+  const assignSel = document.getElementById('tkAssignSel');
+  if (assignSel && t.technicianId) assignSel.value = t.technicianId;
+
+  // ── User-portal detail view (separate simpler page) ──────
+  set('uTkDetailId', t.id);
+  set('uTkDetailSubject', t.sub || '(ไม่มีหัวข้อ)');
+  const uBadge = document.getElementById('uTkStatusBadge');
+  if (uBadge) uBadge.outerHTML = statusBadge(t.status).replace('class="badge', 'id="uTkStatusBadge" style="font-size:13px;padding:7px 14px" class="badge');
+  set('uTkUpdated', t.cr ? `แจ้งเมื่อ ${t.cr}` : '—');
+  set('uTkId2', t.id);
+  set('uTkDate', t.cr || '—');
+  setHtml('uTkPriBadge', priBadge(t.pri));
+  set('uTkTechName', t.tech && t.tech !== '—' ? t.tech : 'ยังไม่มอบหมาย');
+  const uTechAv = document.getElementById('uTkTechAv');
+  if (uTechAv) uTechAv.textContent = (t.tech && t.tech !== '—') ? t.tech.split(' ').map(w=>w[0]).join('').substring(0,2) : '—';
+  set('uTkDescription', t.description || t.sub || 'ไม่มีรายละเอียดเพิ่มเติม');
+
+  const progressCard = document.getElementById('uTkProgressCard');
+  if (progressCard) {
+    if (['progress','testing'].includes(t.status)) {
+      progressCard.style.display = 'block';
+      set('uTkProgressNote', t.resolution || 'ทีม IT กำลังตรวจสอบและดำเนินการแก้ไขปัญหาของคุณ');
+    } else {
+      progressCard.style.display = 'none';
+    }
+  }
+  if (currentUser) {
+    const uMyAv = document.getElementById('uTkMyAv');
+    if (uMyAv) uMyAv.textContent = ((currentUser.firstName||'?')[0]+(currentUser.lastName||'?')[0]).toUpperCase();
+  }
+}
+
+function postUserTicketMessage() {
+  const ta = document.getElementById('uTkNewMsg');
+  const text = ta?.value?.trim();
+  if (!text) { toast('กรุณาพิมพ์ข้อความ', 'error', ''); return; }
+  toast('ส่งข้อความแล้ว ทีม IT จะได้รับแจ้งเตือน', 'success', '');
+  if (ta) ta.value = '';
+}
+
+// ── Action bar functions ────────────────────────────────────
+function showTicketQR() {
+  const t = findTicket(window.currentTicketId);
+  if (!t) return;
+  const url = `${location.origin}${location.pathname}?ticket=${encodeURIComponent(t.id)}`;
+  const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`;
+
+  let m = document.getElementById('qrModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mov';
+    m.id = 'qrModal';
+    m.onclick = function(e){ if(e.target===this) closeM('qrModal'); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="mdl msm"><div class="mhdr"><h3><i class="ti ti-qrcode"></i> QR Code — ${t.id}</h3><button class="mcl" onclick="closeM('qrModal')"><i class="ti ti-x"></i></button></div>
+    <div class="mbdy" style="text-align:center">
+      <img src="${qrImg}" alt="QR Code" style="width:220px;height:220px;border-radius:var(--r);border:1px solid var(--b0)">
+      <div class="xs mu mt12">สแกนเพื่อเปิด Ticket ${t.id} โดยตรง</div>
+    </div>
+    <div class="mftr"><button class="btn pri cw" style="justify-content:center" onclick="closeM('qrModal')">ปิด</button></div></div>`;
+  openM('qrModal');
+}
+
+function printTicket() {
+  window.print();
+}
+
+async function changeTicketStatus(newStatus) {
+  const t = findTicket(window.currentTicketId);
+  if (!t) return;
+  const oldStatus = t.status;
+  t.status = newStatus;
+  setHtmlBadge();
+  saveToLocal();
+
+  await apiUpdateTicket({ id: t.id, status: newStatus });
+  toast(`เปลี่ยนสถานะ: ${oldStatus} → ${newStatus}`, 'success', 'Status');
+  updateNotifBadge();
+
+  function setHtmlBadge() {
+    const el = document.getElementById('tkStatusBadge');
+    if (el) el.innerHTML = statusBadge(newStatus);
+  }
+}
+
+async function saveTicketDetail() {
+  const t = findTicket(window.currentTicketId);
+  if (!t) return;
+  const resolution = document.getElementById('tkResolution')?.value || '';
+  const rootCause  = document.getElementById('tkRootCause')?.value || '';
+
+  t.resolution = resolution;
+  t.rootCause  = rootCause;
+  saveToLocal();
+
+  const btn = event?.target?.closest('button');
+  if (btn) { btn.disabled = true; }
+  await apiUpdateTicket({ id: t.id, resolution, rootCause });
+  if (btn) { btn.disabled = false; }
+  toast('บันทึกข้อมูลแล้ว', 'success', 'บันทึก');
+}
+
+function postTicketComment() {
+  const ta = document.getElementById('tkNewComment');
+  const text = ta?.value?.trim();
+  if (!text) { toast('กรุณาพิมพ์ความคิดเห็น', 'error', ''); return; }
+
+  const list = document.getElementById('tkCommentsList');
+  if (list) {
+    const empty = list.querySelector('.xs.mu');
+    if (empty) empty.remove();
+    const initials = currentUser ? ((currentUser.firstName||'?')[0]+(currentUser.lastName||'?')[0]).toUpperCase() : '—';
+    const name = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'ผู้ใช้';
+    const now = new Date().toLocaleString('th-TH');
+    const div = document.createElement('div');
+    div.className = 'df g12 is';
+    div.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--b0)';
+    div.innerHTML = `<div class="av av-sm" style="background:var(--blue-600);flex-shrink:0">${initials}</div><div style="flex:1"><div class="xs mu mb4">${name} · ${now}</div><div style="font-size:13.5px;line-height:1.6">${text.replace(/</g,'&lt;')}</div></div>`;
+    list.appendChild(div);
+  }
+  if (ta) ta.value = '';
+  toast('โพสต์ความคิดเห็นแล้ว', 'success', '');
+}
+
+function submitCsat() {
+  if (csatRating === 0) { toast('กรุณาให้คะแนนดาว', 'error', ''); return; }
+  toast(`ส่งการประเมิน ${csatRating} ดาวแล้ว ขอบคุณครับ`, 'success', 'CSAT');
+}
+
+async function assignTechnician(techId) {
+  const t = findTicket(window.currentTicketId);
+  if (!t || !techId) return;
+  const tech = DB.users.find(u => u.id === techId);
+  if (!tech) return;
+  const techName = `${tech.firstName} ${tech.lastName}`.trim();
+  t.tech = techName;
+  t.technicianId = techId;
+  set2('tkTechName', techName);
+  saveToLocal();
+  await apiUpdateTicket({ id: t.id, technicianId: techId, technicianName: techName });
+  toast(`มอบหมายให้ ${techName}`, 'success', '');
+
+  function set2(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+}
+
+function escalateTicket() {
+  const t = findTicket(window.currentTicketId);
+  if (!t) return;
+  toast(`Escalate ${t.id} ไปยัง IT Manager แล้ว`, 'warning', 'Escalate');
+  pushNotification({
+    ic:'ti-arrow-up', bg:'var(--red-50)', col:'var(--red-600)',
+    title:'Escalated', desc:`${t.id} ถูก escalate`, time:'ตอนนี้', unread:true,
+  });
+}
+
+// ── Hook renderTicketDetailPage into nav() ──────────────────
+const _origNav = nav;
+nav = function(pg, el) {
+  _origNav(pg, el);
+  if (pg === 'detail') setTimeout(renderTicketDetailPage, 30);
+};
+const _origNavU = navU;
+navU = function(pg, el) {
+  _origNavU(pg, el);
+  if (pg === 'u-detail') setTimeout(renderTicketDetailPage, 30);
+};
+</script>
+
+
+<script>
+// ============================================================
+//  PAGE STAT COMPUTATIONS — 100% derived from DB, zero demo data
+// ============================================================
+function updateAssetsPageStats() {
+  const total  = DB.assets.length;
+  const active = DB.assets.filter(a => a.status === 'active').length;
+  const repair = DB.assets.filter(a => a.status === 'repair').length;
+  const warrantyNear = DB.assets.filter(a => {
+    if (!a.warranty) return false;
+    return !expiredDate(a.warranty) && daysDiff(a.warranty) < 90;
+  }).length;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('asStatTotal', total);
+  set('asStatActive', active);
+  set('asStatActiveMeta', total ? `ปกติ ${Math.round(active/total*100)}%` : '—');
+  set('asStatRepair', repair);
+  set('asStatRepairMeta', total ? `${(repair/total*100).toFixed(1)}%` : '—');
+  set('asStatWarranty', warrantyNear);
+}
+
+function updateDocsPageStats() {
+  const total    = DB.documents.length;
+  const receipt  = DB.documents.filter(d => d.type === 'receipt').length;
+  const warranty = DB.documents.filter(d => d.type === 'warranty').length;
+  const other    = DB.documents.filter(d => !['receipt','warranty'].includes(d.type)).length;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('docStatTotal', total);
+  set('docStatReceipt', receipt);
+  set('docStatWarranty', warranty);
+  set('docStatOther', other);
+}
+
+function updateApprovalPageStats() {
+  const pending  = DB.tickets.filter(t => t.status === 'waiting').length;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('apvStatPending', pending);
+  set('apvStatApproved', 0);
+  set('apvStatRejected', 0);
+  set('apvStatAvg', '—');
+}
+
+function updateReportsPageStats() {
+  const now = new Date();
+  const total = DB.tickets.length;
+  const resolvedCount = DB.tickets.filter(t => ['resolved','closed'].includes(t.status)).length;
+  const slaAvg = total ? Math.round(DB.tickets.reduce((s,t)=>s+Number(t.sla??100),0)/total) : null;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('repStatTotal', total);
+  set('repStatTotalMeta', total ? `${resolvedCount} แก้ไขแล้ว` : 'ยังไม่มีข้อมูล');
+  set('repStatSla', slaAvg !== null ? slaAvg + '%' : '—');
+  set('repStatFirst', '—');
+  set('repStatAvg', '—');
+}
+
+function updateExecPageStats() {
+  const total = DB.tickets.length;
+  const open  = DB.tickets.filter(t => ['open','progress','assigned','new'].includes(t.status)).length;
+  const critical = DB.tickets.filter(t => t.pri === 'critical' && !['resolved','closed'].includes(t.status)).length;
+  const resolved = DB.tickets.filter(t => ['resolved','closed'].includes(t.status)).length;
+  const slaAvg = total ? Math.round(DB.tickets.reduce((s,t)=>s+Number(t.sla??100),0)/total) : null;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('exStatSla', slaAvg !== null ? slaAvg + '%' : '—');
+  set('exStatCsat', '—');
+  set('exStatOpen', open);
+  set('exStatCritical', critical);
+  set('exStatAvg', '—');
+  set('exStatResolved', resolved);
+}
+
+function updateAssetTicketHistory(assetCode) {
+  const body = document.getElementById('asTicketHistBody');
+  if (!body) return;
+  const related = DB.tickets.filter(t => t.assetCode === assetCode);
+  body.innerHTML = related.length ? related.map(t => `
+    <tr class="rc" onclick="viewTicketDetail('${t.id}')">
+      <td class="tid">${t.id}</td><td class="ttr">${t.sub}</td><td>${statusBadge(t.status)}</td>
+      <td class="xs mu">${t.cr||'—'}</td><td class="xs">${t.tech||'—'}</td>
+    </tr>`).join('') : '<tr><td colspan="5"><div class="est"><i class="ti ti-ticket"></i><h3>ไม่มี Ticket</h3></div></td></tr>';
+}
+
+// ── Hook these into the existing render functions ────────────
+const _origRenderAssets = renderAssets;
+renderAssets = function(...args) { _origRenderAssets(...args); updateAssetsPageStats(); };
+
+const _origRenderDocRepo = renderDocRepo;
+renderDocRepo = function(...args) { _origRenderDocRepo(...args); updateDocsPageStats(); };
+
+const _origRenderApproval = renderApproval;
+renderApproval = function(...args) { _origRenderApproval(...args); updateApprovalPageStats(); };
+
+const _origRenderReports = renderReports;
+renderReports = function(...args) { _origRenderReports(...args); updateReportsPageStats(); };
+
+const _origRenderExec = renderExec;
+renderExec = function(...args) { _origRenderExec(...args); updateExecPageStats(); };
+
+const _origRenderAssetDetail = renderAssetDetail;
+renderAssetDetail = function(...args) {
+  _origRenderAssetDetail(...args);
+  updateAssetTicketHistory(window.currentAssetCode || '');
 };
 </script>
 
