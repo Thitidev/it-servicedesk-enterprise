@@ -1243,10 +1243,10 @@ tbody tr.rc{cursor:pointer}
   <div class="phdr">
     <div><div class="xs mu mb4"><span class="bcl" onclick="nav('assets')" style="cursor:pointer">สินทรัพย์</span> <i class="ti ti-chevron-right" style="font-size:11px"></i> <span id="asBreadCode">—</span></div><h2 id="asBreadName">—</h2></div>
     <div class="pact">
-      <button class="btn xs" onclick="toast('พิมพ์ QR Label','info','')"><i class="ti ti-qrcode"></i>QR Label</button>
-      <button class="btn xs" onclick="toast('Print Asset Card','info','')"><i class="ti ti-printer"></i>ใบครุภัณฑ์</button>
+      <button class="btn xs" onclick="showAssetQR()"><i class="ti ti-qrcode"></i>QR Label</button>
+      <button class="btn xs" onclick="printAssetCard()"><i class="ti ti-printer"></i>ใบครุภัณฑ์</button>
       <button class="btn" onclick="openEditAsset(window.currentAssetCode)"><i class="ti ti-edit"></i>แก้ไข</button>
-      <button class="btn dan" onclick="toast('ยืนยันการจำหน่าย?','warning','')"><i class="ti ti-trash"></i>จำหน่าย</button>
+      <button class="btn dan" onclick="disposeAsset()"><i class="ti ti-trash"></i>จำหน่าย</button>
     </div>
   </div>
   <div class="gr31">
@@ -1264,35 +1264,33 @@ tbody tr.rc{cursor:pointer}
         <div class="gr2 mb16">
           <div class="card"><div class="ctit mb14"><i class="ti ti-cpu"></i>ข้อมูลเทคนิค</div>
             <div class="dfc g4px" style="font-size:13.5px">
-              <div class="kl"><span class="mu">CPU</span><strong>Intel Core i7-1165G7</strong></div>
-              <div class="kl"><span class="mu">RAM</span><strong>16 GB DDR4</strong></div>
-              <div class="kl"><span class="mu">Storage</span><strong>512 GB NVMe SSD</strong></div>
-              <div class="kl"><span class="mu">Display</span><strong>15.6" FHD IPS</strong></div>
-              <div class="kl"><span class="mu">OS</span><strong>Windows 11 Pro 23H2</strong></div>
-              <div class="kl"><span class="mu">Serial No.</span><strong>DL552-XK914</strong></div>
+              <div class="kl"><span class="mu">CPU</span><strong id="asInfoCpu">—</strong></div>
+              <div class="kl"><span class="mu">RAM</span><strong id="asInfoRam">—</strong></div>
+              <div class="kl"><span class="mu">Storage</span><strong id="asInfoStorage">—</strong></div>
+              <div class="kl"><span class="mu">OS</span><strong id="asInfoOs">—</strong></div>
+              <div class="kl"><span class="mu">Serial No.</span><strong id="asInfoSerial">—</strong></div>
+              <div class="kl"><span class="mu">ประเภท</span><strong id="asInfoType">—</strong></div>
             </div>
           </div>
           <div class="card"><div class="ctit mb14"><i class="ti ti-id-badge"></i>ข้อมูลการจัดซื้อ</div>
             <div class="dfc g4px" style="font-size:13.5px">
-              <div class="kl"><span class="mu">ราคา</span><strong>42,500 บาท</strong></div>
-              <div class="kl"><span class="mu">ซื้อเมื่อ</span><strong>15 ม.ค. 2024</strong></div>
-              <div class="kl"><span class="mu">ผู้จำหน่าย</span><strong>Dell Thailand</strong></div>
-              <div class="kl"><span class="mu">ประกันถึง</span><strong style="color:var(--red-600)">31 ธ.ค. 2025 ⚠</strong></div>
-              <div class="kl"><span class="mu">มูลค่าคงเหลือ</span><strong>28,333 บาท</strong></div>
+              <div class="kl"><span class="mu">ราคา</span><strong id="asInfoPrice">—</strong></div>
+              <div class="kl"><span class="mu">ซื้อเมื่อ</span><strong id="asInfoPurchDate">—</strong></div>
+              <div class="kl"><span class="mu">ผู้จำหน่าย</span><strong id="asInfoVendor">—</strong></div>
+              <div class="kl"><span class="mu">ประกันถึง</span><strong id="asInfoWarranty">—</strong></div>
+              <div class="kl"><span class="mu">สถานที่</span><strong id="asInfoLocation">—</strong></div>
             </div>
           </div>
         </div>
-        <div class="card mb16"><div class="ctit mb14"><i class="ti ti-chart-line"></i>ค่าเสื่อมราคา</div>
-          <div class="df ic jb mb10"><span class="xs mu">มูลค่าเริ่มต้น 42,500 บาท → ปัจจุบัน 28,333 บาท (อายุ 18 เดือน)</span><span class="badge bhi">66.7%</span></div>
-          <div class="prg" style="height:10px"><div class="prgf" style="width:33.3%;background:var(--red-500)"></div></div>
-          <div class="df jb mt8 xs mu"><span>ราคาทุน: 42,500</span><span>อายุใช้งาน 3 ปี</span><span>มูลค่าซาก: 5,000</span></div>
-        </div>
-        <div class="card"><div class="ctit mb14"><i class="ti ti-network"></i>เครือข่าย & ซอฟต์แวร์</div>
-          <div class="gr2">
-            <div><div class="slbl_">MAC Address</div><code class="xs">A4:C3:F0:12:45:7E</code></div>
-            <div><div class="slbl_">IP Address</div><code class="xs">10.1.4.52</code></div>
-            <div class="mt10"><div class="slbl_">ซอฟต์แวร์ที่ติดตั้ง</div><div class="df fw g6px mt4"><span class="pill">Microsoft 365</span><span class="pill">Chrome</span><span class="pill">Zoom</span><span class="pill">Acrobat</span><span class="pill">VPN Client</span></div></div>
+        <div class="card mb16"><div class="ctit mb14"><i class="ti ti-user"></i>ผู้ใช้งานปัจจุบัน</div>
+          <div class="dfc g4px" style="font-size:13.5px">
+            <div class="kl"><span class="mu">ชื่อ</span><strong id="asInfoUser">ยังไม่มอบหมาย</strong></div>
+            <div class="kl"><span class="mu">แผนก</span><strong id="asInfoDept">—</strong></div>
+            <div class="kl"><span class="mu">สถานะ</span><strong id="asInfoStatus">—</strong></div>
           </div>
+        </div>
+        <div class="card" id="asInfoNotesCard" style="display:none"><div class="ctit mb14"><i class="ti ti-note"></i>หมายเหตุ</div>
+          <div style="font-size:13.5px;line-height:1.7" id="asInfoNotes">—</div>
         </div>
       </div>
 
@@ -1397,20 +1395,20 @@ tbody tr.rc{cursor:pointer}
 <div class="pg" id="pg-approval">
   <div class="phdr"><div><h2>ระบบอนุมัติ</h2></div></div>
   <div class="sg g4 mb16"><div class="sc"><div class="sic ia"><i class="ti ti-hourglass"></i></div><div class="slbl">รอการอนุมัติ</div><div class="sval" style="color:var(--amber-600)" id="apvStatPending">0</div></div><div class="sc"><div class="sic ig"><i class="ti ti-check"></i></div><div class="slbl">อนุมัติแล้ว</div><div class="sval" style="color:var(--green-600)" id="apvStatApproved">0</div></div><div class="sc"><div class="sic ir"><i class="ti ti-x"></i></div><div class="slbl">ปฏิเสธ</div><div class="sval" style="color:var(--red-600)" id="apvStatRejected">0</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">เวลาเฉลี่ย</div><div class="sval" id="apvStatAvg">—</div></div></div>
-  <div class="gr2"><div class="card"><div class="ctit mb16"><i class="ti ti-clipboard-list"></i>รอการอนุมัติ</div><div id="apvList"></div></div><div class="card"><div class="ctit mb16"><i class="ti ti-settings-cog"></i>Workflow Builder</div><div id="wfBldr"></div><button class="btn mt8" onclick="toast('เพิ่ม Step','info','')"><i class="ti ti-plus"></i>เพิ่ม Step</button></div></div>
+  <div class="gr2"><div class="card"><div class="ctit mb16"><i class="ti ti-clipboard-list"></i>รอการอนุมัติ</div><div id="apvList"></div></div><div class="card"><div class="ctit mb16"><i class="ti ti-settings-cog"></i>Workflow Builder</div><div id="wfBldr"></div><button class="btn mt8" onclick="addWorkflowStep()"><i class="ti ti-plus"></i>เพิ่ม Step</button></div></div>
 </div>
 
 <div class="pg" id="pg-sla">
-  <div class="phdr"><div><h2>SLA Management</h2></div><button class="btn pri" onclick="toast('เพิ่ม Policy','info','')"><i class="ti ti-plus"></i>เพิ่ม SLA Policy</button></div>
+  <div class="phdr"><div><h2>SLA Management</h2></div><button class="btn pri" onclick="openAddSlaPolicy()"><i class="ti ti-plus"></i>เพิ่ม SLA Policy</button></div>
   <div class="gr2 mb16">
-    <div class="card"><div class="ctit mb14"><i class="ti ti-alarm"></i>SLA Policy</div><table><thead><tr><th>Priority</th><th>First Response</th><th>Resolution</th><th>เวลาทำการ</th><th>Escalation</th></tr></thead><tbody><tr><td><span class="badge bcr">Critical</span></td><td class="w7" style="color:var(--red-600)">15 นาที</td><td class="w7" style="color:var(--red-600)">4 ชม.</td><td>24/7</td><td>IT Director</td></tr><tr><td><span class="badge bhi">High</span></td><td class="w6">1 ชม.</td><td class="w6">8 ชม.</td><td>เวลาราชการ</td><td>IT Manager</td></tr><tr><td><span class="badge bme">Medium</span></td><td>4 ชม.</td><td>24 ชม.</td><td>เวลาราชการ</td><td>—</td></tr><tr><td><span class="badge blo">Low</span></td><td>8 ชม.</td><td>72 ชม.</td><td>เวลาราชการ</td><td>—</td></tr></tbody></table></div>
+    <div class="card"><div class="ctit mb14"><i class="ti ti-alarm"></i>SLA Policy</div><table><thead><tr><th>Priority</th><th>First Response</th><th>Resolution</th><th>เวลาทำการ</th><th>Escalation</th><th></th></tr></thead><tbody id="slaPolicyBody"></tbody></table></div>
     <div class="card"><div class="ctit mb14"><i class="ti ti-shield-check"></i>SLA Performance</div><div class="chw" style="height:200px"><canvas id="cSlaPerf"></canvas></div></div>
   </div>
   <div class="gr2"><div class="card"><div class="ctit mb14"><i class="ti ti-bell-ringing"></i>Escalation Rules</div><div id="escList"></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-calendar"></i>เวลาทำการ</div><table><thead><tr><th>วัน</th><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th></tr></thead><tbody><tr><td>จันทร์–ศุกร์</td><td>08:30</td><td>17:30</td><td><span class="badge bact">เปิด</span></td></tr><tr><td>เสาร์</td><td>09:00</td><td>13:00</td><td><span class="badge bme">ครึ่งวัน</span></td></tr><tr><td>อาทิตย์</td><td>—</td><td>—</td><td><span class="badge bcl">ปิด</span></td></tr></tbody></table></div></div>
 </div>
 
 <div class="pg" id="pg-reports">
-  <div class="phdr"><div><h2>รายงาน</h2></div><div class="pact"><select class="fsel" style="width:auto"><option>มิถุนายน 2026</option><option>พฤษภาคม 2026</option><option>Q2 2026</option></select><button class="btn" onclick="toast('PDF','info','')"><i class="ti ti-file-type-pdf"></i>PDF</button><button class="btn" onclick="toast('Excel','info','')"><i class="ti ti-table"></i>Excel</button></div></div>
+  <div class="phdr"><div><h2>รายงาน</h2></div><div class="pact"><select class="fsel" style="width:auto"><option>มิถุนายน 2026</option><option>พฤษภาคม 2026</option><option>Q2 2026</option></select><button class="btn" onclick="exportReportPDF()"><i class="ti ti-file-type-pdf"></i>PDF</button><button class="btn" onclick="exportReportExcel()"><i class="ti ti-table"></i>Excel</button></div></div>
   <div class="sg g4 mb16"><div class="sc"><div class="sic ib"><i class="ti ti-ticket"></i></div><div class="slbl">Ticket เดือนนี้</div><div class="sval" id="repStatTotal">0</div><div class="smeta" id="repStatTotalMeta">—</div></div><div class="sc"><div class="sic ig"><i class="ti ti-shield-check"></i></div><div class="slbl">SLA Compliance</div><div class="sval" id="repStatSla">—</div><div class="smeta">เป้า 95%</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock"></i></div><div class="slbl">First Response</div><div class="sval" id="repStatFirst">—</div><div class="smeta">—</div></div><div class="sc"><div class="sic igr"><i class="ti ti-clock-hour-4"></i></div><div class="slbl">เวลาแก้ไขเฉลี่ย</div><div class="sval" id="repStatAvg">—</div></div></div>
   <div class="gr2 mb16"><div class="card"><div class="ctit mb14"><i class="ti ti-chart-bar"></i>Ticket รายเดือน</div><div class="chw" style="height:220px"><canvas id="cRepBar"></canvas></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-chart-area"></i>SLA Trend</div><div class="chw" style="height:220px"><canvas id="cSlaLine"></canvas></div></div></div>
   <div class="gr2"><div class="card"><div class="ctit mb14"><i class="ti ti-users"></i>ประสิทธิภาพช่าง</div><div id="rTech"></div></div><div class="card"><div class="ctit mb14"><i class="ti ti-tag"></i>สถิติหมวดหมู่</div><div id="rCat"></div></div></div>
@@ -1430,19 +1428,19 @@ tbody tr.rc{cursor:pointer}
 </div>
 
 <div class="pg" id="pg-categories">
-  <div class="phdr"><div><h2>หมวดหมู่</h2></div><button class="btn pri" onclick="toast('เพิ่มหมวดหมู่','info','')"><i class="ti ti-plus"></i>เพิ่ม</button></div>
+  <div class="phdr"><div><h2>หมวดหมู่</h2></div><button class="btn pri" onclick="openAddCategory()"><i class="ti ti-plus"></i>เพิ่ม</button></div>
   <div class="card" id="catTree"></div>
 </div>
 
 <div class="pg" id="pg-notif">
-  <div class="phdr"><div><h2>การแจ้งเตือน</h2></div><div class="pact"><button class="btn" onclick="toast('อ่านทั้งหมด','success','')"><i class="ti ti-check-all"></i>อ่านทั้งหมด</button><button class="btn" onclick="toast('ล้าง','info','')"><i class="ti ti-trash"></i>ล้าง</button></div></div>
+  <div class="phdr"><div><h2>การแจ้งเตือน</h2></div><div class="pact"><button class="btn" onclick="markAllNotifsRead()"><i class="ti ti-check-all"></i>อ่านทั้งหมด</button><button class="btn" onclick="clearAllNotifs()"><i class="ti ti-trash"></i>ล้าง</button></div></div>
   <div class="tabs mb-0"><div class="tab on">ทั้งหมด<span class="tbc" id="notifTabAll">0</span></div><div class="tab">ยังไม่อ่าน<span class="tbc" id="notifTabUnread">0</span></div><div class="tab">SLA Warning</div><div class="tab">มอบหมาย</div></div>
   <div class="card p0" style="border-radius:0 var(--r-lg) var(--r-lg) var(--r-lg)"><div id="notifList"></div></div>
 </div>
 
 <div class="pg" id="pg-audit">
-  <div class="phdr"><div><h2>Audit Logs</h2></div><button class="btn" onclick="toast('Export','info','')"><i class="ti ti-file-export"></i>Export</button></div>
-  <div class="card"><div class="fbar mb14"><div class="sbx" style="flex:1;max-width:280px"><i class="ti ti-search"></i><input type="text" placeholder="ค้นหา log..."></div><select class="fsel" style="width:auto"><option>ทุกการดำเนินการ</option><option>เปลี่ยนสถานะ</option><option>Login</option></select></div><div class="tw"><table><thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การดำเนินการ</th><th>เป้าหมาย</th><th>รายละเอียด</th><th>IP</th></tr></thead><tbody id="auditBody"></tbody></table></div></div>
+  <div class="phdr"><div><h2>Audit Logs</h2></div><button class="btn" onclick="exportAuditLog()"><i class="ti ti-file-export"></i>Export</button></div>
+  <div class="card"><div class="fbar mb14"><div class="sbx" style="flex:1;max-width:280px"><i class="ti ti-search"></i><input type="text" id="auditSearchInp" placeholder="ค้นหา log..." oninput="renderAudit()"></div><select class="fsel" style="width:auto" id="auditFilterSel" onchange="renderAudit()"><option value="">ทุกการดำเนินการ</option><option value="LOGIN">Login</option><option value="CREATE">สร้าง</option><option value="UPDATE">แก้ไข</option><option value="DELETE">ลบ</option></select></div><div class="tw"><table><thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การดำเนินการ</th><th>เป้าหมาย</th><th>รายละเอียด</th><th>IP</th></tr></thead><tbody id="auditBody"></tbody></table></div></div>
 </div>
 
 <div class="pg" id="pg-settings">
@@ -2506,7 +2504,7 @@ function renderAssets(q=''){
     const typeIc={notebook:'ti-device-laptop',desktop:'ti-device-desktop-analytics',server:'ti-server',network:'ti-network',printer:'ti-printer'}[a.type]||'ti-device-laptop';
     return `<tr>
       <td><input type="checkbox"></td>
-      <td><span class="tid" onclick="nav('assetdetail')" style="cursor:pointer">${a.code}</span></td>
+      <td><span class="tid" onclick="viewAssetDetail('${a.code}')" style="cursor:pointer">${a.code}</span></td>
       <td class="xs w6">${a.name}</td>
       <td><div class="df ic g6px xs"><i class="ti ${typeIc}" style="color:var(--blue-600)"></i>${a.type}</div></td>
       <td class="xs">${a.brand}</td>
@@ -2518,7 +2516,7 @@ function renderAssets(q=''){
       <td style="font-size:11px;color:${warnColor};white-space:nowrap">${a.warranty}${warnBadge}</td>
       <td>${a.tickets>0?`<span class="badge bhi">${a.tickets}</span>`:`<span class="mu xs">—</span>`}</td>
       <td><div class="df g4px">
-        <button class="btn xs ghost" onclick="nav('assetdetail')" title="รายละเอียด"><i class="ti ti-eye"></i></button>
+        <button class="btn xs ghost" onclick="viewAssetDetail('${a.code}')" title="รายละเอียด"><i class="ti ti-eye"></i></button>
         <button class="btn xs ghost" onclick="openEditAsset('${a.code}')" title="แก้ไข"><i class="ti ti-edit"></i></button>
         <button class="btn xs ghost" onclick="toast('QR','info','')" title="QR"><i class="ti ti-qrcode"></i></button>
       </div></td>
@@ -4580,6 +4578,465 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+</script>
+
+
+<script>
+// ============================================================
+//  ASSET DETAIL — full dynamic rendering (was 100% static demo)
+// ============================================================
+function viewAssetDetail(code) {
+  window.currentAssetCode = code;
+  nav('assetdetail');
+}
+
+function renderAssetDetailInfo() {
+  const code = window.currentAssetCode;
+  const a = DB.assets.find(x => x.code === code);
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
+
+  if (!a) {
+    set('asBreadCode', code || 'ไม่พบสินทรัพย์');
+    set('asBreadName', '—');
+    return;
+  }
+
+  set('asBreadCode', a.code);
+  set('asBreadName', `${a.brand||''} ${a.model||a.name||''}`.trim() || a.code);
+  set('asInfoCpu', a.cpu || 'ไม่ระบุ');
+  set('asInfoRam', a.ram || 'ไม่ระบุ');
+  set('asInfoStorage', a.storage || 'ไม่ระบุ');
+  set('asInfoOs', a.os || 'ไม่ระบุ');
+  set('asInfoSerial', a.serialNo || 'ไม่ระบุ');
+  set('asInfoType', {notebook:'Notebook',desktop:'Desktop',server:'Server',network:'Network',printer:'Printer'}[a.type] || a.type || '—');
+
+  set('asInfoPrice', a.purchasePrice ? `${Number(a.purchasePrice).toLocaleString()} บาท` : '—');
+  set('asInfoPurchDate', a.purchaseDate || '—');
+  set('asInfoVendor', a.vendor || '—');
+  const warrantyEl = document.getElementById('asInfoWarranty');
+  if (warrantyEl) {
+    const w = a.warrantyExpiry || a.warranty;
+    if (w) {
+      const expired = expiredDate(w);
+      warrantyEl.textContent = w + (expired ? ' ⚠ หมดอายุ' : '');
+      warrantyEl.style.color = expired ? 'var(--red-600)' : 'inherit';
+    } else { warrantyEl.textContent = '—'; }
+  }
+  set('asInfoLocation', `${a.location||''} ${a.floor||''}`.trim() || '—');
+
+  set('asInfoUser', a.userName || a.user || 'ยังไม่มอบหมาย');
+  set('asInfoDept', a.dept || '—');
+  const statusEl = document.getElementById('asInfoStatus');
+  if (statusEl) statusEl.innerHTML = ({
+    active:'<span class="badge bact">ใช้งานปกติ</span>',
+    repair:'<span class="badge bpr">ซ่อมบำรุง</span>',
+    stock:'<span class="badge bcl">เก็บสต็อก</span>',
+    retired:'<span class="badge bsus">เลิกใช้งาน</span>',
+  })[a.status] || a.status || '—';
+
+  const notesCard = document.getElementById('asInfoNotesCard');
+  if (a.notes) {
+    if (notesCard) notesCard.style.display = 'block';
+    set('asInfoNotes', a.notes);
+  } else if (notesCard) {
+    notesCard.style.display = 'none';
+  }
+}
+
+function showAssetQR() {
+  const code = window.currentAssetCode;
+  const a = DB.assets.find(x => x.code === code);
+  if (!a) { toast('ไม่พบสินทรัพย์', 'error', ''); return; }
+  const url = `${location.origin}${location.pathname}?asset=${encodeURIComponent(code)}`;
+  const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`;
+
+  let m = document.getElementById('assetQrModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mov';
+    m.id = 'assetQrModal';
+    m.onclick = function(e){ if(e.target===this) closeM('assetQrModal'); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="mdl msm"><div class="mhdr"><h3><i class="ti ti-qrcode"></i> QR Label — ${code}</h3><button class="mcl" onclick="closeM('assetQrModal')"><i class="ti ti-x"></i></button></div>
+    <div class="mbdy" id="assetQrPrintArea" style="text-align:center">
+      <img src="${qrImg}" alt="QR Code" style="width:200px;height:200px;border-radius:var(--r);border:1px solid var(--b0)">
+      <div class="w7 mt10">${code}</div>
+      <div class="xs mu">${a.brand||''} ${a.model||a.name||''}</div>
+    </div>
+    <div class="mftr"><button class="btn" onclick="closeM('assetQrModal')">ปิด</button><button class="btn pri" onclick="window.print()"><i class="ti ti-printer"></i>พิมพ์ QR</button></div></div>`;
+  openM('assetQrModal');
+}
+
+function printAssetCard() {
+  window.print();
+}
+
+async function disposeAsset() {
+  const code = window.currentAssetCode;
+  const a = DB.assets.find(x => x.code === code);
+  if (!a) return;
+  if (!confirm(`ยืนยันการจำหน่ายสินทรัพย์ ${code}?\nสถานะจะถูกเปลี่ยนเป็น "เลิกใช้งาน"`)) return;
+
+  a.status = 'retired';
+  saveToLocal();
+  renderAssetDetailInfo();
+
+  if (useSheets) {
+    try { await sheetPOST('updateAsset', { code, status: 'retired' }); setSyncStatus('ok'); }
+    catch(e) { setSyncStatus('error'); }
+  }
+  toast(`จำหน่ายสินทรัพย์ ${code} แล้ว`, 'warning', 'จำหน่ายสินทรัพย์');
+}
+
+// Hook into renderAssetDetail (already exists, extended earlier for ticket history)
+const _origRenderAssetDetail2 = renderAssetDetail;
+renderAssetDetail = function(...args) {
+  _origRenderAssetDetail2(...args);
+  renderAssetDetailInfo();
+};
+
+const _origNav2 = nav;
+nav = function(pg, el) {
+  _origNav2(pg, el);
+  if (pg === 'assetdetail') setTimeout(renderAssetDetailInfo, 30);
+};
+</script>
+
+
+<script>
+// ============================================================
+//  WORKFLOW BUILDER — real, editable, persisted
+// ============================================================
+let workflowSteps = JSON.parse(localStorage.getItem('itdesk_workflow') || 'null') || [
+  { label:'ผู้ขอสร้าง Ticket', done:true },
+  { label:'หัวหน้าแผนกอนุมัติ', done:false },
+];
+function renderWorkflowBuilder() {
+  const wf = document.getElementById('wfBldr');
+  if (!wf) return;
+  wf.innerHTML = workflowSteps.length ? workflowSteps.map((s,i)=>`
+    <div><div class="wfs ${s.done?'d':''}">
+      <div class="wfsd">${s.done?'✓':i+1}</div>
+      <div style="flex:1;font-size:13px">${s.label}</div>
+      ${s.done?'<span class="badge bact">เสร็จ</span>':'<span class="badge bas">รอ</span>'}
+      <button class="btn xs ghost" onclick="removeWorkflowStep(${i})" style="margin-left:6px"><i class="ti ti-x" style="font-size:12px"></i></button>
+    </div>${i<workflowSteps.length-1?`<div class="wfl ${s.done?'d':''}"></div>`:''}</div>`).join('')
+    : '<div class="est"><i class="ti ti-route"></i><h3>ยังไม่มี Step</h3></div>';
+}
+function addWorkflowStep() {
+  const label = prompt('ชื่อขั้นตอนใหม่:', '');
+  if (!label || !label.trim()) return;
+  workflowSteps.push({ label: label.trim(), done: false });
+  localStorage.setItem('itdesk_workflow', JSON.stringify(workflowSteps));
+  renderWorkflowBuilder();
+  toast('เพิ่มขั้นตอนแล้ว', 'success', 'Workflow');
+}
+function removeWorkflowStep(i) {
+  workflowSteps.splice(i, 1);
+  localStorage.setItem('itdesk_workflow', JSON.stringify(workflowSteps));
+  renderWorkflowBuilder();
+}
+const _origRenderApproval2 = renderApproval;
+renderApproval = function() { _origRenderApproval2(); renderWorkflowBuilder(); };
+
+// ============================================================
+//  SLA POLICY — real, editable, persisted table
+// ============================================================
+let slaPolicies = JSON.parse(localStorage.getItem('itdesk_sla_policies') || 'null') || [
+  { pri:'critical', label:'Critical', first:'15 นาที', resolve:'4 ชม.', hours:'24/7', esc:'IT Director' },
+  { pri:'high',     label:'High',     first:'1 ชม.',   resolve:'8 ชม.', hours:'เวลาราชการ', esc:'IT Manager' },
+  { pri:'medium',   label:'Medium',   first:'4 ชม.',   resolve:'24 ชม.',hours:'เวลาราชการ', esc:'—' },
+  { pri:'low',      label:'Low',      first:'8 ชม.',   resolve:'72 ชม.',hours:'เวลาราชการ', esc:'—' },
+];
+const SLA_BADGE_CLASS = { critical:'bcr', high:'bhi', medium:'bme', low:'blo' };
+function renderSlaPolicyTable() {
+  const tbody = document.getElementById('slaPolicyBody');
+  if (!tbody) return;
+  tbody.innerHTML = slaPolicies.map((p,i) => `
+    <tr>
+      <td><span class="badge ${SLA_BADGE_CLASS[p.pri]||'blo'}">${p.label}</span></td>
+      <td class="w6">${p.first}</td>
+      <td class="w6">${p.resolve}</td>
+      <td>${p.hours}</td>
+      <td>${p.esc}</td>
+      <td><button class="btn xs ghost" onclick="removeSlaPolicy(${i})"><i class="ti ti-trash" style="font-size:12px"></i></button></td>
+    </tr>`).join('');
+}
+function openAddSlaPolicy() {
+  let m = document.getElementById('addSlaM');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mov';
+    m.id = 'addSlaM';
+    m.onclick = function(e){ if(e.target===this) closeM('addSlaM'); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="mdl msm"><div class="mhdr"><h3><i class="ti ti-alarm" style="color:var(--blue-600)"></i> เพิ่ม SLA Policy</h3><button class="mcl" onclick="closeM('addSlaM')"><i class="ti ti-x"></i></button></div>
+  <div class="mbdy"><div class="fg" style="gap:12px">
+    <div class="fgg"><label class="flbl">ระดับความสำคัญ</label><select class="fsel" id="slaPri"><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+    <div class="fgg"><label class="flbl">First Response</label><input class="finp" id="slaFirst" placeholder="เช่น 1 ชม."></div>
+    <div class="fgg"><label class="flbl">Resolution</label><input class="finp" id="slaResolve" placeholder="เช่น 8 ชม."></div>
+    <div class="fgg"><label class="flbl">เวลาทำการ</label><input class="finp" id="slaHours" placeholder="เช่น เวลาราชการ" value="เวลาราชการ"></div>
+    <div class="fgg"><label class="flbl">Escalate ถึง</label><input class="finp" id="slaEsc" placeholder="เช่น IT Manager"></div>
+  </div></div>
+  <div class="mftr"><button class="btn" onclick="closeM('addSlaM')">ยกเลิก</button><button class="btn pri" onclick="saveSlaPolicy()"><i class="ti ti-check"></i>เพิ่ม</button></div></div>`;
+  openM('addSlaM');
+}
+function saveSlaPolicy() {
+  const pri = document.getElementById('slaPri')?.value || 'medium';
+  const first = document.getElementById('slaFirst')?.value.trim();
+  const resolve = document.getElementById('slaResolve')?.value.trim();
+  const hours = document.getElementById('slaHours')?.value.trim() || 'เวลาราชการ';
+  const esc = document.getElementById('slaEsc')?.value.trim() || '—';
+  if (!first || !resolve) { toast('กรุณากรอก First Response และ Resolution', 'error', ''); return; }
+  const label = {critical:'Critical',high:'High',medium:'Medium',low:'Low'}[pri];
+  slaPolicies.push({ pri, label, first, resolve, hours, esc });
+  localStorage.setItem('itdesk_sla_policies', JSON.stringify(slaPolicies));
+  closeM('addSlaM');
+  renderSlaPolicyTable();
+  toast('เพิ่ม SLA Policy แล้ว', 'success', '');
+}
+function removeSlaPolicy(i) {
+  slaPolicies.splice(i, 1);
+  localStorage.setItem('itdesk_sla_policies', JSON.stringify(slaPolicies));
+  renderSlaPolicyTable();
+}
+const _origRenderSLA2 = renderSLA;
+renderSLA = function() { _origRenderSLA2(); renderSlaPolicyTable(); };
+
+// ============================================================
+//  CATEGORIES — real, editable, persisted
+// ============================================================
+let categoryTree = JSON.parse(localStorage.getItem('itdesk_categories') || 'null') || [];
+function renderCategoriesReal() {
+  const el = document.getElementById('catTree');
+  if (!el) return;
+  el.innerHTML = '<div class="df ic jb mb14"><div class="ctit"><i class="ti ti-category"></i>โครงสร้างหมวดหมู่</div></div>' +
+    (categoryTree.length ? categoryTree.map((c,i) => `
+      <div style="margin-bottom:12px;padding:14px;border:1px solid var(--b0);border-radius:var(--r-lg);background:var(--s1)">
+        <div class="df ic jb mb10">
+          <div class="df ic g10">
+            <div class="kbi" style="background:${c.col}22;width:34px;height:34px;border-radius:var(--r);margin:0"><i class="ti ${c.ic}" style="color:${c.col};font-size:18px"></i></div>
+            <div><div class="sm w7">${c.n}</div><div class="xs mu">${c.subs.length} หมวดย่อย</div></div>
+          </div>
+          <div class="df g6px"><button class="btn xs dan" onclick="removeCategory(${i})"><i class="ti ti-trash"></i></button></div>
+        </div>
+        <div class="df fw g6px">${c.subs.map(s=>`<span class="pill">${s}</span>`).join('')}</div>
+      </div>`).join('')
+    : '<div class="est"><i class="ti ti-category-2"></i><h3>ยังไม่มีหมวดหมู่</h3><p>กด "เพิ่ม" เพื่อสร้างหมวดหมู่แรก</p></div>');
+}
+function openAddCategory() {
+  let m = document.getElementById('addCatM');
+  if (!m) {
+    m = document.createElement('div');
+    m.className = 'mov';
+    m.id = 'addCatM';
+    m.onclick = function(e){ if(e.target===this) closeM('addCatM'); };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div class="mdl msm"><div class="mhdr"><h3><i class="ti ti-category-plus" style="color:var(--blue-600)"></i> เพิ่มหมวดหมู่</h3><button class="mcl" onclick="closeM('addCatM')"><i class="ti ti-x"></i></button></div>
+  <div class="mbdy"><div class="fgg mb12"><label class="flbl">ชื่อหมวดหมู่</label><input class="finp" id="catName" placeholder="เช่น Network & VPN"></div>
+  <div class="fgg"><label class="flbl">หมวดย่อย (คั่นด้วย , )</label><input class="finp" id="catSubs" placeholder="เช่น WiFi, VPN, LAN"></div></div>
+  <div class="mftr"><button class="btn" onclick="closeM('addCatM')">ยกเลิก</button><button class="btn pri" onclick="saveCategory()"><i class="ti ti-check"></i>เพิ่ม</button></div></div>`;
+  openM('addCatM');
+}
+function saveCategory() {
+  const name = document.getElementById('catName')?.value.trim();
+  const subsRaw = document.getElementById('catSubs')?.value.trim();
+  if (!name) { toast('กรุณากรอกชื่อหมวดหมู่', 'error', ''); return; }
+  const subs = subsRaw ? subsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  categoryTree.push({ n:name, ic:'ti-folder', col:'#1860C4', subs });
+  localStorage.setItem('itdesk_categories', JSON.stringify(categoryTree));
+  closeM('addCatM');
+  renderCategoriesReal();
+  toast(`เพิ่มหมวดหมู่ "${name}" แล้ว`, 'success', '');
+}
+function removeCategory(i) {
+  if (!confirm('ยืนยันการลบหมวดหมู่นี้?')) return;
+  categoryTree.splice(i, 1);
+  localStorage.setItem('itdesk_categories', JSON.stringify(categoryTree));
+  renderCategoriesReal();
+}
+renderCategories = renderCategoriesReal;
+</script>
+
+
+<script>
+// ============================================================
+//  REAL CLIENT-SIDE AUDIT LOG — every action gets logged
+// ============================================================
+window._auditLog = JSON.parse(localStorage.getItem('itdesk_audit_log') || '[]');
+
+function logAudit(action, targetType, targetId, detail) {
+  const entry = {
+    t: new Date().toLocaleString('th-TH'),
+    ts: Date.now(),
+    u: currentUser ? `${currentUser.firstName||''} ${currentUser.lastName||''}`.trim() : 'ระบบ',
+    a: action,
+    tgt: targetId || '—',
+    d: detail || '',
+    ip: '—',
+  };
+  window._auditLog.unshift(entry);
+  window._auditLog = window._auditLog.slice(0, 200);
+  try { localStorage.setItem('itdesk_audit_log', JSON.stringify(window._auditLog)); } catch(e) {}
+  if (typeof renderAudit === 'function') renderAudit();
+}
+
+function renderAuditReal() {
+  const el = document.getElementById('auditBody');
+  if (!el) return;
+  const q = (document.getElementById('auditSearchInp')?.value || '').toLowerCase();
+  const filter = document.getElementById('auditFilterSel')?.value || '';
+  const data = window._auditLog.filter(a => {
+    const mq = !q || a.a.toLowerCase().includes(q) || a.u.toLowerCase().includes(q) || (a.tgt||'').toLowerCase().includes(q);
+    const mf = !filter || a.a.toUpperCase().includes(filter);
+    return mq && mf;
+  });
+  el.innerHTML = data.length
+    ? data.map(a=>`<tr><td class="xs mu">${a.t}</td><td class="xs w6">${a.u}</td><td class="xs">${a.a}</td><td class="tid">${a.tgt}</td><td class="xs mu">${a.d}</td><td style="font-size:11px;color:var(--t2);font-family:monospace">${a.ip}</td></tr>`).join('')
+    : '<tr><td colspan="6"><div class="est"><i class="ti ti-history"></i><h3>ยังไม่มีบันทึก</h3><p>การกระทำต่างๆ ในระบบจะถูกบันทึกที่นี่</p></div></td></tr>';
+}
+renderAudit = renderAuditReal;
+
+function exportAuditLog() {
+  exportToCSV(window._auditLog.map(a=>({เวลา:a.t, ผู้ใช้:a.u, การดำเนินการ:a.a, เป้าหมาย:a.tgt, รายละเอียด:a.d})), `audit_log_${new Date().toISOString().slice(0,10)}.csv`);
+}
+
+// ── Hook logAudit into key actions across the app ────────────
+const _origEnterApp2 = enterApp;
+enterApp = function(user, saveSession) {
+  _origEnterApp2(user, saveSession);
+  logAudit('LOGIN', 'User', user?.email || user?.name || '—', `เข้าสู่ระบบผ่าน ${user?.provider||'manual'}`);
+};
+const _origLogout2 = logout;
+logout = function() {
+  if (currentUser) logAudit('LOGOUT', 'User', currentUser.email || currentUser.name, 'ออกจากระบบ');
+  _origLogout2();
+};
+const _origApiCreateTicket2 = apiCreateTicket;
+apiCreateTicket = async function(data) {
+  const res = await _origApiCreateTicket2(data);
+  logAudit('CREATE', 'Ticket', res?.id || '—', data.subject || '');
+  return res;
+};
+const _origChangeTicketStatus2 = changeTicketStatus;
+changeTicketStatus = async function(newStatus) {
+  const t = findTicket(window.currentTicketId);
+  await _origChangeTicketStatus2(newStatus);
+  if (t) logAudit('UPDATE', 'Ticket', t.id, `สถานะ → ${newStatus}`);
+};
+const _origApiCreateAsset2 = apiCreateAsset;
+apiCreateAsset = async function(data) {
+  const res = await _origApiCreateAsset2(data);
+  logAudit('CREATE', 'Asset', data.code, `${data.brand||''} ${data.model||''}`.trim());
+  return res;
+};
+const _origSaveEditUser = saveEditUser;
+saveEditUser = async function(userId) {
+  await _origSaveEditUser(userId);
+  logAudit('UPDATE', 'User', userId, 'แก้ไขข้อมูลผู้ใช้');
+};
+const _origSaveNewUser = saveNewUser;
+saveNewUser = async function() {
+  await _origSaveNewUser();
+  logAudit('CREATE', 'User', '—', 'สร้างผู้ใช้ใหม่');
+};
+const _origApiCreateDocument2 = apiCreateDocument;
+apiCreateDocument = async function(data) {
+  const res = await _origApiCreateDocument2(data);
+  logAudit('CREATE', 'Document', res?.id || '—', data.name || '');
+  return res;
+};
+
+// ============================================================
+//  NOTIFICATIONS — click-through, mark-all-read, clear, badge fix
+// ============================================================
+function renderNotifsReal() {
+  const el = document.getElementById('notifList');
+  if (!el) return;
+  const notifs = getNotifications();
+  el.innerHTML = notifs.length ? notifs.map((n,i) => `
+    <div class="nit ${n.unread?'ur':''}" onclick="handleNotifClick(${i})">
+      <div class="nic" style="background:${n.bg}"><i class="ti ${n.ic}" style="color:${n.col}"></i></div>
+      <div style="flex:1"><div class="sm w7">${n.title}</div><div class="xs" style="color:var(--t1);margin-top:3px;line-height:1.5">${n.desc}</div><div class="xs mu mt4">${n.time}</div></div>
+      ${n.unread?'<div class="udot"></div>':''}
+    </div>`).join('') : '<div class="est"><i class="ti ti-bell-off"></i><h3>ไม่มีการแจ้งเตือน</h3></div>';
+
+  // Badge should match what's actually displayed here (fixes the 0-vs-shown mismatch)
+  const unreadCount = notifs.filter(n=>n.unread).length;
+  const setB = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  setB('notifTabAll', notifs.length);
+  setB('notifTabUnread', unreadCount);
+}
+renderNotifs = renderNotifsReal;
+
+function handleNotifClick(i) {
+  const notifs = getNotifications();
+  const n = notifs[i];
+  if (!n) return;
+  // Try to extract a ticket ID from the description (format: "#TK-xxx — ...")
+  const match = (n.desc||'').match(/#?TK-[\w-]+/);
+  if (match) {
+    const id = match[0].startsWith('#') ? match[0] : '#'+match[0];
+    const found = DB.tickets.find(t => t.id === id || t.id === match[0]);
+    if (found) { viewTicketDetail(found.id); return; }
+  }
+  toast(n.title, 'info', '');
+}
+
+function markAllNotifsRead() {
+  (window._liveNotifs || []).forEach(n => n.unread = false);
+  try { localStorage.setItem('itdesk_notifs', JSON.stringify(window._liveNotifs||[])); } catch(e){}
+  renderNotifsReal();
+  updateNotifBadge();
+  toast('อ่านการแจ้งเตือนทั้งหมดแล้ว', 'success', '');
+}
+function clearAllNotifs() {
+  if (!confirm('ยืนยันการล้างการแจ้งเตือนทั้งหมด?')) return;
+  window._liveNotifs = [];
+  try { localStorage.setItem('itdesk_notifs', '[]'); } catch(e){}
+  renderNotifsReal();
+  updateNotifBadge();
+  toast('ล้างการแจ้งเตือนแล้ว', 'info', '');
+}
+
+// ============================================================
+//  REPORTS EXPORT — real PDF (print) + Excel (CSV)
+// ============================================================
+function exportReportPDF() {
+  toast('กำลังเปิดหน้าต่างพิมพ์ (เลือก "Save as PDF")', 'info', '');
+  setTimeout(() => window.print(), 400);
+}
+function exportReportExcel() {
+  const rows = DB.tickets.map(t => ({
+    ID: t.id, หัวข้อ: t.sub, ผู้แจ้ง: t.req, แผนก: t.dept,
+    หมวดหมู่: t.cat, Priority: t.pri, Status: t.status,
+    ช่างเทคนิค: t.tech, 'SLA%': t.sla, วันที่สร้าง: t.cr,
+  }));
+  exportToCSV(rows, `report_tickets_${new Date().toISOString().slice(0,10)}.csv`);
+}
+
+// ============================================================
+//  SETTINGS — honest integration status (was fake "connected")
+// ============================================================
+function fixIntegrationStatusHonesty() {
+  document.querySelectorAll('#pg-settings .kl').forEach(row => {
+    const label = row.querySelector('.w7')?.textContent?.trim();
+    if (['Entra ID','Teams','Active Directory'].includes(label)) {
+      const badge = row.querySelector('.badge.bact');
+      if (badge) {
+        const btn = document.createElement('button');
+        btn.className = 'btn sm';
+        btn.textContent = 'เชื่อมต่อ';
+        btn.onclick = () => toast(`${label}: การเชื่อมต่อนี้ยังไม่เปิดใช้งานในเวอร์ชันนี้`, 'info', '');
+        badge.replaceWith(btn);
+      }
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(fixIntegrationStatusHonesty, 500));
 </script>
 
 </body>
