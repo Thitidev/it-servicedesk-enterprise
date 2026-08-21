@@ -3751,6 +3751,10 @@ function enterApp(user, saveSession=true) {
   document.getElementById('sidebarUser').style.display  = isAdmin ? 'none' : 'flex';
   document.getElementById('sidebarAdmin').style.display = isAdmin ? 'flex' : 'none';
 
+  // Sync badge is admin-only — make sure it's gone for regular employees
+  // (it may have been left over from a previous admin session in this tab)
+  if (!isAdmin) document.getElementById('syncStatus')?.remove();
+
   // Navigate
   if (isAdmin) nav('dashboard'); else navU('u-home');
 
@@ -3768,6 +3772,9 @@ function enterApp(user, saveSession=true) {
 // ============================================================
 function logout() {
   closeM('profileM');
+
+  // Remove admin-only sync badge so it never leaks into a regular employee's view
+  document.getElementById('syncStatus')?.remove();
 
   // Sign out from Google
   if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
